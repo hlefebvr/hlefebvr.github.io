@@ -6,8 +6,8 @@ remote_theme: fongandrew/hydeout
 # highlighter: pygments
 
 # # Permalinks
-# permalink: pretty
-# relative_permalinks: true
+permalink: pretty
+relative_permalinks: true
 
 # # Setup
 # tagline: 'just like home'
