@@ -1,10 +1,6 @@
 title: hlefebvr
 remote_theme: fongandrew/hydeout
 
-# Dependencies
-markdown: redcarpet
-highlighter: rouge
-
 # Setup
 tagline: 'just like home'
 description: 'Student in Computer Science'
