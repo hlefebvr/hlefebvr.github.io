@@ -1,5 +1,5 @@
 title: hlefebvr
-remote_theme: poole/hyde
+remote_theme: fongandrew/hydeout
 
 # Dependencies
 markdown: redcarpet
@@ -24,3 +24,5 @@ paginate: 5
 
 github:
   repo: https://github.com/hlefebvr
+
+sidebar_home_link:  true
