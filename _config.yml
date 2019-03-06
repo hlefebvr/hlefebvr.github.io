@@ -1,2 +1,26 @@
 title: hlefebvr
 remote_theme: poole/hyde
+
+# Dependencies
+markdown: redcarpet
+highlighter: pygments
+
+# Permalinks
+permalink: pretty
+relative_permalinks: true
+
+# Setup
+title: hlefebvr
+tagline: 'just like home'
+description: 'Student in Computer Science'
+url: http://hlefebvr.github.io
+baseurl: /
+
+author:
+  name: 'Henri Lefebvre'
+  url: http://hlefebvr.github.io
+
+paginate: 5
+
+github:
+  repo: https://github.com/hlefebvr
