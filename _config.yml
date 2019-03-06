@@ -2,8 +2,8 @@ title: hlefebvr
 remote_theme: fongandrew/hydeout
 
 # Dependencies
-# markdown: redcarpet
-# highlighter: pygments
+markdown: redcarpet
+highlighter: pygments
 
 # Setup
 tagline: 'just like home'
@@ -15,9 +15,9 @@ author:
   name: 'Henri Lefebvre'
   url: http://hlefebvr.github.io
 
-# paginate: 5
+paginate: 5
 
-# github:
-#   repo: https://github.com/hlefebvr
+github:
+  repo: https://github.com/hlefebvr
 
 sidebar_home_link: true
