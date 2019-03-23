@@ -2,5 +2,4 @@
 title: Home
 layout: page
 ---
- 
-Hello!
+<p> Hello, world!</p>

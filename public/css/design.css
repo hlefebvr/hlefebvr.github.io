@@ -1,0 +1,51 @@
+* {
+    font-family: 'Open Sans', sans-serif;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+}
+#header {
+    border-bottom:2px solid #efefef;
+}
+#header h1{
+    display: inline-block;
+    margin: 5px 0px;
+}
+#header h2{
+    display: inline-block;
+    color: gray;
+    font-size: 1.1em;
+    margin-left: 10px;
+}
+#header a{
+    text-decoration: none;
+}
+a {
+    color: #8B0000;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline !important;
+}
+#menu {
+    float: right;
+}
+#menu a{
+    display: inline-block;
+    margin: 15px;
+}
+.site-width {
+    width: 1000px;
+    margin: auto;
+}
+p {
+    text-indent: 20px;
+}
+#linkedin {
+    background-color: #0077B5;
+    padding: 3px;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+}

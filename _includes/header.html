@@ -1,0 +1,17 @@
+<div id="header">
+  <div class="site-width">
+    <h1><a href="/">{{ site.title }}</a></h1>
+    <h2>{{ site.description }}</h2>
+    <div id="menu">
+      {% assign pages_list = site.pages %}
+        {% for node in pages_list %}
+          {% if node.title != null %}
+            {% if node.layout == "page" %}
+              <a href="{{ node.url }}">{{ node.title }}</a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        <a id="linkedin" href="linkedin">LinkedIn</a>
+    </div>
+  </div>
+</div>
