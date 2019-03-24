@@ -5,6 +5,10 @@ html, body {
     margin: 0;
     padding: 0;
 }
+body {
+    position: relative;
+    min-height: 100vh;
+}
 #header {
     border-bottom:2px solid #efefef;
 }
@@ -38,8 +42,11 @@ a:hover {
     margin: 15px;
 }
 .site-width {
-    width: 1000px;
+    width: 700px;
     margin: auto;
+}
+.site-width *{
+    max-width: 100%;
 }
 p {
     text-indent: 20px;
@@ -55,11 +62,14 @@ p {
     margin-top: 70px;
 }
 #footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
     text-align: center;
     font-size: 0.8em;
     color: gray;
-    padding: 50px;
-    background: #efefef;
+    padding: 50px 0;
+    
 }
 .logo-resume {
     max-width: 150px;
@@ -70,4 +80,7 @@ pre {
     padding: 10px;
     background: #efefef;
     border-left: 2px solid gray;
+}
+#main {
+    padding-bottom: 100px;
 }
