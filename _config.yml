@@ -1,5 +1,3 @@
 title: hlefebvr
 tagline: just like home
 description: Intern at Inria Bordeaux Sud-ouest
-plugins:
-  - 'jekyll-plantuml'
