@@ -9,10 +9,12 @@ html, body {
     border-bottom:2px solid #efefef;
 }
 #header h1{
+    font-weight: lighter;
     display: inline-block;
     margin: 5px 0px;
 }
 #header h2{
+    font-weight: lighter;
     display: inline-block;
     color: gray;
     font-size: 1.1em;
@@ -48,4 +50,19 @@ p {
     color: white;
     border-radius: 4px;
     font-weight: bold;
+}
+#disqus_thread {
+    margin-top: 70px;
+}
+#footer{
+    text-align: center;
+    font-size: 0.8em;
+    color: gray;
+    padding: 50px;
+    background: #efefef;
+}
+.logo-resume {
+    max-width: 150px;
+    max-height: 100px;
+    float: right;
 }

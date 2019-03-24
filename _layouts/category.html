@@ -3,6 +3,7 @@ layout: default
 ---
 
 <h1>Category : {{ page.title }}</h1>
+{{ content }}
 {% for node in site.pages %}
     {% if node.title != null %}
         {% if node.category == "or" and node.layout != "category" %}
