@@ -84,3 +84,7 @@ pre {
 #main {
     padding-bottom: 100px;
 }
+.embeded-doc {
+    width: 100%;
+    height: 800px;
+}
