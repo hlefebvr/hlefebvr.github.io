@@ -1,5 +1,7 @@
 title: hlefebvr
 tagline: just like home
 description: Ph.D Student at DEI - Università Di Bologna
-#url: hlefebvr.github.io
-#sbaseurl: /hlefebvr.github.io
+highlighter: rouge
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
