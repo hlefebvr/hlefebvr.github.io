@@ -1,0 +1,4 @@
+I"Ÿ<p>This tutorial explains how to use the L-Solver library in order to model an optimization problem and to solve it via an external solver. The modeling framework in L-Solver is actually rather similar to some comercial solvers. The most important thing to grasp is how the Environment class and the Model class interacts and which role is played by each. In the following section, we shall first discuss the role of Environments and how its components are stored.</p>
+
+<p>Basically, an Environment is an object responsible for the life and death of its components. An environmentâ€™s components are (core) variables, (core) constraints and (core) objectives (the ).</p>
+:ET

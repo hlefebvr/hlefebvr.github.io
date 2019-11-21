@@ -1,0 +1,20 @@
+I"Ì<p>Here are the <a href="https://github.com/hlefebvr/unige-production-system/raw/master/main.pdf">lecture notes</a> I took while I was a student at the Universit√† Degli Studi Di Genova. The course was taught by Prof. Michele Aicardi, in 2018. It explores production systems in various aspects, namely :</p>
+<ul>
+  <li>Inventory management
+    <ul>
+      <li>Continuous review (both deterministic and stochastic model)</li>
+      <li>Periodic review (Wagner-Miller theorem, Silver-Mill heuristic)</li>
+    </ul>
+  </li>
+  <li>Bill of materials
+    <ul>
+      <li>Batch sizing</li>
+      <li>Scheduling</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Source code can be found on my Github: hlefebvr.</p>
+
+<p><strong>keywords</strong>: Production systems, unige</p>
+:ET

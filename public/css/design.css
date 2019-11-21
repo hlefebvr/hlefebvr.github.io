@@ -50,6 +50,7 @@ a:hover {
 }
 p {
     text-indent: 20px;
+    text-align:justify;
 }
 #linkedin {
     background-color: #0077B5;

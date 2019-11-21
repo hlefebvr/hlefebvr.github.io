@@ -1,0 +1,79 @@
+I"f+<p>This tutorial explains how to use the L-Solver library in order to model an optimization problem and to solve it via an external solver. The modeling framework in L-Solver is actually rather similar to some comercial solvers. The most important thing to grasp is how the Environment class and the Model class interacts and which role is played by each. In the following section, we shall first discuss the role of Environments and how its components are stored. Then, we will show how to use a Model to actually solve an optimization problem.</p>
+
+<h2 id="lenvironment-and-modeling-components">L::Environment and modeling components</h2>
+
+<p>Basically, an Environment is an object responsible for the life and death of its components. A component may be a variable, a constraint or an objective. Let us first look at the following example which creates a new variable in the environment:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Environment</span> <span class="n">env</span><span class="p">;</span> <span class="c1">// creates an environment</span>
+<span class="n">Variable</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">"x"</span><span class="p">);</span> <span class="c1">// creates a new variable</span>
+</code></pre></div></div>
+
+<p>What this two lines of code do behind the hood is actually not straightforward. Indeed, one may notice that we create here a new Variable object that one can kill (via <code class="highlighter-rouge">delete &amp;x;</code>) any time he wants. Moreover, <code class="highlighter-rouge">x</code> will automatically be destroyed at the end of its scope. So, is really <code class="highlighter-rouge">env</code> responsible for the life and death of <code class="highlighter-rouge">x</code> ? Does <code class="highlighter-rouge">env</code> still contain an <code class="highlighter-rouge">x</code> variable after <code class="highlighter-rouge">x</code> is being killed by the end of its scope ? The answer to these questions is found in the concept of Core components and regular components. In fact, calling <code class="highlighter-rouge">Variable(env, "x")</code> does not return a “real” variable but gives you an indirection to a core variable. A core variable is an actual implementation of a variable and is managed, and accessible, only by the environement. Core variables (as implemented by the CoreVariable class) is the essence of what a regular Variable represents in the sense that it posesses all of its attributes like name, value, upper bound, lower bound, type, etc. A (regular) variable (as implemented by the Variable class) does nothing but to forward method calls to its associated core variable. Variables can therefore be seen as references to a given core variable. For instance, the lb() method, used to access the variable’s lower bound, is implemented as the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virtual float AbstractVariable::lb() = 0;
+float Variable::lb() const override { return _core.lb(); }
+float CoreVariable::lb() const override { return _lb; }
+</code></pre></div></div>
+
+<p>Where we clearly see that the Variable class is just using a reference (<code class="highlighter-rouge">_core</code>) to a core variable to which it forwards any modification action. As you can see, CoreVariable and Variable both inherit from an abstract class AbstractVariable which implements the interface for generic variables. This Environment mechanism allows to have a memory safe framework for calling solvers. For instance, it prevents from calling a solver on a model whose variables will be deleted. Clearly however, if an environment is deleted, all of its components are also deleted.</p>
+
+<p>This approach is used for variables (implemented by AbstractVariable, Variable and CoreVariable), constraints (implemented as AbstractConstraint, Constraint and CoreConstraint) and objectives (implemented by AbstractObjective, Objective and CoreObjective). Note that an Environment can have several CoreObjective objects.</p>
+
+<p>One last notion to grasp is the one of detached component. Let’s consider the case of detached variables which is implemented through the DetachedVariable class (or DetachedConstraint, DetachedObjective). A DetachedVariable can be seen as a mix between a CoreVariable and a regular Variable. Though it inherits only from CoreVariable. Because of that later remark, DetachedVariable’s do posess their own attributes yet, they are still linked to a CoreVariable. It can be used to make an independent copy of a CoreVariable while keeping a link to its source. Thus, modification to a DetachedVariable is local to the detached variable. To forward the modifications made on a detached variable to its core variable, one may use specific update() functions. For instance, we may consider the following bunch of code:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Environment env;
+Variable x(env, "x");
+DetachedVariable detached_x(x); // creates a detached variable, linked to the core variable of regular variable x
+
+detached_x.value(100);
+x.value(0);
+
+std::cout &lt;&lt; x.value() &lt;&lt; " / " &lt;&lt; detached_x.value() &lt;&lt; std::endl; // prints: "0 / 100"
+
+detached_x.update_core_value();
+
+std::cout &lt;&lt; x.value() &lt;&lt; " / " &lt;&lt; detached_x.value() &lt;&lt; std::endl; // prints: "100 / 100"
+</code></pre></div></div>
+
+<h2 id="lmodel">L::Model</h2>
+
+<p>We may now turn our intention to the Model class. A model represents an optimization problem modelisation. It is therfore the aggregation of a set of variables, a set of constraint and one objective. It is important to understand that models are not responsible for the life and death of its components. It is only a collection of “pointers” to some components which, together, form a modelisation. Components are added to a model using the <code class="highlighter-rouge">add()</code> method. The following example speaks for itself:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Environemnt</span> <span class="n">env</span><span class="p">;</span>
+<span class="n">VariableVector</span> <span class="nf">x</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">"x"</span><span class="p">);</span> <span class="c1">// vectors are a handy indirection to create several components</span>
+<span class="n">ConstraintVector</span> <span class="nf">ctr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">"ctr"</span><span class="p">);</span>
+<span class="n">Objective</span> <span class="nf">obj</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">"obj"</span><span class="p">);</span>
+
+<span class="c1">// defining objective function</span>
+<span class="n">obj</span><span class="p">.</span><span class="n">expression</span><span class="p">()</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="c1">// defining some constraints</span>
+<span class="n">ctr</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">expression</span><span class="p">()</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// constraints are GreaterOrEqualTo zero by default</span>
+<span class="n">ctr</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">expression</span><span class="p">()</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">7</span><span class="p">;</span> <span class="c1">// constraints are GreaterOrEqualTo zero by default</span>
+
+<span class="c1">// defining variable types (default is Positive)</span>
+<span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">type</span><span class="p">(</span><span class="n">Binary</span><span class="p">);</span>
+<span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">type</span><span class="p">(</span><span class="n">Binary</span><span class="p">);</span>
+
+<span class="c1">// building model</span>
+<span class="n">Model</span> <span class="n">model</span><span class="p">;</span>
+<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">ctr</span><span class="p">);</span>
+<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="solving-a-model-using-the-directmilp-solver">Solving a model using the DirectMILP solver</h2>
+
+<p>To solve a MILP model using its straightforward formulation, one can use the DirectMILPSolver. This solver depends on an external solver and can be used like so:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DirectMILPSolver&lt;CplexAdapter&gt; solver(model); // builds a new solver
+solver.solve(); // solves the problem
+
+cout &lt;&lt; "Status: " &lt;&lt; obj.status() &lt;&lt; std::endl; // or model.objective().status()
+cout &lt;&lt; "Time: " &lt;&lt; solver.last_execution_time() &lt;&lt; std::endl;
+if (obj.status() == Optimal) {
+    for (const Variable&amp; var : model.variables) {
+        cout &lt;&lt; var.user_defined_name() &lt;&lt; " = " &lt;&lt; var.value() &lt;&lt; std::endl;
+    }
+}
+</code></pre></div></div>
+:ET
