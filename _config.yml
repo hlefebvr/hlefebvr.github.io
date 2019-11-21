@@ -2,4 +2,7 @@ title: hlefebvr
 tagline: just like home
 description: Ph.D Student at DEI - Università Di Bologna
 markdown: kramdown
-highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge

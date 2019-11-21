@@ -12,14 +12,14 @@ This tutorial explains how to use the L-Solver library in order to model an opti
 
 Basically, an Environment is an object responsible for the life and death of its components. A component may be a variable, a constraint or an objective. Let us first look at the following example which creates a new variable in the environment:
 
-```cpp
+```c++
 Environment env; // creates an environment
 Variable x = Variable(env, "x"); // creates a new variable
 ```
 
 What this two lines of code do behind the hood is actually not straightforward. Indeed, one may notice that we create here a new Variable object that one can kill (via `delete &x;`) any time he wants. Moreover, `x` will automatically be destroyed at the end of its scope. So, is really `env` responsible for the life and death of `x` ? Does `env` still contain an `x` variable after `x` is being killed by the end of its scope ? The answer to these questions is found in the concept of Core components and regular components. In fact, calling `Variable(env, "x")` does not return a "real" variable but gives you an indirection to a core variable. A core variable is an actual implementation of a variable and is managed, and accessible, only by the environement. Core variables (as implemented by the CoreVariable class) is the essence of what a regular Variable represents in the sense that it posesses all of its attributes like name, value, upper bound, lower bound, type, etc. A (regular) variable (as implemented by the Variable class) does nothing but to forward method calls to its associated core variable. Variables can therefore be seen as references to a given core variable. For instance, the lb() method, used to access the variable's lower bound, is implemented as the following:
 
-```
+```c++
 virtual float AbstractVariable::lb() = 0;
 float Variable::lb() const override { return _core.lb(); }
 float CoreVariable::lb() const override { return _lb; }
@@ -30,7 +30,7 @@ Where we clearly see that the Variable class is just using a reference (`_core`)
 This approach is used for variables (implemented by AbstractVariable, Variable and CoreVariable), constraints (implemented as AbstractConstraint, Constraint and CoreConstraint) and objectives (implemented by AbstractObjective, Objective and CoreObjective). Note that an Environment can have several CoreObjective objects.
 
 One last notion to grasp is the one of detached component. Let's consider the case of detached variables which is implemented through the DetachedVariable class (or DetachedConstraint, DetachedObjective). A DetachedVariable can be seen as a mix between a CoreVariable and a regular Variable. Though it inherits only from CoreVariable. Because of that later remark, DetachedVariable's do posess their own attributes yet, they are still linked to a CoreVariable. It can be used to make an independent copy of a CoreVariable while keeping a link to its source. Thus, modification to a DetachedVariable is local to the detached variable. To forward the modifications made on a detached variable to its core variable, one may use specific update() functions. For instance, we may consider the following bunch of code:
-```
+```c++
 Environment env;
 Variable x(env, "x");
 DetachedVariable detached_x(x); // creates a detached variable, linked to the core variable of regular variable x
