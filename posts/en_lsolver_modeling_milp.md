@@ -45,6 +45,12 @@ detached_x.update_core_value();
 std::cout << x.value() << " / " << detached_x.value() << std::endl; // prints: "100 / 100"
 ```
 
+As a conclusion, the following UML diagram sums up what has been said:
+
+<center>
+    <img src="/public/img/core_regular_detached.png" />
+</center>
+
 ## L::Model
 
 We may now turn our intention to the Model class. A model represents an optimization problem modelisation. It is therfore the aggregation of a set of variables, a set of constraint and one objective. It is important to understand that models are not responsible for the life and death of its components. It is only a collection of "pointers" to some components which, together, form a modelisation. Components are added to a model using the `add()` method. The following example speaks for itself:
