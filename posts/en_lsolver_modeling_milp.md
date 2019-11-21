@@ -12,7 +12,7 @@ This tutorial explains how to use the L-Solver library in order to model an opti
 
 Basically, an Environment is an object responsible for the life and death of its components. A component may be a variable, a constraint or an objective. Let us first look at the following example which creates a new variable in the environment:
 
-```c++
+```cpp
 Environment env; // creates an environment
 Variable x = Variable(env, "x"); // creates a new variable
 ```
