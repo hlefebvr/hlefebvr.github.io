@@ -100,7 +100,7 @@ decomposition.add_block_indicator("E_x", [](const Variable& var){ return var.use
 decomposition.add_block_indicator("E_y", [](const Variable& var){ return var.user_defined_name()[0] == 'y'; });
 
 // solve the model!
-DantzigWolfeDecomposition<CplexAdapter> dw_solver(decomposition);
+DantzigWolfeSolver<CplexAdapter, DirectLPSover<CplexAdapter>> dw_solver(decomposition);
 dw_solver.solve();
 
 // display results:
@@ -114,7 +114,7 @@ if (model.objective().status() == Optimal) {
 
 As one can see, a block description based on variable names are given to build the decomposition. For instance, block "E_x" is regroups all variables whose name start by "x". That is, the vector of "x" variables. Here, we chose to describe our decomposition through character comparison because it is very fast. However, one can imagine any discrimination criteria. The only condition though is that the description yields a feasible decomposition, i.e., that the two blocks are really seperable - as it is the case in the example from the introduction. 
 
-Then, the `DantzigWolfeDecomposition<CplexAdapter>` solver is instanciated. By the means of the decomposition description, it is able to build a block angular formulation of the model and to apply a systematic Dantzig-Wolfe decomposition. Calling the `.solve()` method solves the problem through column generation. 
+Then, the `DantzigWolfeSolver<CplexAdapter, DirectLPSolver<CplexAdapter>>` solver is instanciated. The first template parameter must be an adapter for an external solver which will be used to solve the linear restricted master problem. The second argument is the solver which will be used to solve the pricing sub-problems. Since here, the sub-problem is a linear problem, we use the `DirectLPSolver` with the Cplex Adapter `CplexAdapter`. By the means of the decomposition description, it is able to build a block angular formulation of the model and to apply a systematic Dantzig-Wolfe decomposition. Calling the `.solve()` method solves the problem through column generation. 
 
 ## One final note for LPs
 
