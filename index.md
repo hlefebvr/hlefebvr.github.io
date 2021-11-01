@@ -29,6 +29,6 @@ Roma
 - 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algo-
 rithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - 31st European Conference on Operational Research (EURO), virtual
 - 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - 22nd Conference of the French OR society (ROADEF), virtual
-- 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - Workshop on Polyhedra and Combinatorial Optimization (JPOC), virtual
+- 2021, H Lefebvre, __B Detienne__, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - Workshop on Polyhedra and Combinatorial Optimization (JPOC), virtual
 - 2021, F Clautiaux, __B Detienne__, H Lefebvre, A two-stage robust approach for minimizing the weighted number of tardy jobs with profit uncertainty - 17th International Workshop on Project Management and Scheduling (PMS), virtual
 - 2020, F Clautiaux, B Detienne, __H Lefebvre__, A two-stage robust approach for minimizing the weighted number of tardy jobs with profit uncertainty - 21st Conference of the French OR society (ROADEF), Montpellier
