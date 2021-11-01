@@ -19,8 +19,8 @@ Henri’s Ph.D thesis is funded by the European Union’s EU Framework Programme
 
 ## Publications
 
-- 2021 **(Preprint)**, [Adaptive robust optimization with objective uncertainty](https://www.researchgate.net/publication/354986560_Adaptive_robust_optimization_with_objective_uncertainty), Detienne, B., Lefebvre, H., Malaguti, E. and Monaci, M.
-- 2020 **(Preprint)**, [A two-stage robust approach for the weighted number of tardy jobs with objective uncertainty](https://www.researchgate.net/publication/343163251_A_two-stage_robust_approach_for_the_weighted_number_of_tardy_jobs_with_objective_uncertainty), Lefebvre, H., Clautiaux, F. and Detienne, B.
+- 2021, **(Preprint)**, B Detienne, H Lefebvre, E Malaguti, M Monaci, [Adaptive robust optimization with objective uncertainty](https://www.researchgate.net/publication/354986560_Adaptive_robust_optimization_with_objective_uncertainty)
+- 2020, **(Preprint)**, F Clautiaux, B Detienne, H Lefebvre, [A two-stage robust approach for minimizing the weighted number of tardy jobs with objective uncertainty](https://www.researchgate.net/publication/343163251_A_two-stage_robust_approach_for_the_weighted_number_of_tardy_jobs_with_objective_uncertainty)
 
 ## Talks
 
