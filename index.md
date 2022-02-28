@@ -19,14 +19,16 @@ Henri’s Ph.D thesis is funded by the European Union’s EU Framework Programme
 
 ## Publications
 
+- 2022, **(Preprint)**, H Lefebvre, E Malaguti, M Monaci, [Adjustable Robust Optimization with discrete uncertainty](https://www.researchgate.net/publication/356537304_Adaptive_robust_optimization_with_discrete_uncertainty)
 - 2021, **(Preprint)**, B Detienne, H Lefebvre, E Malaguti, M Monaci, [Adaptive robust optimization with objective uncertainty](https://www.researchgate.net/publication/354986560_Adaptive_robust_optimization_with_objective_uncertainty)
 - 2020, **(Preprint)**, F Clautiaux, B Detienne, H Lefebvre, [A two-stage robust approach for minimizing the weighted number of tardy jobs with objective uncertainty](https://www.researchgate.net/publication/343163251_A_two-stage_robust_approach_for_the_weighted_number_of_tardy_jobs_with_objective_uncertainty)
 
 ## Talks
 
+- 2022, __H Lefebvre__, E Malaguti, M Monaci, Reformulation for a two-stage robust facility location problem - 23rd Conference of the French OR society (ROADEF), Lyon
 - 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - 50th International Conference on Optimization and Decision Science (ODS),
 Roma
-- 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algo-
+- 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algo
 rithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - 31st European Conference on Operational Research (EURO), virtual
 - 2021, __H Lefebvre__, B Detienne, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - 22nd Conference of the French OR society (ROADEF), virtual
 - 2021, H Lefebvre, __B Detienne__, E Malaguti, M Monaci, A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty - Workshop on Polyhedra and Combinatorial Optimization (JPOC), virtual
