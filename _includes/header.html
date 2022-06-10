@@ -1,12 +1,17 @@
 <div id="header">
   <div class="site-width">
-    <h1><a href="/">{{ site.title }}</a></h1>
+    <div id="site-title">
+      <a href="/">{{ site.title }}</a>
+      {{ site.tagline }}
+    </div>
     <!-- <h2>{{ site.description }}</h2> -->
     <div id="menu">
+        <a href="/">Home</a>
+        <a href="/publications">Publications & Talks</a>
+        <a href="/teaching">Teaching</a>
         <a href="/curriculum">Resume</a>
+        <a href="/running">Running</a>
         <a href="/beer">BeerMaps!</a>
-        <a href="http://hlefebvr.github.io/state_machine_cpp" target="_blank" >state_machine_cpp</a>
-        <a href="/documents">Documents</a>
         <!--{% assign pages_list = site.pages %}
           {% for node in pages_list %}
             {% if node.title != null %}

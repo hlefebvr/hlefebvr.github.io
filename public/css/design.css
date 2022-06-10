@@ -1,3 +1,6 @@
+html {
+    overflow-y: scroll;
+}
 html, body {
     margin: 0;
     padding: 0;
@@ -8,9 +11,13 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: #2b2b2b;
 }
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Quicksand';
+    font-weight: normal;
+}
 #header {
     font-family: 'Quicksand', sans-serif;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 #header h1{
     font-weight: lighter;
@@ -24,22 +31,32 @@ body {
     font-size: 1.1em;
     margin-left: 10px;
 }
-#header a{
-    text-decoration: none;
-}
 a {
     color: #8B0000;
     text-decoration: none;
 }
 a:hover {
-    text-decoration: underline !important;
+    text-decoration: underline;
+}
+#site-title {
+    padding-top:50px;
+}
+#site-title a {
+    font-size: 32pt;
+    margin-right: 15px;
+    padding-bottom: 1px;
+    border-bottom: 3px solid #efefef;
+    text-decoration: none;
+}
+#site-title a:hover {
+    border-bottom-color: #8B0000;
 }
 #menu {
-    float: right;
+    padding-top: 20px;
 }
 #menu a{
     display: inline-block;
-    margin: 15px;
+    margin-right: 15px;
 }
 .site-width {
     width: 800px;
@@ -58,6 +75,7 @@ p {
     color: white;
     border-radius: 4px;
     font-weight: bold;
+    float:right;
 }
 #disqus_thread {
     margin-top: 70px;
@@ -91,4 +109,7 @@ pre {
 }
 pre * {
     font-family: monospace;
+}
+#page-title, #post-title {
+    margin-top: 40px;
 }
