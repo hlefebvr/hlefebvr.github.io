@@ -111,5 +111,10 @@ pre * {
     font-family: monospace;
 }
 #page-title, #post-title {
-    margin-top: 40px;
+    margin-top: 10px;
+}
+#cover-image {
+    width: 100%;
+    border-top: 5px solid #efefef;
+    border-bottom: 5px solid #efefef;
 }

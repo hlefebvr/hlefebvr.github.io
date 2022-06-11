@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Publications & Talks
+image: roadef_2022.jpg
 ---
 
 ## Scientific papers in peer-reviewed journals
@@ -16,12 +17,12 @@ title: Publications & Talks
 ## Scientific talks
 
 - Reformulation for a two-stage robust facility location problem, __H. Lefebvre__, E. Malaguti, M. Monaci (2022), [23rd Conference of the French OR society (ROADEF)](https://roadef2022.sciencesconf.org/), Lyon (France)
-- A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [50th International Conference on Optimization and Decision Science (ODS)](https://euro2022espoo.com/),
+- A finite $$\varepsilon$$-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [50th International Conference on Optimization and Decision Science (ODS)](https://euro2022espoo.com/),
 Roma (Italy)
-- A finite eps-convergence algo
+- A finite $$\varepsilon$$-convergence algo
 rithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [31st European Conference on Operational Research (EURO)](https://euro2021athens.com/), virtual
-- A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [22nd Conference of the French OR society (ROADEF)](https://roadef2021.sciencesconf.org/), virtual
-- A finite eps-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, H. Lefebvre, __B. Detienne__, E. Malaguti, M. Monaci (2021), [Workshop on Polyhedra and Combinatorial Optimization (JPOC)](https://www.lamsade.dauphine.fr/~poc/jpoc12/programme.php), virtual
+- A finite $$\varepsilon$$-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [22nd Conference of the French OR society (ROADEF)](https://roadef2021.sciencesconf.org/), virtual
+- A finite $$\varepsilon$$-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, H. Lefebvre, __B. Detienne__, E. Malaguti, M. Monaci (2021), [Workshop on Polyhedra and Combinatorial Optimization (JPOC)](https://www.lamsade.dauphine.fr/~poc/jpoc12/programme.php), virtual
 - A two-stage robust approach for minimizing the weighted number of tardy jobs with profit uncertainty, F. Clautiaux, __B. Detienne__, H. Lefebvre (2021), [17th International Workshop on Project Management and Scheduling (PMS)](https://pms2020.sciencesconf.org/), virtual
 - A two-stage robust approach for minimizing the weighted number of tardy jobs with profit uncertainty, F. Clautiaux, B. Detienne, __H. Lefebvre__ (2020), [21st Conference of the French OR society (ROADEF)](https://roadef2020.sciencesconf.org/), Montpellier (France)
 

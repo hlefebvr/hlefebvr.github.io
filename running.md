@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Running
+image: run.jpg
 ---
 
 ## Marathons

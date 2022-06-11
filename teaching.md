@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Teaching
+image: teaching.jpg
 ---
 
 ## Internship supervision
