@@ -12,9 +12,16 @@ layout: default
 {% for node in site.pages %}
     {% if node.title != null %}
         {% if node.category == page.category and node.layout != "category" %}
-            <ul>
-                <li><a href="{{ node.url }}">{{ node.title }}</a> : {{ node.short }}</li>
-            </ul>
+            <div class="category-item">
+                <div class="category-item-image">
+                    <img src="public/img/{{ node.preview }}" />
+                </div>
+                <div class="category-item-text">
+                    <h2><a href="{{ node.url }}">{{ node.title }}</a></h2>
+                    <div class="category-item-date">Last updated: {{ node.date | date_to_string }}</div>
+                    {{ node.short }}
+                </div>
+            </div>
         {% endif %}
     {% endif %}
 {% endfor %}

@@ -5,4 +5,3 @@ category: beer
 image: beer.jpg
 ---
 
-Beer is life.

@@ -118,3 +118,34 @@ pre * {
     border-top: 5px solid #efefef;
     border-bottom: 5px solid #efefef;
 }
+#post-date {
+    text-align: right;
+    font-size: 10pt;
+    color: gray;
+}
+.category-item {
+    border-bottom: 3px solid #efefef;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.category-item-image {
+    width: 30%;
+    display: inline-block;
+    vertical-align:top;
+    padding: 10px;
+}
+.category-item-image img {
+    border: 2px solid #efefef;
+}
+.category-item-text {
+    width: 65%;
+    padding-top: 5px;
+    display: inline-block;
+    vertical-align:top;
+}
+.category-item-text h2 {
+    margin: 0px;
+}
+.category-item-date {
+    color: gray;
+}
