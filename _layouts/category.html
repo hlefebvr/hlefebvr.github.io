@@ -4,24 +4,22 @@ layout: default
 
 {% if page.image != nil %}
 <div>
-<img src="public/img/{{ page.image }}" id="cover-image" > <!-- 8/3 for pages -->
+<img src="/public/img/{{ page.image }}" id="cover-image" > <!-- 8/3 for pages -->
 </div>
 {% endif %}
 <h1>{{ page.title }}</h1>
 {{ content }}
-{% for node in site.pages %}
+{% for node in site.categories[page.category] %}
     {% if node.title != null %}
-        {% if node.category == page.category and node.layout != "category" %}
-            <div class="category-item">
-                <div class="category-item-image">
-                    <img src="public/img/{{ node.preview }}" />
-                </div>
-                <div class="category-item-text">
-                    <h2><a href="{{ node.url }}">{{ node.title }}</a></h2>
-                    <div class="category-item-date">Last updated: {{ node.date | date_to_string }}</div>
-                    {{ node.short }}
-                </div>
+        <div class="category-item">
+            <div class="category-item-image">
+                <img src="/public/img/{{ node.preview }}" />
             </div>
-        {% endif %}
+            <div class="category-item-text">
+                <h2><a href="{{ node.url }}">{{ node.title }}</a></h2>
+                <div class="category-item-date">Last updated: {{ node.date | date_to_string }}</div>
+                {{ node.short }}
+            </div>
+        </div>
     {% endif %}
 {% endfor %}

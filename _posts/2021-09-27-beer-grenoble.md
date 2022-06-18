@@ -4,7 +4,6 @@ category: beer
 title: Best places to have a beer in Grenoble (France)
 short: Top bars where you can find good beers in the center of Grenoble
 preview: grenoble.jpg
-date: 2021-09-27
 ---
 
 ## The Map

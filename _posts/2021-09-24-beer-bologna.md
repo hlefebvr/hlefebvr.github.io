@@ -4,7 +4,6 @@ category: beer
 title: Best places to have a beer in Bologna (Italy)
 short: Dove bere delle buone birre a Bologna
 preview: bologna.jpg
-date: 2021-09-24
 ---
 
 ## The Map
