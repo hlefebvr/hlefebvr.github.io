@@ -12,4 +12,7 @@
     <link rel="stylesheet" href="/public/css/design.css">
     <link rel="stylesheet" href="/public/css/highlight.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+    {% if page.uses_plots %}
+      <script src="https://unpkg.com/function-plot/dist/function-plot.js"></script>
+    {% endif %}
 </head>

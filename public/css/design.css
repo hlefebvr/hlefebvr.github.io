@@ -149,3 +149,11 @@ pre * {
 .category-item-date {
     color: gray;
 }
+.theorem {
+    border-left: 5px solid #efefef;
+    margin-top: 10px;
+    padding-left: 20px;
+}
+.theorem details {
+    font-style: italic;
+}
