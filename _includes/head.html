@@ -1,6 +1,5 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
     <title>
       {% if page.title == "Home" %}
         {{ site.title }} &middot; {{ site.tagline }}
@@ -8,6 +7,7 @@
         {{ page.title }} &middot; {{ site.title }}
       {% endif %}
     </title>
+    <meta name="description" content="{{ page.short }}">
     <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
     <link rel="stylesheet" href="/public/css/design.css">
     <link rel="stylesheet" href="/public/css/highlight.css">
