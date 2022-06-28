@@ -132,10 +132,14 @@ pre * {
     width: 30%;
     display: inline-block;
     vertical-align:top;
-    padding: 10px;
-}
-.category-item-image img {
+    margin: 10px;
     border: 2px solid #efefef;
+    height: 160px;
+    text-align: center;
+}
+.category-item-image img {    
+    max-height: 160px;
+    max-width: 100%;
 }
 .category-item-text {
     width: 65%;
