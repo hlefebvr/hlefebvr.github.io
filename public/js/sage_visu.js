@@ -27,8 +27,8 @@ function to_sage_vec(x_1, x_2, x_3, sign, rhs) {
     return "[" + rhs + "," + x_1 + "," + x_2 + "," + x_3 + "],"
 }
 
-function plot() {
-    let sage = "Polyhedron(ieqs = [";
+function run_cmd_on_poly(str) {
+    let sage = "p = Polyhedron(ieqs = [";
     $("#inequalities").children().each(function(idx, obj) {
         const x_1 = $(this).find(".coeff_x_1").val()
         const x_2 = $(this).find(".coeff_x_2").val()
@@ -37,10 +37,14 @@ function plot() {
         const sign = $(this).find(".sign").val()
         sage += to_sage_vec(x_1, x_2, x_3, sign, rhs)
     })
-    sage += "]).plot()"
+    sage += "]);\n"
+    sage += "p." + str;
     $(".sagecell_commands").val(sage)
     $(".sagecell_evalButton").trigger("click");
 }
+
+function plot() { run_cmd_on_poly("plot()") }
+function vertices() { run_cmd_on_poly("Vrepresentation()") }
 
 function handleFocusIn(obj) {
     if ( parseFloat(obj.value) == 0.0 ) {
@@ -63,6 +67,7 @@ $(document).ready(function() {
     sagecell.makeSagecell({
         "inputLocation": "#sage", 
         "editor": "textarea",
+        "replaceOutput": true,
         "callback": function() {
             $(".sagecell_evalButton").trigger("click");
         }
