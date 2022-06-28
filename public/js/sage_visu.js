@@ -54,6 +54,10 @@ function handleFocusOut(obj) {
     }
 }
 
+function remove_inequality(obj) {
+    obj.parentNode.remove()
+}
+
 $(document).ready(function() {
     add_inequality()
     sagecell.makeSagecell({
