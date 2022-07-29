@@ -16,6 +16,7 @@ image: roadef_2022.jpg
 
 ## Scientific talks
 
+- Adjustable Robust Optimization with discrete uncertainty, __H. Lefebvre__, E. Malaguti, M. Monaci (2022), [EURO 2022](https://euro2022espoo.com/), Espoo (Finland)
 - Reformulation for a two-stage robust facility location problem, __H. Lefebvre__, E. Malaguti, M. Monaci (2022), [23rd Conference of the French OR society (ROADEF)](https://roadef2022.sciencesconf.org/), Lyon (France)
 - A finite $$\varepsilon$$-convergence algorithm for 0-1 mixed-integer convex two-stage robust optimization with objective uncertainty, __H. Lefebvre__, B. Detienne, E. Malaguti, M. Monaci (2021), [50th International Conference on Optimization and Decision Science (ODS)](https://euro2022espoo.com/),
 Roma (Italy)
