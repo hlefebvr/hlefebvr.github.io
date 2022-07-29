@@ -14,6 +14,10 @@ image: roadef_2022.jpg
 
 - [Reformulation for a two-stage robust facility location problem](https://hal.archives-ouvertes.fr/hal-03596230/document) H. Lefebvre, E. Malaguti, M. Monaci (2022), _23ème congrès annuel de la Société Française de Recherche Opérationnelle et d'Aide à la Décision (ROADEF 2022)_
 
+## Scientific awards
+
+- [ROADEF Best Master Thesis](https://www.roadef.org/roadef-prix-etudiant-master) (2022) for my thesis "A two-stage robust approach for minimizing the weighted number of tardy jobs with profit uncertainty" done with my supervisors F. Clautiaux and B. Detienne
+
 ## Scientific talks
 
 - Adjustable Robust Optimization with discrete uncertainty, __H. Lefebvre__, E. Malaguti, M. Monaci (2022), [EURO 2022](https://euro2022espoo.com/), Espoo (Finland)
