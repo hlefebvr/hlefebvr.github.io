@@ -13,7 +13,7 @@ I earned a Master Degree in “Machine learning and optimization of complex syst
 
 I conducted my master thesis at the [INRIA Bordeaux Sud-Ouest research laboratory](https://www.inria.fr/centre/bordeaux) (Bordeaux, France) on two-stage robust optimization problems with specific applications in scheduling with Boris Detienne and François Clautiaux. Our work was awarded the prize for best master thesis in 2020 by the French Operations Research Society (ROADEF).
 
-My Ph.D thesis was (partially) funded by the European Union’s EU Framework Programme for Research and Innovation (Horizon 2022) under the Marie Sklodowska-Curie Actions Grant agreement number 764759 and was part of the [“Mixed Integer Nonlinear Optimization: Algorithms and Applications”](https://minoa-itn.fau.de/) (MINOA) project.
+<!-- My Ph.D thesis was (partially) funded by the European Union’s EU Framework Programme for Research and Innovation (Horizon 2022) under the Marie Sklodowska-Curie Actions Grant agreement number 764759 and was part of the [“Mixed Integer Nonlinear Optimization: Algorithms and Applications”](https://minoa-itn.fau.de/) (MINOA) project. -->
 
 ## Related entities
 
