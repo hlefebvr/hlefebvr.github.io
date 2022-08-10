@@ -33,4 +33,4 @@ rithm for 0-1 mixed-integer convex two-stage robust optimization with objective 
 
 ## Scientific posters
 
-- **Reformulation for adjutable robust optimization with discrete uncertainty** <br> <u>H. Lefebvre</u>, E. Malaguti, M. Monaci (2022) - [Mixed Integer Programming Workshop 2022](https://www.mixedinteger.org/2022/), New York (USA)
+- **[Reformulation for adjutable robust optimization with discrete uncertainty](/public/pdf/MIP_poster.pdf)** <br> <u>H. Lefebvre</u>, E. Malaguti, M. Monaci (2022) - [Mixed Integer Programming Workshop 2022](https://www.mixedinteger.org/2022/), New York (USA)
