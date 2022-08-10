@@ -1,9 +1,11 @@
 ---
 title: Home
 layout: page
-image: cover_censored.jpg
+image: cover_index.png
 short: Ph.D student in Mathematical Optimization and Operations Research at the University of Bologna. Mainly interested in adjustable robust optimization, min-max games and decomposition methods. Casual runner & beer addict.
 ---
+
+<!-- image: cover_censored.jpg -->
 
 ## Bio
 

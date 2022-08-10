@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Running
-image: run.jpg
+image: cover_censored.jpg
 ---
 
 ## Marathons
