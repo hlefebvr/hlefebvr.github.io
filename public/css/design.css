@@ -1,3 +1,22 @@
+#main {
+    animation: fadeInAnimation ease 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+        background-color: #efefef;
+        color: white;
+    }
+    100% {
+        opacity: 1;
+        background-color: white;
+        color: black;
+     }
+}
+
 html {
     overflow-y: scroll;
 }
@@ -114,9 +133,20 @@ pre * {
     margin-top: 10px;
 }
 #cover-image {
+    width: 800px;
+    height: 300px;
+    background-color: white;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+#cover-image img {
     width: 100%;
-    border-top: 5px solid #efefef;
-    border-bottom: 5px solid #efefef;
+    height: 100%;
+    opacity: 1;
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;
+}
+#cover-image img:hover {
+    opacity: .8;
 }
 #post-date {
     text-align: right;
