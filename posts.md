@@ -1,5 +1,5 @@
 ---
 layout: category
-title: Posts
+title: Pages
 category: posts
 ---
