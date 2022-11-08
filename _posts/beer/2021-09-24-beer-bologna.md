@@ -1,8 +1,8 @@
 ---
 layout: post
 category: beer
-title: Best places to have a beer in Bologna (Italy)
-short: Dove bere delle buone birre a Bologna
+title: Beer places in Bologna (Italy)
+short: Dove bere buone birre a Bologna
 preview: bologna.jpg
 ---
 
