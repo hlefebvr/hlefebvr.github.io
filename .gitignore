@@ -3,3 +3,4 @@ uml
 .jekyll-cache
 *.render.html
 .Rproj.user
+*.render_files

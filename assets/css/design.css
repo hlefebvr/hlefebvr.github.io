@@ -304,3 +304,13 @@ border-radius: 5px;
 .main-container {
   max-width: auto;
 }
+
+iframe {
+    border: 0;
+}
+
+.warning {
+    border: 1px solid gray;
+    font-style: italic;
+    padding: 10px;
+}
