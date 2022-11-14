@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en-us">
-
-  {% include head.html %}
-
-  <body>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    {% include head.html %}
+  </head>
+  <body class="secondary">
 
     {% include header.html %}
 
-    <div class="site-width" id="main">
-      {{ content }}
-    </div>
+    {{ content }}
 
-    <div id="footer">
-      Henri Lefebvre - 2022 - All rights reserved - email : &lt;first_name&gt;<b>.</b>&lt;last_name&gt;[at]unibo.it
-    </div>
+    {% include footer.html %}
+
+  </div>
   </body>
 </html>

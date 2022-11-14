@@ -1,8 +1,3 @@
-title: Henri Lefebvre
-tagline: Ph.D Student in Mathematical Optimization & casual runner
-description: Ph.D Student in Mathematical Optimization at DEI, University of Bologna (Italy) with main interest in Robust Optimization and decomposition methods. Casual runner.
-markdown: kramdown
-
-kramdown:
-  input: GFM
-  syntax_highlighter: rouge
+url: "http://hlefebvr.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/" # the subpath of your site, e.g. /blog
+title: "Henri Lefebvre" # the name of your site, e.g. ACME Corp.

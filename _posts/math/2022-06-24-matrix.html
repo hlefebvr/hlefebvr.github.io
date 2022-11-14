@@ -1,0 +1,59 @@
+---
+layout: post
+category: math
+title: "[Cheatsheet] Matrix computations"
+short: Some nice formulas to work with matrices
+preview: matrix.png
+---
+
+<h2>Rows and columns</h2>
+
+Let \( \mathbf{A}\in\mathbb{R}^{m\times n} \), \(\mathbf{b}\in\mathbb{R}^{m\times 1} \) and \( \mathbf{c}\in\mathbb{R}^{n\times 1} \). We denote by \( \
+a_{ij} \) the \( (i,j) \)-th component of \( \mathbf{A} \), by \( \mathbf{a}^{(j)} \) its \( j \)-th column  and by \( \mathbf{a}_{(i)} \) its \( i \)-th row. Vector \( \mathbf{e}^{(j)} \) (resp. \( \mathbf{e}_{(j)} \)) denote the \( j \)-th column (resp. the \(i\)-th row) of the identity matrix.
+
+<ul>
+    <li> \( \mathbf{e}_{(k)}^T = \mathbf{e}^{(k)} \) </li>
+    <li> \( \mathbf{e} = \sum_{k=1}^K \mathbf{e}^{(k)} \quad ; \quad \mathbf{e}^T = \sum_{k=1}^K \mathbf{e}_{(k)} \) </li>
+    <li> \( \mathbf{A}\mathbf{e}^{(j)} = \mathbf{a}^{(j)} \) with \( j\in [n] \) </li>
+    <li> \( \mathbf{A}^T\mathbf{e}^{(i)} = \mathbf{a}_{(i)}^T \) with \( i\in[m] \) </li>
+    <li> \( \mathbf{e}_{(i)}\mathbf{A} = \mathbf{a}_{(i)} \) with \( i\in[m] \) </li>
+    <li> \( \mathbf{e}_{(j)}\mathbf{A}^T  = {\mathbf{a}^{(j)}}^T \) with \( j\in[n] \) </li>
+    <li> \( \mathbf{e}_{(i)}\mathbf{A}\mathbf{e}^{(j)} = a_{ij} \) with \( i\in[m], j\in[n] \) </li>
+    <li> \( \mathbf{e}^T\mathbf{A} = \sum_{i=1}^m \mathbf{a}_{(i)} \) </li>
+    <li> \( \mathbf{A}\mathbf{e} = \sum_{j=1}^n \mathbf{a}^{(j)} \) </li>
+    <li> \( \mathbf{e}^T\mathbf{A}\mathbf{c} = \sum_{i=1}^m \mathbf{a}_{(i)}\mathbf{c} \) </li>
+    <li> \( \mathbf{e}^T\mathbf{A}^T\mathbf{b} = \sum_{j=1}^n \mathbf{b}^T\mathbf{a}^{(j)} \) </li>
+    <li> \( \mathbf{b}^T\mathbf{e}^{(i)} = \mathbf{e}_{(i)}\mathbf{b} = b_i \) with \( i\in[m] \) </li>
+    <li> \( \mathbf{A}\mathbf{c} = \begin{pmatrix}
+        \mathbf{a}_{(1)}\mathbf{c} \\
+        \vdots \\
+        \mathbf{a}_{(m)}\mathbf{c}
+    \end{pmatrix} \) or \( [\mathbf{Ac}]_{(i)} = \mathbf{a}_{(i)}\mathbf{c} \) </li>
+    <li> \( \mathbf{A}^T\mathbf{b} = \begin{pmatrix}
+        \mathbf{b}^T\mathbf{a}^{(1)} \\
+        \vdots \\
+        \mathbf{b}^T\mathbf{a}^{(n)}
+    \end{pmatrix} \) or \( [\mathbf{A}^T\mathbf{b}]_{(j)} = \mathbf{b}^T\mathbf{a}^{(j)} \) </li>
+    <li> \( \mathbf a^T\mathbf a = \textrm{trace}(\mathbf a\mathbf a^T) \) </li>
+</ul>
+
+<h2>Derivatives</h2>
+
+<ul>
+    <li> \( \frac \partial{\partial\mathbf x} \mathbf a = \mathbf 0 \) </li>
+    <li> \( \frac \partial{\partial\mathbf x} \mathbf a^T\mathbf x = \mathbf a \) </li>
+    <li> \( \frac \partial{\partial\mathbf X} \mathbf a^T\mathbf X\mathbf b = \mathbf a\mathbf b^T \) </li>
+    <li> \( \frac \partial{\partial\mathbf X} \mathbf a^T\mathbf X^T\mathbf b = \mathbf b\mathbf a^T \) </li>
+    <li> \( \frac \partial{\partial\mathbf x} (\mathbf x^T\mathbf A\mathbf x + \mathbf b^T\mathbf x) = (\mathbf A + \mathbf A^T)\mathbf x + \mathbf b \) </li>
+    <li> \( \frac \partial{\partial\mathbf x} || \mathbf x - \mathbf a ||_2 = \frac{ \mathbf x - \mathbf a }{ || \mathbf x - \mathbf a ||_2 } \) </li>
+    <li> \( \frac \partial{\partial\mathbf x} ||\mathbf x ||_2^2 = 2\mathbf x \) </li>
+</ul>
+
+<!-- 
+<h2>Inverses</h2>
+
+<h2>Pseudo-inverses</h2>
+
+<h2>Decompositions</h2>
+
+<h2>Linear systems</h2> -->

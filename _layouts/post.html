@@ -1,12 +1,37 @@
 ---
-layout: default
+layout: page
 ---
 
-<div class="post">
-  <h1 id="post-title">{{ page.title }}</h1>
-  <div id="post-date">Last update: {{ page.date | date_to_string }}</div>
-  {{ content }}
+<div id="toc">
+    <div id="sticky-toc">
+        <b>Table of content</b>
+        <ul data-toc data-toc-headings="h2,h3,h4"></ul>
+    </div>
 </div>
+
+<div id="post-content">
+    {{ content }}
+</div>
+
+<script src="/assets/js/jquery.toc.min.js" ></script>
+
+<script lan="javascript">
+
+    // Get the navbar
+    const navbar = document.getElementById("sticky-toc");
+
+    // Get the offset position of the navbar
+    const sticky = navbar.offsetTop;
+
+    window.onscroll = function() {
+        if (window.pageYOffset >= sticky) {
+            navbar.classList.add("sticky")
+        } else {
+            navbar.classList.remove("sticky");
+        }
+    };
+
+</script>
 
 
 <div id="disqus_thread"></div>
@@ -29,5 +54,3 @@ s.setAttribute('data-timestamp', +new Date());
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-
-</div>

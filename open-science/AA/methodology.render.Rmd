@@ -1,0 +1,201 @@
+---
+title: "AA - Open methodology"
+output: html_document
+---
+
+```{r echo=FALSE}
+library(rmarkdown)
+```
+
+All results can be found in the CSV file `results.csv` which contains the following rows and columns.
+
+```{r}
+all_results = read.csv("results.csv", na.strings = "")
+```
+```{r echo=FALSE}
+paged_table(all_results)
+```
+
+Here, columns have the following inerpretation:
+
+- *instance*: instance file name ;
+- *problem*: 1 if the row relates to problem $(\mathcal P)$, 2 if it relates to problem $(\widetilde{\mathcal P})$ ;
+- *approach*: the approach used for solving the instance,
+  - For problem $(\mathcal P)$, possible values are "colgen, kadapt-a, kadapt-b" (in the paper: ColGen1, KAdapt1-a, KAdapt1-b) ;
+  - For problem $(\widetilde{\mathcal P})$, possible values are "colgen, colgen-ext, kadapt-a" (in the paper: ColGen2, ColGen3, KAdapt2)
+- *n_jobs*: the number of jobs ;
+- *gamma*: the value for $\Gamma$ ;
+- *k*: when using a $K$-adaptability approach, the value for $K$ ;
+- *cpu*: the CPU time needed to sovle the instance (3600 if the time-limit is reached) ;
+- *objective*: the best objective value found (i.e., optimal if *cpu* < 3600) ;
+- *n_active_col*: when the column generation approach is used, the number of active columns ;
+- *quality*: the solution quality,
+  - When column generation is used, possible values are "Optimal, TimeLimitFeasible, TimeLimitInfeasible" ;
+  - When $K$-adaptability is used, possible values are "Optimal, Time Lim, Mem Lim".
+- *gap*: the remaining optimality gap after 1 hour of computation ;
+- *rule_for_branching*: when the column generation approach is used, the variable selection rule which were used (possible values: "default, strong_branching", i.e., most infeasible).
+
+## Problem $(\mathcal P)$
+
+We now focus on Problem $(\mathcal P)$. When column generation is used, we only consider the default branching rule (i.e., most infeasible). Indeed, it can be verified that, for this problem, using strong branching is not more efficient than using the most-infeasible rule.
+
+```{r}
+problem1 = all_results[all_results$problem == 1,]
+colgen1 = problem1[problem1$approach == "colgen" & problem1$rule_for_branching == "default",]
+kadapt1_a = problem1[problem1$approach == "kadapt-a",]
+kadapt1_b = problem1[problem1$approach == "kadapt-b",]
+```
+
+### Estimating $K^*$
+
+Recall that $K^*$ is estimated by
+$$
+  \widehat{K}^* = \min\left\{ K : \begin{array}{l} (\mathcal{P}_K)^* \le (\mathcal P)^*, \\ t(\mathcal P) \le T, \\ t(\mathcal{P}_K) \le T, \\ K\in\mathbb N \end{array} \right\}
+$$
+where $(\bullet)^*$ denotes the optimal value of problem $\bullet$ and $t(\bullet)$ the execution time spent solving $\bullet$.
+
+We start by merging the results from the exact method (i.e., ColGen1) with those of the $K$-adaptability approach (i.e., KAdapt1-a). 
+```{r}
+feasible_K = merge(colgen1, kadapt1_a, by = c("instance", "n_jobs", "gamma"), all = TRUE)
+feasible_K = feasible_K[, c('instance','n_jobs','gamma','objective.x','cpu.x','gap.x','objective.y','k.y','cpu.y', 'gap.y')]
+colnames(feasible_K) <- c("instance","n_jobs","gamma","obj_colgen","cpu_colgen", "gap_colgen", "obj_kadapt","k","cpu_kadapt", "gap_kadapt")
+```
+Then, we filter the resulting table by removing any row not fulfilling the stopping criteria as described in page 19 of the article.
+```{r}
+feasible_K = feasible_K[
+
+  # The two approaches could solve the problme to optimality (K^* is exact!)
+  (feasible_K$obj_kadapt <= feasible_K$obj_colgen & feasible_K$cpu_colgen < 3600 & feasible_K$cpu_kadapt < 3600)
+  
+  | 
+    
+  # The exact approach could not prove optimality within the time limit
+  (feasible_K$obj_kadapt <= feasible_K$obj_colgen & feasible_K$cpu_colgen >= 3600 & feasible_K$cpu_kadapt < 3600)
+  
+  | 
+    
+  # The K-adaptability approach could not prove optimality within the time limit
+  (feasible_K$cpu_colgen < 3600 & feasible_K$cpu_kadapt >= 3600)
+  
+  | 
+    
+  # None of the method could solve the problem to optimality
+  (feasible_K$cpu_colgen >= 3600 & feasible_K$cpu_kadapt >= 3600)
+
+,]
+```
+
+For each instance, we then keep only the smallest value for $K$ which triggered the stopping condition.
+```{r}
+optimal_K = feasible_K[order(feasible_K$instance, feasible_K$gamma, feasible_K$k),]
+optimal_K = optimal_K[!duplicated(( optimal_K[,c("instance", "gamma")] )),]
+```
+
+Thus, we have successfully constructed a table where, for each instance and each value of $\Gamma$, $K^*$ is at hand with its corresponding CPU time and objective. We end by adding two columns indicating if an instance has been solved to optimality (this will make later computations easier).
+```{r}
+optimal_K$unsolved_colgen = optimal_K$cpu_colgen >= 3600
+optimal_K$unsolved_kadapt = optimal_K$cpu_kadapt >= 3600
+```
+
+### Analysis 1: Computational time
+
+We want to evaluate the performance of ColGen1, KAdapt1-a and KAdapt1-b. To do so, we first, count the number of times one method was not able to solve an instance to optimality within the given time limit of 1 hour.
+```{r}
+# Counting the number of instances which could not be solved within 1 hour
+unsolved = aggregate(optimal_K[,c("unsolved_kadapt", "unsolved_colgen")], list(optimal_K$n_jobs, optimal_K$gamma), sum)
+colnames(unsolved) <- c("n_jobs", "gamma", "unsolved_kadapt", "unsolved_colgen")
+
+# Counting the number of instances which were attempted to solve
+attempted = aggregate(optimal_K$instance, list(optimal_K$n_jobs, optimal_K$gamma), length)
+colnames(attempted) <- c("n_jobs", "gamma", "count")
+
+# Computing percentage
+unsolved[,c("unsolved_kadapt", "unsolved_colgen")] = unsolved[,c("unsolved_kadapt", "unsolved_colgen")] / c(attempted$count, attempted$count) * 100
+
+# Sorting by number of jobs and gamma
+unsolved = unsolved[order(unsolved$n_jobs, unsolved$gamma),]
+```
+Then, among those instances which could be solved within the time limit, we compute the average execution time.
+```{r}
+# Computing average computation time
+cpu_times = aggregate(optimal_K[,c("cpu_kadapt", "cpu_colgen")], list(optimal_K$n_jobs, optimal_K$gamma), mean)
+colnames(cpu_times) <- c("n_jobs", "gamma", "cpu_kadapt", "cpu_colgen")
+
+# Sorting by number of jobs and gamma
+cpu_times = cpu_times[order(cpu_times$n_jobs, cpu_times$gamma),]
+```
+
+```{r echo = FALSE}
+rownames(cpu_times) <- NULL
+```
+
+We can now merge the two tables to obtain the following results.
+```{r}
+Table1 = cbind(unsolved, cpu_times[c("cpu_kadapt", "cpu_colgen")])
+```
+
+```{r echo = FALSE}
+rownames(Table1) <- NULL
+knitr::kable(Table1, digits = c(0, 0, 2, 2, 2, 2))
+```
+
+### Analysis 2: Feasible solutions found
+
+Among the 25-jobs instances, we are interested in counting the number of feasible solutions found for each method. Thus, we create one additional column which equals 1 if a feasible solution has been found when the time limit is reached. This is done as follows.
+```{r}
+optimal_K_25jobs = optimal_K[optimal_K$n_jobs == 25,]
+optimal_K_25jobs$feasible_found_colgen = optimal_K_25jobs$cpu_colgen >= 3600 & optimal_K_25jobs$gap_colgen > 0
+optimal_K_25jobs$feasible_found_kadapt = optimal_K_25jobs$cpu_kadapt >= 3600 & optimal_K_25jobs$gap_kadapt > 0
+```
+Then, we count the number of instances for which this occured.
+```{r}
+feasible_found = aggregate(optimal_K_25jobs[,c("feasible_found_kadapt", "feasible_found_colgen")], list(optimal_K_25jobs$n_jobs, optimal_K_25jobs$gamma), sum)
+```
+To make these number a percentage, we also count the number of instances (in each group (n_jobs, gamma)) which could not be solved to optimality.
+```{r}
+time_limit = aggregate(optimal_K_25jobs[,c("unsolved_kadapt", "unsolved_colgen")], list(optimal_K_25jobs$n_jobs, optimal_K_25jobs$gamma), sum)
+```
+We then obtain the following table.
+```{r}
+Table2 = feasible_found
+Table2[,c("feasible_found_kadapt", "feasible_found_colgen")] = Table2[,c("feasible_found_kadapt", "feasible_found_colgen")] / time_limit[, c("unsolved_kadapt", "unsolved_colgen")] * 100
+colnames(Table2) <- c("n_jobs", "gamma", "kadapt1a", "colgen1")
+```
+```{r echo = FALSE}
+knitr::kable(Table2, digits = c(0, 0, 2, 2))
+```
+
+### Analysis 3: Cost of approximating
+
+We now consider the approximation quality of the $K$-adaptability for various values of $K$. To make our study, we need to make a table in which each row relates to a given instance for a given value of $\Gamma$ and a given value of $K$. Each row must have (at least) the following values: the CPU time spent by ColGen1, the CPU time spent by KAdapt1-a (for that specific value of $K$), the estimated value of $K^*$, the optimal objective value for the problem (i.e., the one reported by ColGen1) and the objective value returned by KAdapt1-a. Note that this table should only consider instances where both ColGen1 and KAdapt1-a could solve their respective problems to optimality within the given time limit. 
+
+We build this table as follows.
+```{r}
+all_K = merge(colgen1, kadapt1_a, by = c("instance", "n_jobs", "gamma"), all = TRUE)
+all_K = all_K[, c('instance', 'gamma', 'objective.x','cpu.x','objective.y', 'cpu.y', 'k.y')]
+colnames(all_K) <- c("instance", "gamma", "obj_colgen","cpu_colgen", "obj_kadapt", "cpu_kadapt", "k")
+all_K = all_K[all_K$cpu_colgen < 3600 & all_K$cpu_kadapt < 3600,]
+all_K = merge(all_K, optimal_K, by = c("instance", "gamma"), all.x = FALSE, all.y = TRUE)
+all_K = all_K[,c("k.y", "k.x", "obj_kadapt.x", "cpu_kadapt.x", "obj_colgen.x", "cpu_colgen.x")]
+```
+
+We can then compute the approximation gap and the time gap as defined in the paper.
+```{r}
+all_K$approximation_gap = abs(all_K$obj_kadapt - all_K$obj_colgen) / abs(all_K$obj_colgen) * 100
+all_K$time_gap = all_K$cpu_kadapt / all_K$cpu_colgen
+```
+
+We then obtain the following table.
+```{r}
+Table3 = aggregate(all_K[,c("approximation_gap", "time_gap")], list(all_K$k.y, all_K$k.x), mean)
+```
+```{r echo = FALSE}
+colnames(Table3) <- c("$K^*$", "$K$", "kadapt1a", "colgen1")
+Table3 = Table3[order(Table3$`$K^*$`, Table3$`$K$`),]
+rownames(Table3) <- NULL
+knitr::kable(Table3, digits = c(0, 0, 2, 2))
+```
+
+## Problem $(\widetilde{\mathcal P})$
+
+

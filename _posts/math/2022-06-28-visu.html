@@ -1,0 +1,85 @@
+---
+layout: post
+title: "[Tool] Visualizing 3D polyhedra using Sage"
+category: math
+short: This is an interface for Sage to visualize 3D polyhedron
+preview: poly.png
+---
+
+<h2>Visualizing 3D polyhedra</h2>
+
+<style>
+.sagecell_editor, .sagecell_evalButton {
+    display: none;
+}
+.sagecell_sessionOutput {
+    border: none;
+}
+#sage iframe {
+    width: 100% !important;
+}
+#inequality_form input[type="text"], #inequality_form select {
+    width: 50px;
+    padding: 5px;
+    text-align: right;
+}
+#inequality_form input[type="button"] {
+    padding: 5px;
+}
+#inequalities {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+</style>
+
+<script src="https://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+<script src="/assets/js/sage_visu.js"></script>
+
+<div id="inequality_model" style="display:none;">
+    <input type="text" class="coeff_x_1" value="0" onFocusIn="handleFocusIn(this)" onFocusOut="handleFocusOut(this)" /> x_1 + 
+    <input type="text" class="coeff_x_2" value="0" onFocusIn="handleFocusIn(this)" onFocusOut="handleFocusOut(this)" /> x_2 + 
+    <input type="text" class="coeff_x_3" value="0" onFocusIn="handleFocusIn(this)" onFocusOut="handleFocusOut(this)" /> x_3
+    <select class="sign" >
+        <option><=</option>
+        <option>>=</option>
+        <option>=</option>
+    </select>
+    <input type="text" class="rhs" value="0"  onFocusIn="handleFocusIn(this)" onFocusOut="handleFocusOut(this)"/>
+    <input type="button" value="Remove" onClick="remove_inequality(this)" />
+</div>
+
+<div id="inequality_form">
+    Input your constraints here: <br />
+    <input type="button" value="Add inequality" onClick="add_inequality()" />   
+    <div id="inequalities"></div>
+    <input type="button" value="Plot feasible region" onClick="plot()" />
+    <input type="button" value="Generate vertices & rays" onClick="vertices()" />
+</div>
+
+<div id="sage">
+    <script type="text/x-sage">
+        Polyhedron(ieqs = [[0,0,0,0]]).plot()
+    </script>
+</div>
+
+
+<h2>Credit</h2>
+
+<p>
+This tool is jsut an interface to [Sage](https://www.sagemath.org/). SageMath is a free open-source mathematics software system licensed under the GPL. [SageMathCell](https://sagecell.sagemath.org/) project is an easy-to-use web interface to a free open-source mathematics software system SageMath. It allows embedding Sage computations into any webpage. Resources for your computation are provided by SageMath, Inc.. 
+</p>
+<p>
+    This tool calls the `Polyhedron` class to define your polyhedron. The argument `ieqs` is a vector of vectors \( [d, a, b, c] \) to indicate constraint \( ax_1 + bx_2 + cx_3 + d \ge 0 \). Then, `plot` is called on that object. For instance, the following Sage command will plot \( X \) defined below.
+</p>
+
+<pre><code class="sage">Polyhedron(ieqs = [[2,-1,-1,-1],[0,1,0,0],[0,0,1,0],[0,0,0,1],[1,-1,0,0],[1,0,-1,0],[1,0,0,-1]]).plot()</code></pre>
+
+$$ X = \left\{ x\in\mathbb R^3 : \begin{array}{ll} 
+    x_1 + x_2 + x_3 \le 2 \\
+    x_1 \le 1 \\
+    x_2 \le 1 \\
+    x_3 \le 1 \\
+    x_1 \ge 0 \\
+    x_2 \ge 0 \\
+    x_4 \ge 0
+\end{array} \right\} $$

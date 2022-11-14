@@ -1,19 +1,13 @@
 ---
-layout: default
+layout: page
 ---
 
-{% if page.image != nil %}
-<div>
-<img src="/public/img/{{ page.image }}" id="cover-image" > <!-- 8/3 for pages -->
-</div>
-{% endif %}
-<h1>{{ page.title }}</h1>
 {{ content }}
 {% for node in site.categories[page.category] %}
     {% if node.title != null %}
         <div class="category-item">
             <div class="category-item-image">
-                <img src="/public/img/{{ node.preview }}" />
+                <img src="/assets/images/previews/{{ node.preview }}" />
             </div>
             <div class="category-item-text">
                 <h2><a href="{{ node.url }}">{{ node.title }}</a></h2>
