@@ -2,55 +2,8 @@
 layout: page
 ---
 
-<div id="toc">
-    <div id="sticky-toc">
-        <b>Table of content</b>
-        <ul data-toc data-toc-headings="h2,h3,h4"></ul>
-    </div>
-</div>
+{% include toc.html %}
 
-<div id="post-content">
+{% include begin_post_content.html %}
     {{ content }}
-</div>
-
-<script src="/assets/js/jquery.toc.min.js" ></script>
-
-<script lan="javascript">
-
-    // Get the navbar
-    const navbar = document.getElementById("sticky-toc");
-
-    // Get the offset position of the navbar
-    const sticky = navbar.offsetTop;
-
-    window.onscroll = function() {
-        if (window.pageYOffset >= sticky) {
-            navbar.classList.add("sticky")
-        } else {
-            navbar.classList.remove("sticky");
-        }
-    };
-
-</script>
-
-
-<div id="disqus_thread"></div>
-<script>
-
-/**
-*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
-/*
-var disqus_config = function () {
-this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-};
-*/
-(function() { // DON'T EDIT BELOW THIS LINE
-var d = document, s = d.createElement('script');
-s.src = 'https://hlefebvr-github-io.disqus.com/embed.js';
-s.setAttribute('data-timestamp', +new Date());
-(d.head || d.body).appendChild(s);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+{% include end_post_content.html %}

@@ -16,7 +16,7 @@ color: black;
 background-color: white;
 }
 
-.secondary {
+body, .secondary {
 background-color:rgba(242, 242, 247, 1);
 min-width: 1200px;
 }
@@ -299,4 +299,8 @@ border-radius: 5px;
 
 .category-item-text h2 {
     margin-top: 5px;
+}
+
+.main-container {
+  max-width: auto;
 }

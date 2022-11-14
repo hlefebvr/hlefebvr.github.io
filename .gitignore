@@ -2,3 +2,4 @@ _site
 uml
 .jekyll-cache
 *.render.html
+.Rproj.user
