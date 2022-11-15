@@ -208,7 +208,7 @@ We are now ready to summarize our results. To do so, we bind the columns of the 
 
 ```{r}
 Table1 = cbind(unsolved1, cpu_times1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")])
-colnames(Table1) <- c("N", "G", "TL K1a", "TL K1b", "TL CG", "time K1a", "time K1-b", "time CG", "best K1a", "best K1b", "best CG")
+colnames(Table1) <- c("N", "G", "TL K1a", "TL K1b", "TL CG", "time K1a", "time K1b", "time CG", "best K1a", "best K1b", "best CG")
 ```
 
 ```{r echo = FALSE}
@@ -278,3 +278,8 @@ plot_performance_profile(optimal_K1[optimal_K1$n_jobs == 25,], title = "Over 25-
 ```{r}
 plot_performance_profile(optimal_K1[optimal_K1$gamma <= optimal_K1$n_jobs / 4.,], title = "Over those instances with gamma <= n_jobs / 4", xlim = xlim)
 ```
+
+## Feasible solutions found
+
+## The cost of approximating
+
