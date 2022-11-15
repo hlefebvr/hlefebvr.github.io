@@ -26,7 +26,9 @@ output:
 library(rmarkdown)
 ```
 
-All results can be found in the CSV file `results.csv` which contains the following rows and columns.
+## Reading results
+
+All our results can be found in the CSV file `results.csv` which contains the following rows and columns.
 
 ```{r}
 all_results = read.csv("results.csv", na.strings = "")
@@ -56,7 +58,7 @@ Here, columns have the following inerpretation:
 
 ## Problem $(\mathcal P)$
 
-We now focus on Problem $(\mathcal P)$. When column generation is used, we only consider the default branching rule (i.e., most infeasible). Indeed, it can be verified that, for this problem, using strong branching is not more efficient than using the most-infeasible rule.
+We now focus on Problem $(\mathcal P)$. When column generation is used, we only consider the default branching rule (i.e., most infeasible). Indeed, it can be verified that, for this problem, using strong branching is not more efficient than using the "most infeasible" rule.
 
 ```{r}
 problem1 = all_results[all_results$problem == 1,]
@@ -66,6 +68,14 @@ kadapt1_b = problem1[problem1$approach == "kadapt-b",]
 ```
 
 ### Estimating $K^*$
+
+Remember that the value for $K$ in the $K$-adaptability approach making this heuristic an exact method is estimated as follows:
+$$
+  K^* = \min\left\{ K : \begin{array}{l} (\mathcal P_K)^* \le (\mathcal P)^* \\ t(\mathcal P_K) \le T \\ t(\mathcal P) \le T \\ K\in\mathbb N  \end{array} \right\}
+$$
+where $(\bullet)^*$ and $t(\bullet)$ respectively refer to the optimum objective value and the execution time related to problem $\bullet$.
+
+In search for $K^*$, we start by merging all results so as to obtain a table in which each row refers to a single instance alongside to its results obtained by ColGen1, KAdapt1-a and KAdapt1-b. We do it by first merging the two $K$-adaptability approaches together, then merging with ColGen1. 
 
 ```{r}
 kadapt1 = merge(kadapt1_a, kadapt1_b, by = c("instance", "n_jobs", "gamma", "k"))
@@ -77,73 +87,152 @@ all1 = all1[,c("instance", "n_jobs", "gamma", "objective", "k.y", "obj_kadapt1_a
 colnames(all1) <- c("instance", "n_jobs", "gamma", "obj_colgen1", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b")
 ```
 
+To avoid numerical issues, we introduce here the following comparing function which evaluates to `TRUE` if and only if its two arguments are equal with a given tolerance `tol = 1e-4`.
+
 ```{r}
 equals <- function (a, b, tol = 1e-4) {
   return ( abs(a - b) <= tol )
 }
 ```
 
+We are now ready to compute $K^*$. First, we restrict our attention to the rows for which:
+
+- one of the two $K$-adaptability approaches coincide with the exact approach ColGen1 ;
+- one of the two $K$-adaptability approaches times out.
+
 ```{r}
 optimal_K1 = all1[
-    (
-      equals(all1$obj_colgen1, all1$obj_kadapt1_a) | equals(all1$obj_colgen1, all1$obj_kadapt1_b)
-    )
-    |
-    (
-      all1$cpu_kadapt1_a >= 3600 | all1$cpu_kadapt1_b >= 3600
-    )
+      equals(all1$obj_colgen1, all1$obj_kadapt1_a)
+    | equals(all1$obj_colgen1, all1$obj_kadapt1_b)
+    | all1$cpu_kadapt1_a >= 3600 
+    | all1$cpu_kadapt1_b >= 3600
   ,]
 ```
+
+Then, we estimate $K^*$ by $\widehat{K}^*$ by looking, for each instance, at the first row which fulfills these criteria. This is done as follows.
 
 ```{r}
 optimal_K1 = optimal_K1[order(optimal_K1$instance, optimal_K1$gamma, optimal_K1$k),]
 optimal_K1 = optimal_K1[!duplicated(( optimal_K1[,c("instance", "gamma")] )),]
 ```
 
+Clearly, the $K$-adaptability approach is advantaged by this process, at least in two ways:
+
+- We will compare the $\widehat{K}^*$-adaptability for each instance to our exact approach while, in practice, knowing the value of $K^*$ is not a realistic assumption ;
+- We stop searching for $K^*$ as soon as one of the two approaches reaches the time limit, i.e., we clearly compare our exact method to a underestimation of $K^*$.
+
+### Computational times
+
+In this section, we study the computational abilities of each method. A final table is built through the following sub-sections which summarizes their content.
+
+#### Unsolved instances
+
+We first count the number of instances which could not be solved by each of the three approaches. We therefore create additional columns which contain 1 if and only if an instance has been solved by a specific approach within the time limit.
+
 ```{r}
-# Computing average computation time
-cpu_times = aggregate(optimal_K1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], list(optimal_K1$n_jobs, optimal_K1$gamma), mean)
-colnames(cpu_times) <- c("n_jobs", "gamma", "cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")
+optimal_K1$unsolved_colgen1 = optimal_K1$cpu_colgen1 >= 3600
+optimal_K1$unsolved_kadapt1_a = optimal_K1$cpu_kadapt1_a >= 3600
+optimal_K1$unsolved_kadapt1_b = optimal_K1$cpu_kadapt1_b >= 3600
+```
+
+We then aggregate these columns by number of jobs and value for $\Gamma$.
+```{r}
+unsolved1 = aggregate(optimal_K1[,c("unsolved_kadapt1_a", "unsolved_kadapt1_b", "unsolved_colgen1")], list(optimal_K1$n_jobs, optimal_K1$gamma), sum)
+colnames(unsolved1) <- c("n_jobs", "gamma", "unsolved_kadapt1_a", "unsolved_kadapt1_b", "unsolved_colgen1")
+```
+
+Finally, we make a percentage out of the resulting table and sort these values according to the number of jobs and the value for $\Gamma$.
+```{r}
+# Counting number of instances
+n_instances1 = aggregate(optimal_K1[,c("instance")], list(optimal_K1$n_jobs, optimal_K1$gamma), length)
+colnames(n_instances1) <- c("n_jobs", "gamma", "n_instances")
+
+# Make percentage
+unsolved1$unsolved_colgen1 = unsolved1$unsolved_colgen1 / n_instances1$n_instances * 100
+unsolved1$unsolved_kadapt1_a = unsolved1$unsolved_kadapt1_a / n_instances1$n_instances * 100
+unsolved1$unsolved_kadapt1_b = unsolved1$unsolved_kadapt1_b / n_instances1$n_instances * 100
 
 # Sorting by number of jobs and gamma
-cpu_times = cpu_times[order(cpu_times$n_jobs, cpu_times$gamma),]
-
-rownames(cpu_times) <- NULL
+unsolved1 = unsolved1[order(unsolved1$n_jobs, unsolved1$gamma),]
 ```
 
-```{r echo=FALSE}
-knitr::kable(cpu_times, digits = c(0, 0, 2, 2, 2))
+```{r echo = FALSE}
+rownames(unsolved1) <- NULL
 ```
+
+#### Average computational times
+
+Similarly, we compute the average computation time each approach needs to solve an instance. When the time limit is reached, the approach is considered to spend 3600 seconds. Thus, we aggregate the CPU times of KAdapt1-a, KAdapt1-b and ColGen1 as follows.
+
+```{r}
+cpu_times1 = aggregate(optimal_K1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], list(optimal_K1$n_jobs, optimal_K1$gamma), mean)
+colnames(cpu_times1) <- c("n_jobs", "gamma", "cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")
+```
+
+We then sort the resulting table by number of jobs and value for $\Gamma$.
+```{r}
+cpu_times1 = cpu_times1[order(cpu_times1$n_jobs, cpu_times1$gamma),]
+```
+
+```{r echo = FALSE}
+rownames(cpu_times1) <- NULL
+```
+
+#### Fastest approach
+
+Finally, we compute the number of times a solution approach is the fastest approach among all. This is done in a much similar way as what has been done in the previous sections.
 
 ```{r} 
-optimal_K1$colgen1_is_fastest = optimal_K1$cpu_colgen1 < optimal_K1$cpu_kadapt1_a & optimal_K1$cpu_colgen1 < optimal_K1$cpu_kadapt1_b
-optimal_K1$kadapt1_a_is_fastest = optimal_K1$cpu_kadapt1_a < optimal_K1$cpu_colgen1 & optimal_K1$cpu_kadapt1_a < optimal_K1$cpu_kadapt1_b
+# Create additional columns which equal 1 iff a specific approach is the fastest
+optimal_K1$colgen1_is_fastest = optimal_K1$cpu_colgen1 <= optimal_K1$cpu_kadapt1_a & optimal_K1$cpu_colgen1 <= optimal_K1$cpu_kadapt1_b
+optimal_K1$kadapt1_a_is_fastest = optimal_K1$cpu_kadapt1_a <= optimal_K1$cpu_colgen1 & optimal_K1$cpu_kadapt1_a <= optimal_K1$cpu_kadapt1_b
 optimal_K1$kadapt1_b_is_fastest = optimal_K1$cpu_kadapt1_b <= optimal_K1$cpu_colgen1 & optimal_K1$cpu_kadapt1_b <= optimal_K1$cpu_kadapt1_a
 
 # Counting times in which a method is faster than the others
-fastest = aggregate(optimal_K1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")], list(optimal_K1$n_jobs, optimal_K1$gamma), sum)
-colnames(fastest) <- c("n_jobs", "gamma", "kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")
+fastest1 = aggregate(optimal_K1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")], list(optimal_K1$n_jobs, optimal_K1$gamma), sum)
+colnames(fastest1) <- c("n_jobs", "gamma", "kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")
 
 # Sorting by number of jobs and gamma
-fastest = fastest[order(fastest$n_jobs, fastest$gamma),]
+fastest1 = fastest1[order(fastest1$n_jobs, fastest1$gamma),]
 
-rownames(fastest) <- NULL
-
-fastest[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] = fastest[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] / rowSums(fastest[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")]) * 100
+fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] = fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] / rowSums(fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")]) * 100
 ```
 
-
-```{r echo=FALSE}
-knitr::kable(fastest, digits = c(0, 0, 2, 2, 2))
+```{r echo = FALSE}
+rownames(fastest1) <- NULL
 ```
+
+#### Summary table
+
+We are now ready to summarize our results. To do so, we bind the columns of the previous tables `unsolved1`, `cpu_times1` and `fastest1`. Note that this manipulation is correct since all three tables have been sorted according to the same criteria.
 
 ```{r}
-optimal_K1$cpu_best = apply(optimal_K1[,c("cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b")], 1, FUN = min)
+Table1 = cbind(unsolved1, cpu_times1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")])
+colnames(Table1) <- c("N", "G", "TL K1a", "TL K1b", "TL CG", "time K1a", "time K1-b", "time CG", "best K1a", "best K1b", "best CG")
+```
 
+```{r echo = FALSE}
+knitr::kable(Table1, digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2))
+```
+
+### Performance profiles
+
+We then build a performance profile for our test bed to better compare the three approaches. We refer to <a href="https://arxiv.org/abs/cs/0102001">Dolan, E., Moré, J. Benchmarking optimization software with performance profiles. Math. Program. 91, 201–213 (2002)</a> for a formal introduction.
+
+We start by computing, for each instance, the best solver computational time.
+```{r}
+optimal_K1$cpu_best = apply(optimal_K1[,c("cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b")], 1, FUN = min)
+```
+
+Then, for each solver, we divide its computational time by that of the best solver.
+```{r}
 optimal_K1$perf_colgen1 = optimal_K1$cpu_colgen1 / optimal_K1$cpu_best
 optimal_K1$perf_kadapt1_a = optimal_K1$cpu_kadapt1_a / optimal_K1$cpu_best
 optimal_K1$perf_kadapt1_b = optimal_K1$cpu_kadapt1_b / optimal_K1$cpu_best
+```
 
+According to Dolan et al. (2002), instances which could not be solved by an approach should have a (big enough) fixed ratio. We fix it as follows.
+```{r}
 max_perf = max( max(optimal_K1$perf_colgen1), max(optimal_K1$perf_kadapt1_a), max(optimal_K1$perf_kadapt1_b) )
 
 optimal_K1$perf_colgen1[optimal_K1$cpu_colgen1 >= 3600] = max_perf
@@ -151,8 +240,9 @@ optimal_K1$perf_kadapt1_a[optimal_K1$cpu_kadapt1_a >= 3600] = max_perf
 optimal_K1$perf_kadapt1_b[optimal_K1$cpu_kadapt1_b >= 3600] = max_perf
 ```
 
+Finally, we introduce the following function which will plot our performance profile based on different subsets of instances.
 ```{r}
-plot_performance_profile <- function(data, xlim = c(0, max_perf), ylim = c(0., 1.), title = "Performance profile") {
+plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1.), title = "Performance profile") {
   
   perf_profile_colgen1 = ecdf(data[,"perf_colgen1"])
   perf_profile_kadapt1_a = ecdf(data[,"perf_kadapt1_a"])
@@ -163,10 +253,28 @@ plot_performance_profile <- function(data, xlim = c(0, max_perf), ylim = c(0., 1
   lines(perf_profile_kadapt1_b, col = "black", xlim = xlim, ylim = ylim, lty = "dashed", cex = 0)
   
 }
+```
 
-xlim = c(0, 2000)
+Note that we restrict our attention to cases in which one approach is up to 2000 times worse than the best approach.
 
+```{r}
+xlim = c(1, 2000)
+```
+
+#### Over all instances
+
+```{r}
 plot_performance_profile(optimal_K1, title = "Over all instances", xlim = xlim)
+```
+
+#### Over the 25-jobs instances
+
+```{r}
 plot_performance_profile(optimal_K1[optimal_K1$n_jobs == 25,], title = "Over 25-jobs instances", xlim = xlim)
+```
+
+### Over those instances with $\Gamma \le |\mathcal J| / 4$
+
+```{r}
 plot_performance_profile(optimal_K1[optimal_K1$gamma <= optimal_K1$n_jobs / 4.,], title = "Over those instances with gamma <= n_jobs / 4", xlim = xlim)
 ```

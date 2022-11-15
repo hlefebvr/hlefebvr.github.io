@@ -1,0 +1,187 @@
+---
+title: Open methodology for "Adjustable robust optimization with discrete uncertainty"
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../_includes/head.html
+      before_body: 
+        - ../../_includes/header.html
+        - ../../_includes/begin_content.html
+        - ../../_includes/toc.html
+        - ../../_includes/begin_post_content.html
+      after_body: 
+        - ../../_includes/end_post_content.html
+        - ../../_includes/end_content.html
+        - ../../_includes/footer.html
+        - ../../_includes/handle_page_title.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+In this document we evaluate the computational properties of the approach from AC (Adjustable robust optimization with discrete uncertainty). The introduced approach is referred to as "benders" in the following. 
+
+## Reading results
+
+```{r echo = FALSE}
+library(rmarkdown)
+```
+
+We start by reading the results from the Benders approach in CSV form.
+```{r}
+benders = read.csv("./results_benders.csv", header = FALSE)
+colnames(benders) <- c("instance", "status", "reason", "objective", "time", "nodes")
+```
+
+The obtained table is as follows:
+
+- *instance*: the instance filename ;
+- *status*: the status of the solution (Optimal, Feasible or Infeasible) ;
+- *reason*: the reason for the solution status (Proved or TimeLimit) ;
+- *objective*: the objective value reported ;
+- *time*: the computation time spent solving the problem ;
+- *nodes*: the overall number of created nodes.
+
+```{r echo = FALSE}
+paged_table(benders)
+```
+
+Then, we read the results from the "column and constraint generation" approach.
+
+```{r}
+ccg = read.csv("./results_ccg.csv", header = FALSE)
+colnames(ccg) <- c("instance", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+```
+
+Here, the columns are described as:
+
+- *instance*: the instance filename ; 
+- *iter*: the number of iterations ;
+- *LB*: the reported lower bound ;
+- *UB*: the reported upper bound ; 
+- *time*: the computational time spent solving the instance ;
+- *inner_iter_1* and *inner_iter_2*: the number of inner iterations of the algorithm.
+
+```{r echo = FALSE}
+paged_table(ccg)
+```
+
+## Merging
+
+We merge the results by instance filename so as to obtain one table with, for each instance, a row containing the results from both approaches. We merge as follows.
+
+```{r}
+results = merge(benders, ccg, by = "instance")
+results = results[,c("instance", "objective", "time.x", "UB", "time.y")]
+colnames(results) <- c("instance", "obj_benders", "time_benders", "obj_ccg", "time_ccg")
+```
+
+Then, we extract from the instance filename instance properties such as the number of knapsacks, the number of items and the coefficient $\alpha$ used to generate the instance.
+
+```{r}
+library(stringr)
+parsed = t(apply(as.matrix(results$instance), 1, function(str)  str_extract_all(results$instance, regex("([0-9]+)"))[[1]]))
+results$n_knapsacks = parsed[,1]
+results$n_items = parsed[,2]
+results$alpha = parsed[,3]
+```
+
+Since the time limit was set to 3600 seconds, we replace any time value greater than 3600 by exactly 3600 to avoid numerical problems.
+
+```{r}
+# (TODO: this will be removed when all data is collected)
+#results[results$time_benders > 3600,]
+#results[results$time_ccg > 3600,]
+```
+
+```{r}
+if (sum(results$time_ccg > 3600) > 0) {
+  results[results$time_ccg > 3600,]$time_ccg <- 3600
+}
+
+if (sum(results$time_benders > 3600) > 0) {
+  results[results$time_benders > 3600,]$time_benders <- 3600
+}
+```
+
+Our final table reads.
+
+```{r echo = FALSE}
+paged_table(results)
+```
+
+## Checking
+
+In this section, we also check that the two solution approaches report the same global optimum when they both terminate before the time limit is reached.
+
+```{r}
+results[abs(results$obj_benders - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
+```
+
+## Computational time
+
+In this section, we compute the average computation time spent by each method to solve our test bed. If a given approach was not able to solve an instance in the given time limit, it is penalized by the time limit iteself. 
+
+```{r}
+# Computing average computation time
+cpu_times = aggregate(results[,c("time_benders", "time_ccg")], list(results$n_knapsacks, results$n_items, results$alpha), mean)
+colnames(cpu_times) <- c("n_knapsacks", "n_items", "alpha", "time_benders", "time_ccg")
+
+# Sorting by number of knapsacks and items
+cpu_times = cpu_times[order(cpu_times$n_knapsacks, cpu_times$n_items, cpu_times$alpha),]
+
+rownames(cpu_times) <- NULL
+```
+
+The resulting table reads.
+
+```{r echo = FALSE}
+knitr::kable(cpu_times, digits = c(0, 0, 2, 2))
+```
+
+## Performance profile
+
+We then build a performance profile for our test bed to better compare the two approaches. We refer to <a href="https://arxiv.org/abs/cs/0102001">Dolan, E., Moré, J. Benchmarking optimization software with performance profiles. Math. Program. 91, 201–213 (2002)</a> for a formal introduction.
+
+We start by computing, for each instance, the best solver computational time.
+
+```{r}
+results$time_best = apply(results[,c("time_benders", "time_ccg")], 1, FUN = min)
+```
+
+Then, for each solver, we divide its computational time by that of the best solver.
+
+```{r}
+results$perf_benders = results$time_benders / results$time_best
+results$perf_ccg = results$time_ccg / results$time_best
+```
+
+According to Dolan et al. (2002), instances which could not be solved by an approach should have a (big enough) fixed ratio. We fix it as follows.
+
+```{r}
+max_perf = max( max(results$time_benders), max(results$time_ccg) )
+
+results$perf_benders[results$time_benders >= 3600] = max_perf
+results$perf_ccg[results$time_ccg >= 3600] = max_perf
+```
+
+Finally, we are ready to plot our performance profile as the ECDF of performance ratios. Note that we restrict our attention to cases in which one approach is up to 10 times worse than the best approach.
+
+```{r}
+plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1.), title = "Performance profile") {
+  
+  perf_profile_benders = ecdf(data[,"perf_benders"])
+  perf_profile_ccg = ecdf(data[,"perf_ccg"])
+  
+  plot(perf_profile_benders, col = "black", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
+  lines(perf_profile_ccg, col = "black", xlim = xlim, ylim = ylim, lty = "dotted", cex = 0)
+  
+}
+
+xlim = c(1, 10)
+
+plot_performance_profile(results, title = "Over all instances", xlim = xlim)
+```
