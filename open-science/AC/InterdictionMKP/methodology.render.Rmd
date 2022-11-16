@@ -1,5 +1,5 @@
 ---
-title: Open methodology for "Adjustable robust optimization with discrete uncertainty"
+title: Open methodology for "Adjustable robust optimization with discrete uncertainty" > InterdictionMKP
 output: 
   html_document:
     theme: null
@@ -7,17 +7,17 @@ output:
     self_contained: false
     highlight: null
     include:
-      in_header: ../../_includes/head.html
+      in_header: ../../../_includes/head.html
       before_body: 
-        - ../../_includes/header.html
-        - ../../_includes/begin_content.html
-        - ../../_includes/toc.html
-        - ../../_includes/begin_post_content.html
+        - ../../../_includes/header.html
+        - ../../../_includes/begin_content.html
+        - ../../../_includes/toc.html
+        - ../../../_includes/begin_post_content.html
       after_body: 
-        - ../../_includes/end_post_content.html
-        - ../../_includes/end_content.html
-        - ../../_includes/footer.html
-        - ../../_includes/handle_page_title.html
+        - ../../../_includes/end_post_content.html
+        - ../../../_includes/end_content.html
+        - ../../../_includes/footer.html
+        - ../../../_includes/handle_page_title.html
 ---
 
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
@@ -33,7 +33,7 @@ library(rmarkdown)
 We start by reading the results from the Benders approach in CSV form.
 ```{r}
 benders = read.csv("./results_benders.csv", header = FALSE)
-colnames(benders) <- c("instance", "status", "reason", "objective", "time", "nodes")
+colnames(benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
 ```
 
 The obtained table is as follows:
@@ -53,7 +53,7 @@ Then, we read the results from the "column and constraint generation" approach.
 
 ```{r}
 ccg = read.csv("./results_ccg.csv", header = FALSE)
-colnames(ccg) <- c("instance", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+colnames(ccg) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
 ```
 
 Here, the columns are described as:
@@ -74,28 +74,22 @@ paged_table(ccg)
 We merge the results by instance filename so as to obtain one table with, for each instance, a row containing the results from both approaches. We merge as follows.
 
 ```{r}
-results = merge(benders, ccg, by = "instance")
-results = results[,c("instance", "objective", "time.x", "UB", "time.y")]
-colnames(results) <- c("instance", "obj_benders", "time_benders", "obj_ccg", "time_ccg")
+results = merge(benders, ccg, by = c("instance", "gamma"))
+results = results[,c("instance", "gamma", "objective", "time.x", "UB", "time.y")]
+colnames(results) <- c("instance", "gamma", "obj_benders", "time_benders", "obj_ccg", "time_ccg")
 ```
 
 Then, we extract from the instance filename instance properties such as the number of knapsacks, the number of items and the coefficient $\alpha$ used to generate the instance.
 
 ```{r}
 library(stringr)
-parsed = t(apply(as.matrix(results$instance), 1, function(str)  str_extract_all(results$instance, regex("([0-9]+)"))[[1]]))
-results$n_knapsacks = parsed[,1]
-results$n_items = parsed[,2]
-results$alpha = parsed[,3]
+parsed = t(apply(as.matrix(results$instance), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
+results$n_knapsacks = as.double(parsed[,1])
+results$n_items = as.double(parsed[,2])
+results$alpha = as.double(parsed[,3]) / 100
 ```
 
 Since the time limit was set to 3600 seconds, we replace any time value greater than 3600 by exactly 3600 to avoid numerical problems.
-
-```{r}
-# (TODO: this will be removed when all data is collected)
-#results[results$time_benders > 3600,]
-#results[results$time_ccg > 3600,]
-```
 
 ```{r}
 if (sum(results$time_ccg > 3600) > 0) {
@@ -121,25 +115,56 @@ In this section, we also check that the two solution approaches report the same 
 results[abs(results$obj_benders - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
 ```
 
-## Computational time
-
-In this section, we compute the average computation time spent by each method to solve our test bed. If a given approach was not able to solve an instance in the given time limit, it is penalized by the time limit iteself. 
+## Number of instances in each category
 
 ```{r}
-# Computing average computation time
-cpu_times = aggregate(results[,c("time_benders", "time_ccg")], list(results$n_knapsacks, results$n_items, results$alpha), mean)
-colnames(cpu_times) <- c("n_knapsacks", "n_items", "alpha", "time_benders", "time_ccg")
-
-# Sorting by number of knapsacks and items
-cpu_times = cpu_times[order(cpu_times$n_knapsacks, cpu_times$n_items, cpu_times$alpha),]
-
-rownames(cpu_times) <- NULL
+attemps = aggregate(results[,c("instance")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), length)
+colnames(attemps) <- c("gamma", "n_knapsacks", "n_items", "alpha", "total")
+attemps = attemps[order(attemps$gamma, attemps$n_knapsacks, attemps$n_items, attemps$alpha),]
 ```
 
-The resulting table reads.
+## Unsolved instances
+
+
+```{r}
+results$unsolved_benders = results$time_benders >= 3600
+results$unsolved_ccg = results$time_ccg >= 3600
+```
+
+We then aggregate these columns by number of jobs and value for $\Gamma$.
+```{r}
+unsolved = aggregate(results[,c("unsolved_benders", "unsolved_ccg")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), sum)
+colnames(unsolved) <- c("gamma", "n_knapsacks", "n_items", "alpha", "unsolved_benders", "unsolved_ccg")
+unsolved = unsolved[order(unsolved$gamma, unsolved$n_knapsacks, unsolved$n_items, unsolved$alpha),]
+```
+
+## Computational time
+
+In this section, we compute the average computation time spent by each method to solve our test bed. If a given approach was not able to solve an instance in the given time limit, it is penalized by the time limit itself. 
+
+```{r}
+compute_mean_time <- function(column_with_time) {
+  only_solved_instances = results[results[,column_with_time] < 3600,]
+  cpu_times = aggregate(only_solved_instances[,column_with_time], list(only_solved_instances$gamma, only_solved_instances$n_knapsacks, only_solved_instances$n_items, only_solved_instances$alpha), mean)
+  colnames(cpu_times) <- c("gamma", "n_knapsacks", "n_items", "alpha", "time")
+  cpu_times = cpu_times[order(cpu_times$gamma, cpu_times$n_knapsacks, cpu_times$n_items, cpu_times$alpha),]
+  return (cpu_times)
+}
+
+mean_time_benders = compute_mean_time("time_benders")
+mean_time_ccg = compute_mean_time("time_ccg")
+```
+
+## Summary
+
+```{r}
+Table1 = cbind(attemps, unsolved[,c("unsolved_benders", "unsolved_ccg")],mean_time_benders$time, mean_time_ccg$time)
+colnames(Table1) <- c("gamma", "K", "N", "alpha", "Total", "Unsolved benders", "Unsolved CCG", "Time benders", "Time CCG")
+```
 
 ```{r echo = FALSE}
-knitr::kable(cpu_times, digits = c(0, 0, 2, 2))
+rownames(Table1) <- NULL
+knitr::kable(Table1, digits = c(0,0,0,2,0,0,0,2,2))
 ```
 
 ## Performance profile
@@ -181,7 +206,7 @@ plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1
   
 }
 
-xlim = c(1, 10)
+xlim = c(1, 100)
 
 plot_performance_profile(results, title = "Over all instances", xlim = xlim)
 ```

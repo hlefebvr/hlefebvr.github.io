@@ -5,29 +5,20 @@ layout: open_science
 open_methodology: >
     We have open methodology on our experimental results thanks to <a href="https://rmarkdown.rstudio.com/" target="_blank">rmarkdown</a>.
     <br />
-    <a href="methodology.render.html" class="attachment attachment-link">Compiled version</a>
-    <a href="methodology.render.Rmd" target="_blank" class="attachment attachment-download">R markdown source</a>
+    <a href="InterdictionMKP/methodology.render.html" class="attachment attachment-link">InterdictionMKP/methodology.render.html</a>
+    <a href="InterdictionMKP/methodology.render.Rmd" target="_blank" class="attachment attachment-download">InterdictionMKP/methodology.render.Rmd</a>
+    <a href="DisruptionFLP/methodology.render.html" class="attachment attachment-link">DisruptionFLP/methodology.render.html</a>
+    <a href="DisruptionFLP/methodology.render.Rmd" target="_blank" class="attachment attachment-download">DisruptionFLP/methodology.render.Rmd</a>
 
 open_source: >
     <i>This is a work in progress. Contact me via email if needed.</i>
 
 open_data: >
-    We have public instances (<code>InterdictionMKP_instances.zip</code>) and open raw experimental results (<code>results_benders.csv</code>, <code>results_ccg.csv</code>). <br />
-    The columns in <code>.csv</code> files are explained in the public rmarkdown (see open methodology) while the instances are given in the following format:
-    <ul>
-        <li>For <code>InterdictionMKP_instances.zip</code></li>
-        <ul>
-          <li>One line with the number of knapsacks and number of items: \( K, N \) ;</li>
-          <li>One line with, for each item \(j\), its processing time \( p_j \) ;</li>
-          <li>One line with, for each item \(j\), its weight \( w_j \) ; </li>
-          <li>One line with, for each knapsack \( k \), its capacity \( C_k \).</li>
-        </ul>
-    </ul>
-    The input data is separated by tabs or space.
+    We have public instances and open raw experimental results. The columns in <code>.csv</code> files are explained in the corresponding public rmarkdown (see open methodology) while the instances format is explained in <code>README.md</code> files in the associated <code>.zip</code>.
     <br />
-    <a href="InterdictionMKP_instances.zip" class="attachment attachment-download">InterdictionMKP_instances.zip</a>
-    <a href="results_benders.csv" class="attachment attachment-download">results_benders.csv</a>
-    <a href="results_ccg.csv" class="attachment attachment-download">results_ccg.csv</a>
+    <a href="InterdictionMKP/instances.zip" class="attachment attachment-download">InterdictionMKP/instances.zip</a>
+    <a href="InterdictionMKP/results_benders.csv" class="attachment attachment-download">InterdictionMKP/results_benders.csv</a>
+    <a href="InterdictionMKP/results_ccg.csv" class="attachment attachment-download">InterdictionMKP/results_ccg.csv</a>
 
 open_access: >
     We have open access preprint.
@@ -42,13 +33,3 @@ open_education: >
     <a href="MIP_poster.pdf" target="_blank" class="attachment attachment-download">MIP_poster.pdf</a>
     <a href="EURO2022.pdf" target="_blank" class="attachment attachment-download">EURO2022.pdf</a>
 ---
-
-<center style="padding: 50px;">
-    <b style="font-size: 2em;">This page is under construction.</b>
-</center>
-
-Experiments are run on
-<ul>
-    <li>mini_pc_11 for branch-and-cut</li>
-    <li>mini_pc_12 for column-and-constraint generation</li>
-</ul>

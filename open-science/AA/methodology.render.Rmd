@@ -8,7 +8,7 @@ output:
     highlight: null
     include:
       in_header: ../../_includes/head.html
-      before_body: 
+      before_body:
         - ../../_includes/header.html
         - ../../_includes/begin_content.html
         - ../../_includes/toc.html
