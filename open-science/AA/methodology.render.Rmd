@@ -22,20 +22,25 @@ output:
 
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 
+## Reading instances
+
+### The CSV file
+
 ```{r echo=FALSE}
 library(rmarkdown)
+library(kableExtra)
 ```
-
-## Reading results
 
 All our results can be found in the CSV file `results.csv` which contains the following rows and columns.
 
 ```{r}
 all_results = read.csv("results.csv", na.strings = "")
 ```
+
 ```{r echo=FALSE}
 paged_table(all_results)
 ```
+
 
 Here, columns have the following inerpretation:
 
@@ -56,275 +61,463 @@ Here, columns have the following inerpretation:
 - *gap*: the remaining optimality gap after 1 hour of computation ;
 - *rule_for_branching*: when the column generation approach is used, the variable selection rule which were used (possible values: "default, strong_branching", i.e., most infeasible).
 
-## Problem $(\mathcal P)$
-
-We now focus on Problem $(\mathcal P)$. When column generation is used, we only consider the default branching rule (i.e., most infeasible). Indeed, it can be verified that, for this problem, using strong branching is not more efficient than using the "most infeasible" rule.
+```{r}
+all_results[all_results$cpu > 3600, ] = 3600
+```
 
 ```{r}
 problem1 = all_results[all_results$problem == 1,]
-colgen1 = problem1[problem1$approach == "colgen" & problem1$rule_for_branching == "default",]
-kadapt1_a = problem1[problem1$approach == "kadapt-a",]
-kadapt1_b = problem1[problem1$approach == "kadapt-b",]
+problem2 = all_results[all_results$problem == 2,]
 ```
 
-### Estimating $K^*$
-
-Remember that the value for $K$ in the $K$-adaptability approach making this heuristic an exact method is estimated as follows:
-$$
-  K^* = \min\left\{ K : \begin{array}{l} (\mathcal P_K)^* \le (\mathcal P)^* \\ t(\mathcal P_K) \le T \\ t(\mathcal P) \le T \\ K\in\mathbb N  \end{array} \right\}
-$$
-where $(\bullet)^*$ and $t(\bullet)$ respectively refer to the optimum objective value and the execution time related to problem $\bullet$.
-
-In search for $K^*$, we start by merging all results so as to obtain a table in which each row refers to a single instance alongside to its results obtained by ColGen1, KAdapt1-a and KAdapt1-b. We do it by first merging the two $K$-adaptability approaches together, then merging with ColGen1. 
-
 ```{r}
-kadapt1 = merge(kadapt1_a, kadapt1_b, by = c("instance", "n_jobs", "gamma", "k"), all.y = TRUE)
-kadapt1 = kadapt1[,c("instance", "n_jobs", "gamma", "k", "objective.x", "objective.y", "cpu.x", "cpu.y", "gap.x", "gap.y")]
-colnames(kadapt1) <- c("instance", "n_jobs", "gamma", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap_kadapt1_a", "gap_kadapt1_b")
-
-kadapt1[is.na(kadapt1$cpu_kadapt1_a),]$cpu_kadapt1_a = 3600
-kadapt1[is.na(kadapt1$obj_kadapt1_a),]$obj_kadapt1_a = Inf
-kadapt1[is.na(kadapt1$gap_kadapt1_a),]$gap_kadapt1_a = Inf
-
-all1 = merge(colgen1, kadapt1, by = c("instance", "n_jobs", "gamma"), all = TRUE)
-all1 = all1[,c("instance", "n_jobs", "gamma", "objective", "k.y", "obj_kadapt1_a", "obj_kadapt1_b", "cpu", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap", "gap_kadapt1_a", "gap_kadapt1_b")]
-colnames(all1) <- c("instance", "n_jobs", "gamma", "obj_colgen1", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap_colgen1", "gap_kadapt1_a", "gap_kadapt1_b")
-```
-
-To avoid numerical issues, we introduce here the following comparing function which evaluates to `TRUE` if and only if its two arguments are equal with a given tolerance `tol = 1e-4`.
-
-```{r}
-equals <- function (a, b, tol = 1e-4) {
-  return ( abs(a - b) <= tol )
+create_approach = function(problem, approach) {
+  result = problem[problem$approach == approach & problem$rule_for_branching == 'default',]
+  result = result[,!names(result) %in% c("approach", "problem", "rule_for_branching", "quality", "n_active_col")]
+  rownames(result) = NULL
+  return (result)
 }
 ```
 
-We are now ready to compute $K^*$. First, we restrict our attention to the rows for which:
-
-- one of the two $K$-adaptability approaches coincide with the exact approach ColGen1 ;
-- both $K$-adaptability approaches time out.
-
 ```{r}
-optimal_K1 = all1[
-      ( equals(all1$obj_colgen1, all1$obj_kadapt1_a) | equals(all1$obj_colgen1, all1$obj_kadapt1_b) )
-      | (all1$cpu_kadapt1_a >= 3600  & all1$cpu_kadapt1_b >= 3600)
-  ,]
+colgen1 = create_approach(problem1, 'colgen')
+kadapt1_a = create_approach(problem1, 'kadapt-a')
+kadapt1_b = create_approach(problem1, 'kadapt-b')
 ```
 
-Then, we estimate $K^*$ by $\widehat{K}^*$ by looking, for each instance, at the first row which fulfills these criteria. This is done as follows.
+```{r}
+colgen2 = create_approach(problem2, 'colgen')
+colgen3 = create_approach(problem2, 'colgen-ext')
+kadapt2_a = create_approach(problem2, 'kadapt-a')
+kadapt2_b = create_approach(problem2, 'kadapt-b')
+```
+
+### Estimating $K^*$ (finding $\widehat{K}^*$)
 
 ```{r}
-optimal_K1 = optimal_K1[order(optimal_K1$instance, optimal_K1$gamma, optimal_K1$k),]
-optimal_K1 = optimal_K1[!duplicated(( optimal_K1[,c("instance", "gamma")] )),]
+estimate_k_star = function(exact_method, k_adaptability) {
+  
+  # We first merge the exact method with the K-adaptability approach
+  k_stars = merge(exact_method, k_adaptability, by = c("instance", "gamma"), all.y = TRUE)
+  
+  # We only keep those values of K which trigger the stopping condition
+  k_stars = k_stars[
+      # - (P_K)^* <= (P)^*, t(P) <= T, t(P_K) <= T
+        (k_stars$objective.y <= k_stars$objective.x + 1e-3 & k_stars$time.x < 3600 & k_stars$time.y < 3600)
+      |
+      # - (P_K)^* <= (P)^*, t(P) > T, t(P_K) <= T
+        (k_stars$objective.y <= k_stars$objective.x + 1e-3 & k_stars$time.x >= 3600 & k_stars$time.y < 3600)
+      |
+      # - t(P) <= P, t(P_K) > T
+        (k_stars$time.x < 3600 & k_stars$time.y >= 3600)
+      |
+      # - t(P) > T, t(P_K) > T
+        (k_stars$time.x >= 3600 & k_stars$time.y >= 3600)
+    , 
+      c("instance", "gamma", "k.y")
+  ]
+  
+  # We rename k.y as k
+  colnames(k_stars)[3] = "k"
+  
+  # Keep only the first (instance, gamma, k) which triggered the stopping criteria
+  k_stars = k_stars[order(k_stars$instance, k_stars$gamma, k_stars$k),]
+  k_stars = k_stars[!duplicated(( k_stars[,c("instance", "gamma")] )),]
+  
+  return (k_stars)
+}
 ```
+
+```{r}
+k_star1_a = estimate_k_star(colgen1, kadapt1_a)
+k_star1_b = estimate_k_star(colgen1, kadapt1_b)
+k_star2_a = estimate_k_star(colgen2, kadapt2_a)
+k_star2_b = estimate_k_star(colgen2, kadapt2_b)
+```
+
+### The $\widehat{K}^*$-adaptability
+
+```{r}
+create_optimal_kadapt = function(k_adaptability, k_star) {
+  opt_kadapt = merge(k_adaptability, k_star, by = c("instance", "gamma", "k"))
+  return(opt_kadapt)
+}
+```
+
+```{r}
+opt_kadapt1_a = create_optimal_kadapt(kadapt1_a, k_star1_a)
+opt_kadapt1_b = create_optimal_kadapt(kadapt1_b, k_star1_b)
+opt_kadapt2_a = create_optimal_kadapt(kadapt2_a, k_star2_a)
+opt_kadapt2_b = create_optimal_kadapt(kadapt2_b, k_star2_b)
+```
+
+## Analysis
 
 ### Computational times
 
-In this section, we study the computational abilities of each method. A final table is built through the following sub-sections which summarizes their content.
-
-#### Unsolved instances
-
-We first count the number of instances which could not be solved by each of the three approaches. We therefore create additional columns which contain 1 if and only if an instance has been solved by a specific approach within the time limit.
-
 ```{r}
-optimal_K1$unsolved_colgen1 = optimal_K1$cpu_colgen1 >= 3600
-optimal_K1$unsolved_kadapt1_a = optimal_K1$cpu_kadapt1_a >= 3600
-optimal_K1$unsolved_kadapt1_b = optimal_K1$cpu_kadapt1_b >= 3600
+compute_mean_times_by_group = function(data) {
+  
+  mean_times = aggregate(data$time, list(data$n_jobs, data$gamma), mean)
+  colnames(mean_times) = c("n_jobs", "gamma", "time")
+  
+  mean_times = mean_times[order(mean_times$n_jobs, mean_times$gamma),]
+  rownames(mean_times) = NULL
+  
+  return(mean_times)
+}
 ```
 
-We then aggregate these columns by number of jobs and value for $\Gamma$.
 ```{r}
-unsolved1 = aggregate(optimal_K1[,c("unsolved_kadapt1_a", "unsolved_kadapt1_b", "unsolved_colgen1")], list(optimal_K1$n_jobs, optimal_K1$gamma), sum)
-colnames(unsolved1) <- c("n_jobs", "gamma", "unsolved_kadapt1_a", "unsolved_kadapt1_b", "unsolved_colgen1")
+mean_times_colgen1 = compute_mean_times_by_group(colgen1)
+mean_times_kadapt1_a = compute_mean_times_by_group(opt_kadapt1_a)
+mean_times_kadapt1_b = compute_mean_times_by_group(opt_kadapt1_b)
+
+mean_times_colgen2 = compute_mean_times_by_group(colgen2)
+mean_times_colgen3 = compute_mean_times_by_group(colgen3)
+mean_times_kadapt2_a = compute_mean_times_by_group(opt_kadapt2_a)
+mean_times_kadapt2_b = compute_mean_times_by_group(opt_kadapt2_b)
 ```
 
-Finally, we make a percentage out of the resulting table and sort these values according to the number of jobs and the value for $\Gamma$.
 ```{r}
-# Counting number of instances
-n_instances1 = aggregate(optimal_K1[,c("instance")], list(optimal_K1$n_jobs, optimal_K1$gamma), length)
-colnames(n_instances1) <- c("n_jobs", "gamma", "n_instances")
+compute_number_unsolved_by_group = function(data) {
+  unsolved = aggregate(data$time >= 3600, list(data$n_jobs, data$gamma), sum)
+  colnames(unsolved) = c("n_jobs", "gamma", "unsolved")
+  
+  total = aggregate(data$instance, list(data$n_jobs, data$gamma), length)
+  colnames(total) = c("n_jobs", "gamma", "total")
+  
+  unsolved$unsolved = unsolved$unsolved / total$total * 100
+  
+  unsolved = unsolved[order(unsolved$n_jobs, unsolved$gamma),]
+  rownames(unsolved) = NULL
+  
+  return(unsolved)
+}
+```
 
-# Make percentage
-unsolved1$unsolved_colgen1 = unsolved1$unsolved_colgen1 / n_instances1$n_instances * 100
-unsolved1$unsolved_kadapt1_a = unsolved1$unsolved_kadapt1_a / n_instances1$n_instances * 100
-unsolved1$unsolved_kadapt1_b = unsolved1$unsolved_kadapt1_b / n_instances1$n_instances * 100
+```{r}
+unsolved_colgen1 = compute_number_unsolved_by_group(colgen1)
+unsolved_kadapt1_a = compute_number_unsolved_by_group(opt_kadapt1_a)
+unsolved_kadapt1_b = compute_number_unsolved_by_group(opt_kadapt1_b)
 
-# Sorting by number of jobs and gamma
-unsolved1 = unsolved1[order(unsolved1$n_jobs, unsolved1$gamma),]
+unsolved_colgen2 = compute_number_unsolved_by_group(colgen2)
+unsolved_colgen3 = compute_number_unsolved_by_group(colgen3)
+unsolved_kadapt2_a = compute_number_unsolved_by_group(opt_kadapt2_a)
+unsolved_kadapt2_b = compute_number_unsolved_by_group(opt_kadapt2_b)
+```
+
+```{r}
+compute_fastest_approach = function(t_colgen, t_kadapta, t_kadaptb) {
+  
+  fastest = merge(t_colgen, t_kadapta, by = c("instance", "gamma"))
+  fastest = fastest[,c("instance", "gamma", "n_jobs.x", "time.x", "time.y")]
+  colnames(fastest) = c("instance", "gamma", "n_jobs", "time_colgen", "time_kadapt_a")
+  
+  fastest = merge(fastest, t_kadaptb, by = c("instance", "gamma"))
+  fastest = fastest[,c("instance", "gamma", "n_jobs.x", "time_colgen", "time_kadapt_a", "time")]
+  colnames(fastest)[3] = "n_jobs"
+  colnames(fastest)[6] = "time_kadapt_b"
+  
+  fastest$best_time = apply(fastest[,c("time_colgen", "time_kadapt_a", "time_kadapt_b")], 1, FUN = min)
+  
+  fastest$best_is_colgen = fastest$time_colgen == fastest$best_time
+  fastest$best_is_kadapt_a = fastest$time_kadapt_a == fastest$best_time
+  fastest$best_is_kadapt_b = fastest$time_kadapt_b == fastest$best_time
+  
+  return(fastest)
+}
+
+fastest1 = compute_fastest_approach(colgen1, opt_kadapt1_a, opt_kadapt1_b)
+fastest2 = compute_fastest_approach(colgen2, opt_kadapt2_a, opt_kadapt2_b)
+```
+
+```{r}
+compute_fastest_approach_by_group = function(fastest) {
+  
+  fastest = aggregate(fastest[,c("best_is_colgen", "best_is_kadapt_a", "best_is_kadapt_b")], by = list(fastest$n_jobs, fastest$gamma), sum)
+  
+  fastest[,3:5] = fastest[,3:5] / rowSums(fastest[,3:5]) * 100
+  
+  colnames(fastest) = c("n_jobs", "gamma", "best_is_colgen", "best_is_kadapt_a", "best_is_kadapt_b")
+  
+  fastest = fastest[order(fastest$n_jobs, fastest$gamma),]
+  rownames(fastest) = NULL
+  
+  return (fastest);
+}
+```
+
+```{r}
+fastest_by_group1 = compute_fastest_approach_by_group(fastest1)
+fastest_by_group2 = compute_fastest_approach_by_group(fastest2)
+```
+
+#### For problem $({\mathcal P})$
+
+```{r}
+Table41 = cbind(unsolved_kadapt1_a,
+      unsolved_kadapt1_b$unsolved,
+      unsolved_colgen1$unsolved,
+      mean_times_kadapt1_a$time,
+      mean_times_kadapt1_b$time,
+      mean_times_colgen1$time,
+      fastest_by_group1$best_is_kadapt_a,
+      fastest_by_group1$best_is_kadapt_b,
+      fastest_by_group1$best_is_colgen
+    )
 ```
 
 ```{r echo = FALSE}
-rownames(unsolved1) <- NULL
-```
-
-#### Average computational times
-
-Similarly, we compute the average computation time each approach needs to solve an instance. When the time limit is reached, the approach is considered to spend 3600 seconds. Thus, we aggregate the CPU times of KAdapt1-a, KAdapt1-b and ColGen1 as follows.
-
-```{r}
-cpu_times1 = aggregate(optimal_K1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], list(optimal_K1$n_jobs, optimal_K1$gamma), mean)
-colnames(cpu_times1) <- c("n_jobs", "gamma", "cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")
-```
-
-We then sort the resulting table by number of jobs and value for $\Gamma$.
-```{r}
-cpu_times1 = cpu_times1[order(cpu_times1$n_jobs, cpu_times1$gamma),]
-```
-
-```{r echo = FALSE}
-rownames(cpu_times1) <- NULL
-```
-
-#### Fastest approach
-
-Finally, we compute the number of times a solution approach is the fastest approach among all. This is done in a much similar way as what has been done in the previous sections.
-
-```{r} 
-# Create additional columns which equal 1 iff a specific approach is the fastest
-optimal_K1$colgen1_is_fastest = optimal_K1$cpu_colgen1 <= optimal_K1$cpu_kadapt1_a & optimal_K1$cpu_colgen1 <= optimal_K1$cpu_kadapt1_b
-optimal_K1$kadapt1_a_is_fastest = optimal_K1$cpu_kadapt1_a <= optimal_K1$cpu_colgen1 & optimal_K1$cpu_kadapt1_a <= optimal_K1$cpu_kadapt1_b
-optimal_K1$kadapt1_b_is_fastest = optimal_K1$cpu_kadapt1_b <= optimal_K1$cpu_colgen1 & optimal_K1$cpu_kadapt1_b <= optimal_K1$cpu_kadapt1_a
-
-# Counting times in which a method is faster than the others
-fastest1 = aggregate(optimal_K1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")], list(optimal_K1$n_jobs, optimal_K1$gamma), sum)
-colnames(fastest1) <- c("n_jobs", "gamma", "kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")
-
-# Sorting by number of jobs and gamma
-fastest1 = fastest1[order(fastest1$n_jobs, fastest1$gamma),]
-
-fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] = fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")] / rowSums(fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")]) * 100
-```
-
-```{r echo = FALSE}
-rownames(fastest1) <- NULL
-```
-
-#### Summary table
-
-We are now ready to summarize our results. To do so, we bind the columns of the previous tables `unsolved1`, `cpu_times1` and `fastest1`. Note that this manipulation is correct since all three tables have been sorted according to the same criteria.
-
-```{r}
-Table1 = cbind(unsolved1, cpu_times1[,c("cpu_kadapt1_a", "cpu_kadapt1_b", "cpu_colgen1")], fastest1[,c("kadapt1_a_is_fastest", "kadapt1_b_is_fastest", "colgen1_is_fastest")])
-colnames(Table1) <- c("N", "G", "TL K1a", "TL K1b", "TL CG", "time K1a", "time K1b", "time CG", "best K1a", "best K1b", "best CG")
-```
-
-```{r echo = FALSE}
-library(kableExtra)
-knitr::kable(Table1, 
+knitr::kable(Table41, 
                digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2), 
-               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1") ) %>%
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.1"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r}
+Table44 = cbind(unsolved_kadapt2_a,
+      unsolved_kadapt2_b$unsolved,
+      unsolved_colgen2$unsolved,
+      mean_times_kadapt2_a$time,
+      mean_times_kadapt2_b$time,
+      mean_times_colgen2$time,
+      fastest_by_group2$best_is_kadapt_a,
+      fastest_by_group2$best_is_kadapt_b,
+      fastest_by_group2$best_is_colgen
+    )
+```
+
+```{r echo = FALSE}
+knitr::kable(Table44, 
+               digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.4"
+             ) %>%
       kable_classic() %>%
       add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
 ```
 
 ### Performance profiles
 
-We then build a performance profile for our test bed to better compare the three approaches. We refer to <a href="https://arxiv.org/abs/cs/0102001">Dolan, E., Moré, J. Benchmarking optimization software with performance profiles. Math. Program. 91, 201–213 (2002)</a> for a formal introduction.
-
-We start by computing, for each instance, the best solver computational time.
 ```{r}
-optimal_K1$cpu_best = apply(optimal_K1[,c("cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b")], 1, FUN = min)
-```
-
-Then, for each solver, we divide its computational time by that of the best solver.
-```{r}
-optimal_K1$perf_colgen1 = optimal_K1$cpu_colgen1 / optimal_K1$cpu_best
-optimal_K1$perf_kadapt1_a = optimal_K1$cpu_kadapt1_a / optimal_K1$cpu_best
-optimal_K1$perf_kadapt1_b = optimal_K1$cpu_kadapt1_b / optimal_K1$cpu_best
-```
-
-According to Dolan et al. (2002), instances which could not be solved by an approach should have a (big enough) fixed ratio. We fix it as follows.
-```{r}
-max_perf = max( max(optimal_K1$perf_colgen1), max(optimal_K1$perf_kadapt1_a), max(optimal_K1$perf_kadapt1_b) )
-
-optimal_K1$perf_colgen1[optimal_K1$cpu_colgen1 >= 3600] = max_perf
-optimal_K1$perf_kadapt1_a[optimal_K1$cpu_kadapt1_a >= 3600] = max_perf
-optimal_K1$perf_kadapt1_b[optimal_K1$cpu_kadapt1_b >= 3600] = max_perf
-```
-
-Finally, we introduce the following function which will plot our performance profile based on different subsets of instances.
-```{r}
-plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1.), title = "Performance profile") {
+plot_performance_profile = function(fastest, title = "Performance profile") {
   
-  perf_profile_colgen1 = ecdf(data[,"perf_colgen1"])
-  perf_profile_kadapt1_a = ecdf(data[,"perf_kadapt1_a"])
-  perf_profile_kadapt1_b = ecdf(data[,"perf_kadapt1_b"])
+  perf_colgen = fastest$time_colgen / fastest$best_time
+  perf_kadapt_a = fastest$time_kadapt_a / fastest$best_time
+  perf_kadapt_b = fastest$time_kadapt_b / fastest$best_time
   
-  plot(perf_profile_colgen1, col = "black", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
-  lines(perf_profile_kadapt1_a, col = "black", xlim = xlim, ylim = ylim, lty = "dotted", cex = 0)
-  lines(perf_profile_kadapt1_b, col = "black", xlim = xlim, ylim = ylim, lty = "dashed", cex = 0)
+  max_perf = max( max(perf_colgen), max(perf_kadapt_a), max(perf_kadapt_b) ) + 1
+
+  perf_colgen[fastest$time_colgen >= 3600] = max_perf
+  perf_kadapt_a[fastest$time_kadapt_a >= 3600] = max_perf
+  perf_kadapt_b[fastest$time_kadapt_b >= 3600] = max_perf
   
+  perf_profile_colgen = ecdf(perf_colgen)
+  perf_profile_kadapt_a = ecdf(perf_kadapt_a)
+  perf_profile_kadapt_b = ecdf(perf_kadapt_b)
+  
+  xlim = c(1, 1000)
+  ylim = c(0, 1)
+  
+  plot(perf_profile_colgen, col = "blue", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
+  lines(perf_profile_kadapt_a, col = "green", xlim = xlim, ylim = ylim, lty = "dotted", cex = 0)
+  lines(perf_profile_kadapt_b, col = "red", xlim = xlim, ylim = ylim, lty = "dashed", cex = 0)
+  
+  legend(
+    500, .5, legend = c("ColGen", "KAdapt-a", "KAdapt-b"), col = c("blue", "green", "red"), lty = c("solid", "dotted", "dashed")
+  )
 }
 ```
 
-Note that we restrict our attention to cases in which one approach is up to 2000 times worse than the best approach.
+#### For problem $(\mathcal P)$
 
-```{r}
-xlim = c(1, 2000)
+```{r, fig.show="hold", out.width="100%"}
+plot_performance_profile(fastest1, title = "Over all instances")
+plot_performance_profile(fastest1[fastest1$n_jobs == 25,], title = "Over instances with n_jobs = 25")
+plot_performance_profile(fastest1[fastest1$gamma <= fastest1$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4")
 ```
 
-```{r, figures-side, fig.show="hold", out.width="50%"}
-plot_performance_profile(optimal_K1, title = "Over all instances", xlim = xlim)
-plot_performance_profile(optimal_K1[optimal_K1$n_jobs == 25,], title = "Over 25-jobs instances", xlim = xlim)
-plot_performance_profile(optimal_K1[optimal_K1$gamma <= optimal_K1$n_jobs / 4.,], title = "Over those instances with gamma <= n_jobs / 4", xlim = xlim)
-plot_performance_profile(optimal_K1[optimal_K1$k > 1,], title = "Over those instances with K^* > 1", xlim = xlim)
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r, fig.show="hold", out.width="100%"}
+plot_performance_profile(fastest2, title = "Over all instances")
+plot_performance_profile(fastest2[fastest2$n_jobs == 15,], title = "Over instances with n_jobs = 15")
+plot_performance_profile(fastest2[fastest2$gamma <= fastest2$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4")
 ```
 
 ### Feasible solutions found
 
 ```{r}
-optimal_K1$has_feasible_colgen1 = optimal_K1$gap_colgen1 > 0
-optimal_K1$has_feasible_kadapt1_a = optimal_K1$gap_kadapt1_a > 0
-optimal_K1$has_feasible_kadapt1_b = optimal_K1$gap_kadapt1_b > 0
-```
-
-```{r}
-compute_feasible_found = function(has_feasible_column, time_column) {
-  unsolved = optimal_K1[optimal_K1[time_column] >= 3600,]
-  feasible_found = aggregate(unsolved[has_feasible_column], list(unsolved$gamma), sum)
-  colnames(feasible_found) <- c("gamma", "feasible_found")
-  unsolved = aggregate(unsolved$instance, list(unsolved$gamma), length)
-  colnames(unsolved) = c("gamma", "total")
-  feasible_found$feasible_found = feasible_found$feasible_found / unsolved$total * 100
+compute_feasible_found_by_group = function(data, n_jobs) {
+  
+  data = data[data$time >= 3600 & data$n_jobs == n_jobs,]
+  
+  feasible_found = aggregate(is.finite(data$gap) & data$gap > 1e-4, by = list(data$gamma), sum)
+  colnames(feasible_found) = c("gamma", "feasible_found")
+  
+  total = aggregate(data$instance, by = list(data$gamma), length)
+  colnames(total) = c("gamma", "total")
+  
+  feasible_found$feasible_found = feasible_found$feasible_found / total$total * 100
+  
   return (feasible_found)
+  
 }
+```
 
-feasible_found_colgen1 = compute_feasible_found("has_feasible_colgen1", "cpu_colgen1")
-feasible_found_kadapt1_a = compute_feasible_found("has_feasible_kadapt1_a", "cpu_kadapt1_a")
-feasible_found_kadapt1_b = compute_feasible_found("has_feasible_kadapt1_b", "cpu_kadapt1_b")
+```{r}
+feasible_found_colgen1 = compute_feasible_found_by_group(colgen1, 25)
+feasible_found_kadapt1_a = compute_feasible_found_by_group(kadapt1_a, 25)
+feasible_found_kadapt1_b = compute_feasible_found_by_group(kadapt1_b, 25)
+```
 
-Table2 = cbind(feasible_found_kadapt1_a, feasible_found_kadapt1_b$feasible_found, feasible_found_colgen1$feasible_found)
-colnames(Table2) = c("gamma", "has_feasible_kadapt1_a", "has_feasible_kadapt1_b", "has_feasible_colgen1")
+```{r}
+Table42 = cbind(
+  feasible_found_kadapt1_a,
+  feasible_found_kadapt1_b$feasible_found,
+  feasible_found_colgen1$feasible_found
+)
 ```
 
 ```{r echo = FALSE}
-knitr::kable(Table2)
+knitr::kable(Table42, 
+               digits = c(0, 2, 2, 2), 
+               col.names = c("$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1") ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Feasible solutions found (%)" = 3))
 ```
 
-### The cost of approximating
+### Approximation cost
 
 ```{r}
-approx1 = merge(all1[,c("instance", "gamma", "k", "obj_kadapt1_b", "cpu_kadapt1_b", "obj_colgen1", "cpu_colgen1")], optimal_K1[,c("instance", "gamma", "k")], by = c("instance", "gamma"), all.x = TRUE)
-colnames(approx1) = c("instance", "gamma", "k", "obj_kadapt1_b", "cpu_kadapt1_b", "obj_colgen1", "cpu_colgen1", "k_star")
-approx1$approx_gap = abs( approx1$obj_kadapt1_b - approx1$obj_colgen1 ) / abs(approx1$obj_kadapt1_b) * 100
+compute_approximation_cost = function(colgen, k_adaptability, k_star) {
+  
+  # Merge results from colgen with those obtained by K-adaptability
+  data = merge(colgen, k_adaptability, by = c("instance", "gamma"), all.y = TRUE)
+  data = data[,c("instance", "gamma", "time.x", "time.y", "objective.x", "objective.y", "k.y")]
+  colnames(data) = c("instance", "gamma", "time_colgen", "time_kadapt", "obj_colgen", "obj_kadapt", "k")
+  
+  # Only consider those instances where both methods have converged
+  data = data[data$time_colgen < 3600 & data$time_kadapt < 3600,]
+  
+  # Merge the resulting with the estimates of K^*
+  data = merge(data, k_star, by = c("instance", "gamma"), all.x = TRUE)
+  colnames(data)[7] = "k"
+  colnames(data)[8] = "k_star"
+  
+  # Only consider those rows with K <= K^*
+  data = data[data$k <= data$k_star,]
+  
+  # Compute approximation gap
+  data$approximation_cost = (data$obj_kadapt - data$obj_colgen) / data$obj_colgen * 100
+  
+  # Compute time ratio
+  data$time_ratio = data$time_kadapt / data$time_colgen
+
+  return (data)  
+}
 ```
 
 ```{r}
-approx1$time_ratio = approx1$cpu_kadapt1_b / approx1$cpu_colgen1 * 100
+approximation_costs1a = compute_approximation_cost(colgen1, kadapt1_a, k_star1_a)
+approximation_costs2a = compute_approximation_cost(colgen2, kadapt2_a, k_star2_a)
 ```
 
 ```{r}
-approx1 = approx1[approx1$cpu_colgen1 < 3660 & approx1$cpu_kadapt1_b < 3600 & approx1$ k <= approx1$k_star,]
-Table3 = aggregate(approx1[,c("approx_gap", "time_ratio")], list(approx1$k_star, approx1$k), mean)
+compute_approximation_cost_by_group = function(approximation_cost) {
+  
+  # Compute mean of approximation_cost and time_ratio
+  result = aggregate(approximation_cost[,c("approximation_cost", "time_ratio")], by = list(approximation_cost$k_star, approximation_cost$k), mean)
+  colnames(result)[1:2] = c("k_star", "k")
+  
+  # Count instances in each category
+  total = aggregate(approximation_cost$instance, by = list(approximation_cost$k_star, approximation_cost$k), length)
+  result$total = total[[3]]
+  
+  result = result[order(result$k_star, result$k),]
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
 
-total = aggregate(approx1[,c("instance")], list(approx1$k_star, approx1$k), length)
+```{r}
+Table43 = compute_approximation_cost_by_group(approximation_costs1a)
+Table45 = compute_approximation_cost_by_group(approximation_costs2a)
+```
 
-colnames(Table3) = c("K^*", "K", "Approximation gap", "Time ratio")
-Table3 = Table3[order(Table3$`K^*`, Table3$K),]
-rownames(Table3) = NULL
+#### For problem $({\mathcal P})$
+
+```{r echo = FALSE}
+knitr::kable(Table43, 
+               digits = c(0, 0, 2, 2, 0), 
+               col.names = c("$K^*$", "$K$", "Approximation gap (%)", "Time ratio", "# Instances") ) %>%
+      kable_classic()
+```
+
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r echo = FALSE}
+knitr::kable(Table45, 
+               digits = c(0, 0, 2, 2, 0), 
+               col.names = c("$K^*$", "$K$", "Approximation gap (%)", "Time ratio", "# Instances") ) %>%
+      kable_classic()
+```
+
+### Fixed-order costs analysis
+
+```{r}
+compute_fixed_order_costs = function(t_colgen1, t_colgen2) {
+  
+  result = merge(t_colgen1, t_colgen2, by = c("instance", "gamma"))
+  result = result[,c("instance", "gamma", "n_jobs.x", "objective.x", "objective.y", "time.x", "time.y")]
+  colnames(result)[3:7] = c("n_jobs", "obj_colgen1", "obj_colgen2", "time_colgen1", "time_colgen2")
+  
+  result = result[result$time_colgen1 < 3600 & result$time_colgen2 < 3600,]
+  
+  result$gap = (result$obj_colgen2 - result$obj_colgen1) / result$obj_colgen1 * 100
+  
+  return (result)
+}
+```
+
+```{r}
+fixed_order_costs = compute_fixed_order_costs(colgen1, colgen2)
+```
+
+```{r}
+compute_fixed_order_costs_by_group = function(t_fixed_order_costs) {
+  
+  result = aggregate(t_fixed_order_costs[,c("obj_colgen1", "obj_colgen2", "gap")], by = list(t_fixed_order_costs$n_jobs, t_fixed_order_costs$gamma), mean)
+  colnames(result)[1:2] = c("n_jobs", "gamma")
+  
+  total = aggregate(t_fixed_order_costs$instance, by = list(t_fixed_order_costs$n_jobs, t_fixed_order_costs$gamma), length)
+  result$total = total[[3]]
+  
+  result = result[order(result$n_jobs, result$gamma),]
+  rownames(result) = NULL
+  
+  return (result)
+}
+```
+
+```{r}
+Table46 = compute_fixed_order_costs_by_group(fixed_order_costs)
 ```
 
 ```{r echo = FALSE}
-knitr::kable(Table3, digits = c(0, 0, 2, 2))
+knitr::kable(Table46, 
+               digits = c(0, 0, 2, 2, 2, 0), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "Free (ColGen1)", "Fixed order (ColGen2)", "Gap (%)", "# Instances"),
+               caption = "Table 4.6"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Objective cost" = 2, " " = 2))
 ```
-

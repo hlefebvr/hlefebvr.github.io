@@ -186,3 +186,14 @@ instance_2_25_25__4.txt,2,Optimal,Proved,-5289,133.749,1599
 instance_2_25_25__4.txt,4,Optimal,Proved,-4310,38.4337,169
 instance_2_25_25__5.txt,2,Fail,NotSpecified,-5411,50.1561,911
 instance_2_25_25__6.txt,2,Optimal,Proved,-5434,5.53999,49
+instance_2_25_25__7.txt,2,Optimal,Proved,-5195,144.007,1525
+instance_2_25_25__7.txt,4,Optimal,Proved,-4246,130.298,527
+instance_2_25_25__8.txt,2,Optimal,Proved,-4586,2.56053,51
+instance_2_25_25__8.txt,4,Optimal,Proved,-3871,87.71,477
+instance_2_25_25__9.txt,2,Optimal,Proved,-4862,3.27757,35
+instance_2_25_50__0.txt,2,Optimal,Proved,-8170,0.9596,7
+instance_2_25_50__0.txt,4,Feasible,TimeLimit,-6993,3601.15,1769
+instance_2_25_50__1.txt,2,Optimal,Proved,-9086,307.863,1977
+instance_2_25_50__1.txt,4,Feasible,TimeLimit,-7618,3603.91,789
+instance_2_25_50__2.txt,2,Fail,NotSpecified,-7561,10.4643,135
+instance_2_25_50__2.txt,4,Feasible,TimeLimit,-6347,3600.27,3263

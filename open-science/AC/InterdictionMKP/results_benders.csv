@@ -206,3 +206,8 @@ instance_2_25_50__2.txt,2,Optimal,Proved,-7561,473.686,8655
 instance_2_25_50__2.txt,4,Fail,NotSpecified,-6313,3600,14055
 instance_2_25_50__3.txt,2,Optimal,Proved,-9083,403.689,3661
 instance_2_25_50__3.txt,4,Fail,NotSpecified,-7720,791.667,1963
+instance_2_25_50__4.txt,2,Fail,NotSpecified,-9149,3600,24615
+instance_2_25_50__4.txt,4,Fail,NotSpecified,-7957,3600,2391
+instance_2_25_50__5.txt,2,Optimal,Proved,-9125,2019.62,12525
+instance_2_25_50__5.txt,4,Fail,NotSpecified,-7870,3600.01,4619
+instance_2_25_50__6.txt,2,Fail,NotSpecified,-10630,3600.01,14257

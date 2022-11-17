@@ -1,4 +1,4 @@
-instance,problem,approach,n_jobs,gamma,k,cpu,objective,n_active_col,quality,gap,rule_for_branching
+instance,problem,approach,n_jobs,gamma,k,time,objective,n_active_col,quality,gap,rule_for_branching
 instance_n10_r30_d20_4.txt,2,colgen-ext,10,5,0,2.030,231.000,1,Optimal,0.00000,default
 instance_n5_r30_d30_0.txt,2,colgen-ext,5,2,0,1.112,91.208,3,Optimal,0.00000,default
 instance_n10_r20_d20_1.txt,2,colgen-ext,10,1,0,3.481,137.000,1,Optimal,0.00000,default
