@@ -78,13 +78,17 @@ where $(\bullet)^*$ and $t(\bullet)$ respectively refer to the optimum objective
 In search for $K^*$, we start by merging all results so as to obtain a table in which each row refers to a single instance alongside to its results obtained by ColGen1, KAdapt1-a and KAdapt1-b. We do it by first merging the two $K$-adaptability approaches together, then merging with ColGen1. 
 
 ```{r}
-kadapt1 = merge(kadapt1_a, kadapt1_b, by = c("instance", "n_jobs", "gamma", "k"))
-kadapt1 = kadapt1[,c("instance", "n_jobs", "gamma", "k", "objective.x", "objective.y", "cpu.x", "cpu.y")]
-colnames(kadapt1) <- c("instance", "n_jobs", "gamma", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_kadapt1_a", "cpu_kadapt1_b")
+kadapt1 = merge(kadapt1_a, kadapt1_b, by = c("instance", "n_jobs", "gamma", "k"), all.y = TRUE)
+kadapt1 = kadapt1[,c("instance", "n_jobs", "gamma", "k", "objective.x", "objective.y", "cpu.x", "cpu.y", "gap.x", "gap.y")]
+colnames(kadapt1) <- c("instance", "n_jobs", "gamma", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap_kadapt1_a", "gap_kadapt1_b")
+
+kadapt1[is.na(kadapt1$cpu_kadapt1_a),]$cpu_kadapt1_a = 3600
+kadapt1[is.na(kadapt1$obj_kadapt1_a),]$obj_kadapt1_a = Inf
+kadapt1[is.na(kadapt1$gap_kadapt1_a),]$gap_kadapt1_a = Inf
 
 all1 = merge(colgen1, kadapt1, by = c("instance", "n_jobs", "gamma"), all = TRUE)
-all1 = all1[,c("instance", "n_jobs", "gamma", "objective", "k.y", "obj_kadapt1_a", "obj_kadapt1_b", "cpu", "cpu_kadapt1_a", "cpu_kadapt1_b")]
-colnames(all1) <- c("instance", "n_jobs", "gamma", "obj_colgen1", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b")
+all1 = all1[,c("instance", "n_jobs", "gamma", "objective", "k.y", "obj_kadapt1_a", "obj_kadapt1_b", "cpu", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap", "gap_kadapt1_a", "gap_kadapt1_b")]
+colnames(all1) <- c("instance", "n_jobs", "gamma", "obj_colgen1", "k", "obj_kadapt1_a", "obj_kadapt1_b", "cpu_colgen1", "cpu_kadapt1_a", "cpu_kadapt1_b", "gap_colgen1", "gap_kadapt1_a", "gap_kadapt1_b")
 ```
 
 To avoid numerical issues, we introduce here the following comparing function which evaluates to `TRUE` if and only if its two arguments are equal with a given tolerance `tol = 1e-4`.
@@ -98,14 +102,12 @@ equals <- function (a, b, tol = 1e-4) {
 We are now ready to compute $K^*$. First, we restrict our attention to the rows for which:
 
 - one of the two $K$-adaptability approaches coincide with the exact approach ColGen1 ;
-- one of the two $K$-adaptability approaches times out.
+- both $K$-adaptability approaches time out.
 
 ```{r}
 optimal_K1 = all1[
-      equals(all1$obj_colgen1, all1$obj_kadapt1_a)
-    | equals(all1$obj_colgen1, all1$obj_kadapt1_b)
-    | all1$cpu_kadapt1_a >= 3600 
-    | all1$cpu_kadapt1_b >= 3600
+      ( equals(all1$obj_colgen1, all1$obj_kadapt1_a) | equals(all1$obj_colgen1, all1$obj_kadapt1_b) )
+      | (all1$cpu_kadapt1_a >= 3600  & all1$cpu_kadapt1_b >= 3600)
   ,]
 ```
 
@@ -115,11 +117,6 @@ Then, we estimate $K^*$ by $\widehat{K}^*$ by looking, for each instance, at the
 optimal_K1 = optimal_K1[order(optimal_K1$instance, optimal_K1$gamma, optimal_K1$k),]
 optimal_K1 = optimal_K1[!duplicated(( optimal_K1[,c("instance", "gamma")] )),]
 ```
-
-Clearly, the $K$-adaptability approach is advantaged by this process, at least in two ways:
-
-- We will compare the $\widehat{K}^*$-adaptability for each instance to our exact approach while, in practice, knowing the value of $K^*$ is not a realistic assumption ;
-- We stop searching for $K^*$ as soon as one of the two approaches reaches the time limit, i.e., we clearly compare our exact method to a underestimation of $K^*$.
 
 ### Computational times
 
@@ -212,7 +209,12 @@ colnames(Table1) <- c("N", "G", "TL K1a", "TL K1b", "TL CG", "time K1a", "time K
 ```
 
 ```{r echo = FALSE}
-knitr::kable(Table1, digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2))
+library(kableExtra)
+knitr::kable(Table1, 
+               digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1") ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
 ```
 
 ### Performance profiles
@@ -261,25 +263,68 @@ Note that we restrict our attention to cases in which one approach is up to 2000
 xlim = c(1, 2000)
 ```
 
-#### Over all instances
-
-```{r}
+```{r, figures-side, fig.show="hold", out.width="50%"}
 plot_performance_profile(optimal_K1, title = "Over all instances", xlim = xlim)
-```
-
-#### Over the 25-jobs instances
-
-```{r}
 plot_performance_profile(optimal_K1[optimal_K1$n_jobs == 25,], title = "Over 25-jobs instances", xlim = xlim)
+plot_performance_profile(optimal_K1[optimal_K1$gamma <= optimal_K1$n_jobs / 4.,], title = "Over those instances with gamma <= n_jobs / 4", xlim = xlim)
+plot_performance_profile(optimal_K1[optimal_K1$k > 1,], title = "Over those instances with K^* > 1", xlim = xlim)
 ```
 
-### Over those instances with $\Gamma \le |\mathcal J| / 4$
+### Feasible solutions found
 
 ```{r}
-plot_performance_profile(optimal_K1[optimal_K1$gamma <= optimal_K1$n_jobs / 4.,], title = "Over those instances with gamma <= n_jobs / 4", xlim = xlim)
+optimal_K1$has_feasible_colgen1 = optimal_K1$gap_colgen1 > 0
+optimal_K1$has_feasible_kadapt1_a = optimal_K1$gap_kadapt1_a > 0
+optimal_K1$has_feasible_kadapt1_b = optimal_K1$gap_kadapt1_b > 0
 ```
 
-## Feasible solutions found
+```{r}
+compute_feasible_found = function(has_feasible_column, time_column) {
+  unsolved = optimal_K1[optimal_K1[time_column] >= 3600,]
+  feasible_found = aggregate(unsolved[has_feasible_column], list(unsolved$gamma), sum)
+  colnames(feasible_found) <- c("gamma", "feasible_found")
+  unsolved = aggregate(unsolved$instance, list(unsolved$gamma), length)
+  colnames(unsolved) = c("gamma", "total")
+  feasible_found$feasible_found = feasible_found$feasible_found / unsolved$total * 100
+  return (feasible_found)
+}
 
-## The cost of approximating
+feasible_found_colgen1 = compute_feasible_found("has_feasible_colgen1", "cpu_colgen1")
+feasible_found_kadapt1_a = compute_feasible_found("has_feasible_kadapt1_a", "cpu_kadapt1_a")
+feasible_found_kadapt1_b = compute_feasible_found("has_feasible_kadapt1_b", "cpu_kadapt1_b")
+
+Table2 = cbind(feasible_found_kadapt1_a, feasible_found_kadapt1_b$feasible_found, feasible_found_colgen1$feasible_found)
+colnames(Table2) = c("gamma", "has_feasible_kadapt1_a", "has_feasible_kadapt1_b", "has_feasible_colgen1")
+```
+
+```{r echo = FALSE}
+knitr::kable(Table2)
+```
+
+### The cost of approximating
+
+```{r}
+approx1 = merge(all1[,c("instance", "gamma", "k", "obj_kadapt1_b", "cpu_kadapt1_b", "obj_colgen1", "cpu_colgen1")], optimal_K1[,c("instance", "gamma", "k")], by = c("instance", "gamma"), all.x = TRUE)
+colnames(approx1) = c("instance", "gamma", "k", "obj_kadapt1_b", "cpu_kadapt1_b", "obj_colgen1", "cpu_colgen1", "k_star")
+approx1$approx_gap = abs( approx1$obj_kadapt1_b - approx1$obj_colgen1 ) / abs(approx1$obj_kadapt1_b) * 100
+```
+
+```{r}
+approx1$time_ratio = approx1$cpu_kadapt1_b / approx1$cpu_colgen1 * 100
+```
+
+```{r}
+approx1 = approx1[approx1$cpu_colgen1 < 3660 & approx1$cpu_kadapt1_b < 3600 & approx1$ k <= approx1$k_star,]
+Table3 = aggregate(approx1[,c("approx_gap", "time_ratio")], list(approx1$k_star, approx1$k), mean)
+
+total = aggregate(approx1[,c("instance")], list(approx1$k_star, approx1$k), length)
+
+colnames(Table3) = c("K^*", "K", "Approximation gap", "Time ratio")
+Table3 = Table3[order(Table3$`K^*`, Table3$K),]
+rownames(Table3) = NULL
+```
+
+```{r echo = FALSE}
+knitr::kable(Table3, digits = c(0, 0, 2, 2))
+```
 

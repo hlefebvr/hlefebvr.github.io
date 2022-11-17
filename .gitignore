@@ -4,3 +4,5 @@ uml
 *.render.html
 .Rproj.user
 *.render_files
+.RData
+.Rhistory
