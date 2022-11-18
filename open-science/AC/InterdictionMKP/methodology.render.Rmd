@@ -28,252 +28,487 @@ In this document we evaluate the computational properties of the approach from A
 
 ```{r echo = FALSE}
 library(rmarkdown)
+library(kableExtra)
 ```
 
-We start by reading the results from the Benders approach in CSV form.
-```{r}
-benders = read.csv("./results_benders.csv", header = FALSE)
-colnames(benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
-```
+### CSV structures
 
-The obtained table is as follows:
+#### Benders approaches
+
+The results obtained by the Benders-type approaches are given in CSV form with the following columns.
 
 - *instance*: the instance filename ;
+- *gamma*: the value of $\Gamma$ ; 
 - *status*: the status of the solution (Optimal, Feasible or Infeasible) ;
 - *reason*: the reason for the solution status (Proved or TimeLimit) ;
 - *objective*: the objective value reported ;
 - *time*: the computation time spent solving the problem ;
 - *nodes*: the overall number of created nodes.
 
+For example, `results_benders.csv` reads.
+
 ```{r echo = FALSE}
-paged_table(benders)
+raw_benders = read.csv("./results_benders.csv", header = FALSE)
+colnames(raw_benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
+paged_table(raw_benders)
 ```
 
-We also read results obtained by the Benders approach with IIS branching.
-```{r}
-benders_IIS = read.csv("./results_benders_IIS.csv", header = FALSE)
-colnames(benders_IIS) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
-```
+#### Column-and-constraint generation (CCG)
 
-Then, we read the results from the "column and constraint generation" approach.
-
-```{r}
-ccg = read.csv("./results_ccg.csv", header = FALSE)
-colnames(ccg) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
-```
-
-Here, the columns are described as:
+The results obtained by the column-and-constraint generation approach are given in CSV form with the following columns.
 
 - *instance*: the instance filename ; 
+- *gamma*: the value of $\Gamma$ ; 
 - *iter*: the number of iterations ;
 - *LB*: the reported lower bound ;
 - *UB*: the reported upper bound ; 
 - *time*: the computational time spent solving the instance ;
 - *inner_iter_1* and *inner_iter_2*: the number of inner iterations of the algorithm.
 
+For example, `results_ccg.csv`` reads.
+
 ```{r echo = FALSE}
-paged_table(ccg)
+raw_ccg = read.csv("./results_ccg.csv", header = FALSE)
+colnames(raw_ccg) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+paged_table(raw_ccg)
 ```
 
-## Merging
+### Unifying format
 
-We merge the results by instance filename so as to obtain one table with, for each instance, a row containing the results from all approaches. We merge as follows.
+To make our study easier, we start by unifying the format of each dataset. To do so, we transform our data to obtain it in the following format:
 
-```{r}
-results = merge(benders, ccg, by = c("instance", "gamma"))
-results = results[,c("instance", "gamma", "objective", "time.x", "UB", "time.y")]
-colnames(results) <- c("instance", "gamma", "obj_benders", "time_benders", "obj_ccg", "time_ccg")
-results = merge(results, benders_IIS[,c("instance", "gamma", "objective", "time")], by = c("instance", "gamma"))
-colnames(results) <- c("instance", "gamma", "obj_benders", "time_benders", "obj_ccg", "time_ccg", "obj_benders_IIS", "time_benders_IIS")
-```
+- *instance*: the instance filename ;
+- *n_knapsacks*: the number of knapsacks ;
+- *n_items*: the number of items ;
+- *alpha*: the value of $\alpha$ ;
+- *gamma*: the value of $\Gamma$ ; 
+- *objective*: the best objective value found (feasible) ;
+- *time*: the computation time spent solving the instance.
 
-Then, we extract from the instance filename instance properties such as the number of knapsacks, the number of items and the coefficient $\alpha$ used to generate the instance.
+We thus introduce two functions `read_csv_benders` and `read_csv_ccg` which first reads an input file for the corresponding approach and returns the associated formatted table.
+
+Before that, we first introduce a helper function `parse_instance_properties` which takes a list of instances as input and returns a table containing, for each instance, the number of knapsacks, the number of items and the value for alpha extracted from the instance file name.
 
 ```{r}
 library(stringr)
-parsed = t(apply(as.matrix(results$instance), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
-results$n_knapsacks = as.double(parsed[,1])
-results$n_items = as.double(parsed[,2])
-results$alpha = as.double(parsed[,3]) / 100
+
+parse_instance_properties = function (instances) {
+  
+  parsed = t(apply(as.matrix(instances), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
+  
+  result = data.frame(instances, as.double(parsed[,1]), as.double(parsed[,2]), as.double(parsed[,3]) / 100)
+  colnames(result) = c("instance", "n_knapsacks", "n_items", "alpha")
+  
+  return (result)
+  
+}
 ```
 
-Since the time limit was set to 3600 seconds, we replace any time value greater than 3600 by exactly 3600 to avoid numerical problems.
+#### read_csv_benders
+
+The `read_csv_benders`` function is given as follows.
 
 ```{r}
-if (sum(results$time_ccg > 3600) > 0) {
-  results[results$time_ccg > 3600,]$time_ccg <- 3600
-}
-
-if (sum(results$time_benders > 3600) > 0) {
-  results[results$time_benders > 3600,]$time_benders <- 3600
-}
-
-if (sum(results$time_benders_IIS > 3600) > 0) {
-  results[results$time_benders_IIS > 3600,]$time_benders_IIS <- 3600
+read_csv_benders = function(filename) {
+  
+  # Read raw results
+  raw_results = read.csv(filename, header = FALSE)
+  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
+  
+  # Extract properties from instance file names
+  properties = parse_instance_properties(raw_results$instance)
+  
+  # Build result data frame
+  result = data.frame(
+      properties$instance, 
+      properties$n_knapsacks,
+      properties$n_items,
+      properties$alpha,
+      raw_results$gamma,
+      raw_results$objective,
+      raw_results$time
+    )
+  colnames(result) = c("instance", "n_knapsacks", "n_items", "alpha", "gamma", "objective", "time")
+  
+  return (result)
+  
 }
 ```
 
-Our final table reads.
+We can then read CSV files comming from the benders approach.
+
+```{r}
+benders = read_csv_benders("./results_benders.csv")
+benders_IIS = read_csv_benders("./results_benders_IIS.csv")
+```
+
+#### read_csv_ccg
+
+The `read_csv_ccg`` function is given as follows.
+
+```{r}
+read_csv_ccg = function (filename) {
+  
+  # Read raw results
+  raw_results = read.csv("./results_ccg.csv", header = FALSE)
+  colnames(raw_results) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+  
+  # Extract properties from instance file names
+  properties = parse_instance_properties(raw_results$instance)
+  
+  # Build result data frame
+  result = data.frame(
+      properties$instance, 
+      properties$n_knapsacks,
+      properties$n_items,
+      properties$alpha,
+      raw_results$gamma,
+      raw_results$UB,
+      raw_results$time
+    )
+  colnames(result) = c("instance", "n_knapsacks", "n_items", "alpha", "gamma", "objective", "time")
+  
+  return (result)
+  
+}
+```
+
+Then, we read the results obtained by the CCG approach as follows.
+
+```{r}
+ccg = read_csv_ccg("./results_ccg.csv")
+```
+
+## Analysis
+
+### Computational times
+
+Our first analysis regards computational times within different groups. We will group data by `group_by` columns. Note that `str_group_by` contains a "stringified" version of the columns names for clean outputs.
+
+```{r}
+group_by = c("gamma", "n_knapsacks", "n_items", "alpha")
+str_group_by = c("$\\Gamma$", "$K$", "$N$", "$\\alpha$")
+
+#group_by = c("gamma", "n_knapsacks", "n_items")
+#str_group_by = c("$\\Gamma$", "$K$", "$N$")
+```
+
+#### Computing summary times by group
+
+We start by calling `summary` on each group. This will compute, for each group, the minimum, 1st quantile, median, mean, 3rd quantile and maximum execution time. This is done in the following function which takes as parameter the formatted table with all results.
+
+```{r}
+compute_summary_by_group = function(data) {
+  
+  # We summarize only the solved instances
+  data = data[data$time < 3600,]
+  
+  # We aggregate by `group_by` using `summary`
+  result = aggregate(data$time, by = data[,group_by], summary)
+  
+  # Here, we call data.frame recursively to flatten `result` (summary does create a nested structure)
+  result = do.call(data.frame, result)
+  
+  # Then, we set column names
+  colnames(result) = c(group_by, "min", "1st_quantile", "median", "mean", "3rd_quantile", "max")
+  
+  return (result)
+}
+```
+
+We then call this function on each approach.
+
+```{r}
+summary_benders = compute_summary_by_group(benders)
+summary_benders_IIS = compute_summary_by_group(benders_IIS)
+summary_ccg = compute_summary_by_group(ccg)
+```
+
+#### Computing number of unsolved instances by group
+
+We then count the number of instances which could not be solved to optimality within each group. This is done in the following function.
+
+```{r}
+compute_unsolved_by_group = function(data) {
+
+  # Aggregate groups using `sum` over the filter returning 1 iff the time limit is reached
+  result = aggregate(data$time >= 3600, by = data[,group_by], sum)
+  
+  # Set column and row names
+  colnames(result) = c(group_by, "unsolved")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Again, we call this function on each approach.
+
+```{r}
+unsolved_benders = compute_unsolved_by_group(benders)
+unsolved_benders_IIS = compute_unsolved_by_group(benders_IIS)
+unsolved_ccg = compute_unsolved_by_group(ccg)
+```
+
+#### Computing number of instances by group
+
+Finally, we also count the number of instances which was tried by each approach. (Note that when experiments are done, they should all be equal).
+
+```{r}
+compute_instances_by_group = function(data) {
+  
+  # Call length on each group to count the number of instances
+  result = aggregate(data$instance, by = data[,group_by], length)
+  
+  # Set row and column names
+  colnames(result) = c(group_by, "total")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Let's call it on each approach.
+
+```{r}
+total_benders = compute_instances_by_group(benders)
+total_benders_IIS = compute_instances_by_group(benders_IIS)
+total_ccg = compute_instances_by_group(ccg)
+```
+
+#### Final result
+
+We are now ready to build our summary table. In what follows, we introduce a helper function to add the useful columns of a by-group result (i.e., `total_<APPROACH>`, `unsolved_<APPROACH>` or `summary_<APPROACH>`) to the main table, called `Table`.
+
+```{r}
+# Helper function
+add_columns = function(table, data, suffix) {
+  result = merge(table, data, by = group_by, all = TRUE, suffixes = c("", paste(".", suffix, sep = "")))
+  return (result)
+}
+
+# We list the useful columns of the by-group results
+column_names = c("total", "unsolved", "min", "1st_quantile", "median", "mean", "3rd_quantile", "max")
+
+# We create an empty data frame with column names. This is used to
+# (1) create the placeholder for the group identifiers
+# (2) force R to rename each added column by appending a suffix to it
+Table = data.frame(matrix(ncol = length(group_by) + length(column_names), nrow = 0))
+colnames(Table) = c(group_by, column_names)
+
+# We add by-group totals
+Table = add_columns(Table, total_benders, "benders")
+Table = add_columns(Table, total_benders_IIS, "iis")
+Table = add_columns(Table, total_ccg, "ccg")
+
+# We add by-group unsolveds
+Table = add_columns(Table, unsolved_benders, "benders")
+Table = add_columns(Table, unsolved_benders_IIS, "iis")
+Table = add_columns(Table, unsolved_ccg, "ccg")
+
+# We add by-group summaries
+Table = add_columns(Table, summary_benders, "benders")
+Table = add_columns(Table, summary_benders_IIS, "iis")
+Table = add_columns(Table, summary_ccg, "ccg")
+
+# Finally, we can remove the "fake" columns we introduced to foce R renaming new columns
+Table = Table[,!names(Table) %in% column_names]
+```
+
+The resulting table therefore contains a merge of all by-group data and is drawn hereafter.
 
 ```{r echo = FALSE}
-paged_table(results)
+paged_table(Table)
 ```
 
-## Checking
-
-In this section, we also check that the two solution approaches report the same global optimum when they both terminate before the time limit is reached.
+To better summarize our data, we make a new table out of this table by selecting interesting columns. This is done as follows.
 
 ```{r}
-results[abs(results$obj_benders - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
+Table1 = Table[,c(
+  group_by,
+  "total.benders",
+  "total.iis",
+  "total.ccg",
+  "unsolved.benders",
+  "unsolved.iis",
+  "unsolved.ccg",
+  "mean.benders",
+  "mean.iis",
+  "mean.ccg"
+  )]
 ```
-
-```{r}
-results[abs(results$obj_benders_IIS - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders_IIS < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
-```
-
-## Number of instances in each category
-
-```{r}
-attemps = aggregate(results[,c("instance")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), length)
-colnames(attemps) <- c("gamma", "n_knapsacks", "n_items", "alpha", "total")
-attemps = attemps[order(attemps$gamma, attemps$n_knapsacks, attemps$n_items, attemps$alpha),]
-```
-
-## Unsolved instances
-
-
-```{r}
-results$unsolved_benders = results$time_benders >= 3600
-results$unsolved_ccg = results$time_ccg >= 3600
-results$unsolved_benders_IIS = results$time_benders_IIS >= 3600
-```
-
-We then aggregate these columns by number of jobs and value for $\Gamma$.
-```{r}
-unsolved = aggregate(results[,c("unsolved_benders", "unsolved_ccg", "unsolved_benders_IIS")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), sum)
-colnames(unsolved) <- c("gamma", "n_knapsacks", "n_items", "alpha", "unsolved_benders", "unsolved_ccg", "unsolved_benders_IIS")
-unsolved = unsolved[order(unsolved$gamma, unsolved$n_knapsacks, unsolved$n_items, unsolved$alpha),]
-```
-
-## Computational time
-
-In this section, we compute the average, median and quantiles of computation times spent by each method to solve our test bed. The computation is done over the set of instances which was solved to optimality within the given time limit by the considered approach.
-
-### Mean and quantiles
-
-```{r}
-compute_mean_time <- function(column_with_time) {
-  # We first consider only solved instances
-  only_solved_instances = results[results[,column_with_time] < 3600,]
-  
-  # We then aggregate with summary
-  cpu_times = aggregate(only_solved_instances[,column_with_time], list(only_solved_instances$gamma, only_solved_instances$n_knapsacks, only_solved_instances$n_items, only_solved_instances$alpha), summary)
-  
-  # Rename columns
-  colnames(cpu_times) <- c("gamma", "n_knapsacks", "n_items", "alpha", "time")
-  
-  # Sort result by gamma, nb. of knapsacks, nb. of items and alpha
-  cpu_times = cpu_times[order(cpu_times$gamma, cpu_times$n_knapsacks, cpu_times$n_items, cpu_times$alpha),]
-  
-  # Here, summary creates a nested data.frame, we unnest it
-  cpu_times <- do.call(data.frame, cpu_times)
-  
-  # Remove rownames
-  rownames(cpu_times) <- NULL
-  
-  return (cpu_times)
-}
-
-summary_time_benders = compute_mean_time("time_benders")
-summary_time_ccg = compute_mean_time("time_ccg")
-summary_time_benders_IIS = compute_mean_time("time_benders_IIS")
-```
-
-## Results
-
-We now print out the obtained results as follows.
 
 ```{r echo = FALSE}
-library(kableExtra)
-```
-
-```{r}
-print_summary_table <- function(time_column) {
-  
-  # Making table
-  Table1 = cbind(attemps, unsolved[,c("unsolved_benders", "unsolved_benders_IIS", "unsolved_ccg")], summary_time_benders[,time_column], summary_time_benders_IIS[,time_column], summary_time_ccg[,time_column])
-  colnames(Table1) <- c("Gamma", "K", "N", "alpha", "Total", "unsolved_benders", "unsolved_benders_IIS", "unsolved_ccg", "time_benders", "time_benders_IIS", "time_CCG")  
-  rownames(Table1) <- NULL
-
-  # Printing table
-  knitr::kable(Table1, 
-               digits = c(0,0,0,2,0,0,0,0,2,2,2), 
-               col.names = c("$\\Gamma$", "$K$", "$N$", "$\\alpha$", "Total", "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG"), 
-               caption = time_column) %>%
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 0, 0, 2, 2, 2)
+knitr::kable(Table1,
+             digits = digits,
+             col.names = c(str_group_by, "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG")
+             ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = 5, "Unsolved" = 3, "Time" = 3))
+      add_header_above(c(" " = length(group_by), "Total" = 3, "Unsolved" = 3, "Time" = 3))
+```
+
+### Performance profiles
+
+In this section, we plot performance profiles for the different approaches. 
+
+#### Computations
+
+We start by merging every approach results together so as to have one table in which each row, referring to a given instance, gathers all results from every approaches. We do this by introducing a helper function called `add_approach`. See rather.
+
+```{r}
+# Helper function
+add_approach = function(table, approach, suffix) {
   
+  # Merge results by instance name and value for gamma
+  result = merge(approach[,c("instance", "gamma", "time")], table, by = c("instance", "gamma"))
+  
+  # Here, we rename column "time" as "time.<SUFFIX>"
+  colnames(result)[3] = paste("time.", suffix, sep = "")
+  rownames(result) = NULL
+  
+  return (result)
 }
 
-print_summary_table("time.Mean")
-print_summary_table("time.1st.Qu.")
-print_summary_table("time.Median")
-print_summary_table("time.3rd.Qu.")
+# We first create an initial table with a given approach (here, ccg)
+all_approaches = data.frame(
+  "instance" = ccg$instance, 
+  "gamma" = ccg$gamma,
+  "time.ccg" = ccg$time)
+
+# We then add other approaches
+all_approaches = add_approach(all_approaches, benders_IIS, suffix = "iis")
+all_approaches = add_approach(all_approaches, benders, suffix = "benders")
 ```
 
-## Performance profile
-
-We then build a performance profile for our test bed to better compare the two approaches. We refer to <a href="https://arxiv.org/abs/cs/0102001">Dolan, E., Moré, J. Benchmarking optimization software with performance profiles. Math. Program. 91, 201–213 (2002)</a> for a formal introduction.
-
-We start by computing, for each instance, the best solver computational time.
+For each instance, we compute the best time among all approaches.
 
 ```{r}
-results$time_best = apply(results[,c("time_benders", "time_ccg", "time_benders_IIS")], 1, FUN = min)
+# Compute row-wise minimums
+all_approaches$time.best = apply(all_approaches[,-c(1:2)], 1, FUN = min)
 ```
 
-Then, for each solver, we divide its computational time by that of the best solver.
+Then, we compute the performance ratios of each approach, this is defined as
+$$
+  \tau_i = \frac{ t(approach_i) }{ t(best\_approach_i) }
+$$
+where $i$ is an index for instances with its value for $\Gamma$.
+
+To make our code clearer, we first introduce some variables.
 
 ```{r}
-results$perf_benders = results$time_benders / results$time_best
-results$perf_ccg = results$time_ccg / results$time_best
-results$perf_benders_IIS = results$time_benders_IIS / results$time_best
+approach_columns = c(3:(ncol(all_approaches)-1))
+approach_names = colnames(all_approaches[,approach_columns])
+n_approaches = length(approach_names)
 ```
 
-According to Dolan et al. (2002), instances which could not be solved by an approach should have a (big enough) fixed ratio. We fix it as follows.
+These variables contain respectively the indices for columns containing the approaches execution times, the approaches given names and the number of approaches considered.
+
+We can now compute performance ratios as follows.
 
 ```{r}
-max_perf = max( max(results$perf_benders), max(results$perf_ccg), max(results$perf_benders_IIS) ) + 1
+# Compute performance ratios
+performance_ratios = all_approaches[,approach_columns] / all_approaches$time.best
 
-results$perf_benders[results$time_benders >= 3600] = max_perf
-results$perf_ccg[results$time_ccg >= 3600] = max_perf
-results$perf_benders_IIS[results$time_benders_IIS >= 3600] = max_perf
+# Rename columns with ratio.time.<APPROACH>
+colnames(performance_ratios) = paste0("ratio.", approach_names)
+
+# Bind the performance ratios to the main result
+all_approaches = cbind(all_approaches, performance_ratios)
 ```
 
-Finally, we are ready to plot our performance profile as the ECDF of performance ratios. Note that we restrict our attention to cases in which one approach is up to 100 times worse than the best approach.
+When an approach times out, its performance ratio should be the maximum performance ratio of all. We do this in the following.
 
-```{r, figures-side, fig.show="hold", out.width="50%"}
-plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1.), title = "Performance profile") {
+```{r}
+# Compute the worst performance ratio
+worst_performance_ratio = max(performance_ratios) + 1
+
+# For each approach
+for (approach in approach_names) {
+  # Set the ratio of unsolved instances to the worst
+  all_approaches[all_approaches[,approach] >= 3600, paste0("ratio.", approach)] = worst_performance_ratio
+}
+```
+
+Finally, we end by adding parsed instance properties to our table. This will allow us to plot performance profiles according to different criteria.
+
+```{r}
+all_approaches = data.frame(
+  parse_instance_properties(all_approaches$instance),
+  gamma = all_approaches$gamma,
+  all_approaches[,c(3:(ncol(all_approaches)))]
+)
+```
+
+The resulting table is drawn here.
+
+```{r echo = FALSE}
+paged_table(all_approaches)
+```
+
+### Final result
+
+All the data has been prepared to be able to plot the performance profile of each instances. Note that performance profiles are the ECDF of ratios $\{ \tau_i \}$ for each approach.
+We introduce function `plot_performance_profile` which plots the performance profile over a restricted dataset.
+
+```{r}
+plot_performance_profile = function(data, xlim = c(1, 500), color = c("blue", "green", "red", "black"), main = "Performance profile") {
   
-  perf_profile_benders = ecdf(data[,"perf_benders"])
-  perf_profile_ccg = ecdf(data[,"perf_ccg"])
-  perf_profile_benders_IIS = ecdf(data[,"perf_benders_IIS"])
+  # We first select the ratio columns (note that this uses the "global variable" n_approaches)
+  ratios = data[, c( ( ncol(data) - n_approaches + 1 ) : ncol(data)  ) ]
   
-  plot(perf_profile_benders, col = "blue", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
-  lines(perf_profile_benders_IIS, col = "green", xlim = xlim, ylim = ylim, lty = "solid", cex = 0)
-  lines(perf_profile_ccg, col = "red", xlim = xlim, ylim = ylim, lty = "solid", cex = 0)
+  # We create a two-column table where each line is [ ratio, group ] with:
+  # - ratio being the ratio for a given instance
+  # - group being the approach to which the ratio "belongs"
+  ratios_by_approach = data.frame(
+                          ratio = unlist(ratios),
+                          group = gl( n_approaches, nrow(ratios), labels = approach_names )
+                        )
   
+  # We then compute the ECDF for each approach by calling aggregate with ecdf
+  performance_profiles = aggregate(ratios_by_approach$ratio, by = list(ratios_by_approach$group), ecdf)
+  colnames(performance_profiles) = c("approach", "performance_profile")
+  
+  # For each approach, we plot the result
+  for (index in 1:n_approaches) {
+    
+    # If this is the first plot, we need to call "plot", otherwise, we call "lines"
+    plot_function = lines
+    if (index == 1) {
+      plot_function = plot
+    }
+    
+    # We retrieve the ECDF function
+    ecdf_function = performance_profiles[index,]$performance_profile[[1]] 
+    
+    # Actually plot the function
+    plot_function( ecdf_function, xlim = xlim, ylim = c(0, 1), lty = "solid", cex = 0, col = color[index], main = "", xlab = "", ylab = "" )
+    
+  }
+  
+  # Set the plot title
+  title(main = main,
+        xlab = "Performance ratio",
+        ylab = "ECDF")
+  
+  # Set the plot legend
   legend(
-    60, .5, legend = c("Benders", "Benders IIS", "CCG"), col = c("blue", "green", "red"), lty = c("solid", "solid", "solid")
+    xlim[2] / 2,
+    .5,
+    legend = approach_names,
+    lty = "solid",
+    col = color
   )
   
 }
+```
 
-xlim = c(1, 100)
+Now, we can use this function to plot differnet performance profiles.
 
-plot_performance_profile(results, title = "Over all instances", xlim = xlim)
-plot_performance_profile(results[results$n_items == 10,], title = "Over 10-items instances", xlim = xlim)
-plot_performance_profile(results[results$n_items == 15,], title = "Over 15-items instances", xlim = xlim)
-plot_performance_profile(results[results$n_items == 20,], title = "Over 20-items instances", xlim = xlim)
-plot_performance_profile(results[results$gamma == 2,], title = "Over those instances with Gamma = 2", xlim = xlim)
-plot_performance_profile(results[results$gamma == 4,], title = "Over those instances with Gamma = 4", xlim = xlim)
+```{r, figures-side, fig.show="hold", out.width="100%"}
+plot_performance_profile(all_approaches, main = "All instances")
+plot_performance_profile(all_approaches[all_approaches$gamma == 2,], main = "Gamma = 2")
+plot_performance_profile(all_approaches[all_approaches$gamma == 4,], main = "Gamma = 4")
 ```

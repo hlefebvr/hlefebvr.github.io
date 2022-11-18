@@ -1,0 +1,201 @@
+
+## Merging
+
+We merge the results by instance filename so as to obtain one table with, for each instance, a row containing the results from all approaches. We merge as follows.
+
+```{r}
+results = merge(benders, ccg, by = c("instance", "gamma"))
+results = results[,c("instance", "gamma", "objective", "time.x", "UB", "time.y")]
+colnames(results) <- c("instance", "gamma", "obj_benders", "time_benders", "obj_ccg", "time_ccg")
+results = merge(results, benders_IIS[,c("instance", "gamma", "objective", "time")], by = c("instance", "gamma"))
+colnames(results) <- c("instance", "gamma", "obj_benders", "time_benders", "obj_ccg", "time_ccg", "obj_benders_IIS", "time_benders_IIS")
+```
+
+Then, we extract from the instance filename instance properties such as the number of knapsacks, the number of items and the coefficient $\alpha$ used to generate the instance.
+
+```{r}
+library(stringr)
+parsed = t(apply(as.matrix(results$instance), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
+results$n_knapsacks = as.double(parsed[,1])
+results$n_items = as.double(parsed[,2])
+results$alpha = as.double(parsed[,3]) / 100
+```
+
+Since the time limit was set to 3600 seconds, we replace any time value greater than 3600 by exactly 3600 to avoid numerical problems.
+
+```{r}
+if (sum(results$time_ccg > 3600) > 0) {
+  results[results$time_ccg > 3600,]$time_ccg <- 3600
+}
+
+if (sum(results$time_benders > 3600) > 0) {
+  results[results$time_benders > 3600,]$time_benders <- 3600
+}
+
+if (sum(results$time_benders_IIS > 3600) > 0) {
+  results[results$time_benders_IIS > 3600,]$time_benders_IIS <- 3600
+}
+```
+
+Our final table reads.
+
+```{r echo = FALSE}
+paged_table(results)
+```
+
+## Checking
+
+In this section, we also check that the two solution approaches report the same global optimum when they both terminate before the time limit is reached.
+
+```{r}
+results[abs(results$obj_benders - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
+```
+
+```{r}
+results[abs(results$obj_benders_IIS - results$obj_ccg) > 1e-3 & results$time_ccg < 3600 & results$time_benders_IIS < 3600, ][,c("instance", "obj_benders", "obj_ccg", "time_benders", "time_ccg")]
+```
+
+## Number of instances in each category
+
+```{r}
+attemps = aggregate(results[,c("instance")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), length)
+colnames(attemps) <- c("gamma", "n_knapsacks", "n_items", "alpha", "total")
+attemps = attemps[order(attemps$gamma, attemps$n_knapsacks, attemps$n_items, attemps$alpha),]
+```
+
+## Unsolved instances
+
+
+```{r}
+results$unsolved_benders = results$time_benders >= 3600
+results$unsolved_ccg = results$time_ccg >= 3600
+results$unsolved_benders_IIS = results$time_benders_IIS >= 3600
+```
+
+We then aggregate these columns by number of jobs and value for $\Gamma$.
+```{r}
+unsolved = aggregate(results[,c("unsolved_benders", "unsolved_ccg", "unsolved_benders_IIS")], list(results$gamma, results$n_knapsacks, results$n_items, results$alpha), sum)
+colnames(unsolved) <- c("gamma", "n_knapsacks", "n_items", "alpha", "unsolved_benders", "unsolved_ccg", "unsolved_benders_IIS")
+unsolved = unsolved[order(unsolved$gamma, unsolved$n_knapsacks, unsolved$n_items, unsolved$alpha),]
+```
+
+## Computational time
+
+In this section, we compute the average, median and quantiles of computation times spent by each method to solve our test bed. The computation is done over the set of instances which was solved to optimality within the given time limit by the considered approach.
+
+### Mean and quantiles
+
+```{r}
+compute_mean_time <- function(column_with_time) {
+  # We first consider only solved instances
+  #only_solved_instances = results[results[,column_with_time] < 3600,]
+  only_solved_instances = results
+  
+  # We then aggregate with summary
+  cpu_times = aggregate(only_solved_instances[,column_with_time], list(only_solved_instances$gamma, only_solved_instances$n_knapsacks, only_solved_instances$n_items, only_solved_instances$alpha), summary)
+  
+  # Rename columns
+  colnames(cpu_times) <- c("gamma", "n_knapsacks", "n_items", "alpha", "time")
+  
+  # Sort result by gamma, nb. of knapsacks, nb. of items and alpha
+  cpu_times = cpu_times[order(cpu_times$gamma, cpu_times$n_knapsacks, cpu_times$n_items, cpu_times$alpha),]
+  
+  # Here, summary creates a nested data.frame, we unnest it
+  cpu_times <- do.call(data.frame, cpu_times)
+  
+  # Remove rownames
+  rownames(cpu_times) <- NULL
+  
+  return (cpu_times)
+}
+
+summary_time_benders = compute_mean_time("time_benders")
+summary_time_ccg = compute_mean_time("time_ccg")
+summary_time_benders_IIS = compute_mean_time("time_benders_IIS")
+```
+
+## Results
+
+We now print out the obtained results as follows.
+
+```{r echo = FALSE}
+library(kableExtra)
+```
+
+```{r}
+print_summary_table <- function(time_column) {
+  
+  # Making table
+  Table1 = cbind(attemps, unsolved[,c("unsolved_benders", "unsolved_benders_IIS", "unsolved_ccg")], summary_time_benders[,time_column], summary_time_benders_IIS[,time_column], summary_time_ccg[,time_column])
+  colnames(Table1) <- c("Gamma", "K", "N", "alpha", "Total", "unsolved_benders", "unsolved_benders_IIS", "unsolved_ccg", "time_benders", "time_benders_IIS", "time_CCG")  
+  rownames(Table1) <- NULL
+
+  # Printing table
+  knitr::kable(Table1, 
+               digits = c(0,0,0,2,0,0,0,0,2,2,2), 
+               col.names = c("$\\Gamma$", "$K$", "$N$", "$\\alpha$", "Total", "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG"), 
+               caption = time_column) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 5, "Unsolved" = 3, "Time" = 3))
+  
+}
+
+print_summary_table("time.Mean")
+```
+
+## Performance profile
+
+We then build a performance profile for our test bed to better compare the two approaches. We refer to <a href="https://arxiv.org/abs/cs/0102001">Dolan, E., Moré, J. Benchmarking optimization software with performance profiles. Math. Program. 91, 201–213 (2002)</a> for a formal introduction.
+
+We start by computing, for each instance, the best solver computational time.
+
+```{r}
+results$time_best = apply(results[,c("time_benders", "time_ccg", "time_benders_IIS")], 1, FUN = min)
+```
+
+Then, for each solver, we divide its computational time by that of the best solver.
+
+```{r}
+results$perf_benders = results$time_benders / results$time_best
+results$perf_ccg = results$time_ccg / results$time_best
+results$perf_benders_IIS = results$time_benders_IIS / results$time_best
+```
+
+According to Dolan et al. (2002), instances which could not be solved by an approach should have a (big enough) fixed ratio. We fix it as follows.
+
+```{r}
+max_perf = max( max(results$perf_benders), max(results$perf_ccg), max(results$perf_benders_IIS) ) + 1
+
+results$perf_benders[results$time_benders >= 3600] = max_perf
+results$perf_ccg[results$time_ccg >= 3600] = max_perf
+results$perf_benders_IIS[results$time_benders_IIS >= 3600] = max_perf
+```
+
+Finally, we are ready to plot our performance profile as the ECDF of performance ratios. Note that we restrict our attention to cases in which one approach is up to 100 times worse than the best approach.
+
+```{r, figures-side, fig.show="hold", out.width="50%"}
+plot_performance_profile <- function(data, xlim = c(1, max_perf), ylim = c(0., 1.), title = "Performance profile") {
+  
+  perf_profile_benders = ecdf(data[,"perf_benders"])
+  perf_profile_ccg = ecdf(data[,"perf_ccg"])
+  perf_profile_benders_IIS = ecdf(data[,"perf_benders_IIS"])
+  
+  plot(perf_profile_benders, col = "blue", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
+  lines(perf_profile_benders_IIS, col = "green", xlim = xlim, ylim = ylim, lty = "solid", cex = 0)
+  lines(perf_profile_ccg, col = "red", xlim = xlim, ylim = ylim, lty = "solid", cex = 0)
+  
+  legend(
+    60, .5, legend = c("Benders", "Benders IIS", "CCG"), col = c("blue", "green", "red"), lty = c("solid", "solid", "solid")
+  )
+  
+}
+
+xlim = c(1, 100)
+
+plot_performance_profile(results, title = "Over all instances", xlim = xlim)
+plot_performance_profile(results[results$n_items == 10,], title = "Over 10-items instances", xlim = xlim)
+plot_performance_profile(results[results$n_items == 15,], title = "Over 15-items instances", xlim = xlim)
+plot_performance_profile(results[results$n_items == 20,], title = "Over 20-items instances", xlim = xlim)
+plot_performance_profile(results[results$gamma == 2,], title = "Over those instances with Gamma = 2", xlim = xlim)
+plot_performance_profile(results[results$gamma == 4,], title = "Over those instances with Gamma = 4", xlim = xlim)
+```
