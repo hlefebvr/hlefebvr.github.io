@@ -115,6 +115,9 @@ read_csv_benders = function(filename) {
   raw_results = read.csv(filename, header = FALSE)
   colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
   
+  # Fix unsolved instances to TIME_LIMIT
+  raw_results[raw_results$time >= 3600,]$time = 3600
+  
   # Extract properties from instance file names
   properties = parse_instance_properties(raw_results$instance)
   
@@ -126,16 +129,17 @@ read_csv_benders = function(filename) {
       properties$alpha,
       raw_results$gamma,
       raw_results$objective,
-      raw_results$time
+      raw_results$time,
+      raw_results$nodes
     )
-  colnames(result) = c("instance", "n_knapsacks", "n_items", "alpha", "gamma", "objective", "time")
+  colnames(result) = c("instance", "n_knapsacks", "n_items", "alpha", "gamma", "objective", "time", "nodes")
   
   return (result)
   
 }
 ```
 
-We can then read CSV files comming from the benders approach.
+We can then read CSV files coming from the benders approach.
 
 ```{r}
 benders = read_csv_benders("./results_benders.csv")
@@ -152,6 +156,9 @@ read_csv_ccg = function (filename) {
   # Read raw results
   raw_results = read.csv("./results_ccg.csv", header = FALSE)
   colnames(raw_results) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+  
+  # Fix unsolved instances to TIME_LIMIT
+  raw_results[raw_results$time >= 3600,]$time <- 3600
   
   # Extract properties from instance file names
   properties = parse_instance_properties(raw_results$instance)
@@ -448,7 +455,7 @@ The resulting table is drawn here.
 paged_table(all_approaches)
 ```
 
-### Final result
+#### Final result
 
 All the data has been prepared to be able to plot the performance profile of each instances. Note that performance profiles are the ECDF of ratios $\{ \tau_i \}$ for each approach.
 We introduce function `plot_performance_profile` which plots the performance profile over a restricted dataset.
@@ -511,4 +518,59 @@ Now, we can use this function to plot differnet performance profiles.
 plot_performance_profile(all_approaches, main = "All instances")
 plot_performance_profile(all_approaches[all_approaches$gamma == 2,], main = "Gamma = 2")
 plot_performance_profile(all_approaches[all_approaches$gamma == 4,], main = "Gamma = 4")
+```
+
+### Number of nodes between Benders and Benders IIS
+
+#### Computations
+
+```{r}
+group_benders_by = c("gamma", "n_knapsacks", "n_items")
+all_benders = merge(benders, benders_IIS, by = group_benders_by)
+all_benders = all_benders[,c(group_benders_by, "time.x", "time.y", "nodes.x", "nodes.y")]
+colnames(all_benders) = c(group_benders_by, "time.benders", "time.iis", "nodes.benders", "nodes.iis")
+```
+
+```{r}
+all_benders$nodes.best = apply(all_benders[,c("nodes.benders", "nodes.iis")], 1, FUN = min)
+all_benders$ratio.benders = all_benders$nodes.benders / all_benders$nodes.best
+all_benders$ratio.iis = all_benders$nodes.iis / all_benders$nodes.best
+```
+
+```{r}
+worst_performance_ratio = max(all_benders[,c("ratio.benders", "ratio.iis")])
+all_benders[all_benders$time.benders >= 3600,]$ratio.benders = worst_performance_ratio
+all_benders[all_benders$time.iis >= 3600,]$ratio.iis = worst_performance_ratio
+```
+
+#### Final result
+
+```{r}
+Table2 = aggregate(all_benders[,c("time.benders", "time.iis", "nodes.benders", "nodes.iis")], by = all_benders[,group_benders_by], mean)
+colnames(Table2)[1:length(group_benders_by)] = group_benders_by
+```
+
+```{r echo = FALSE}
+digits = c(as.vector(matrix(0, nrow = length(group_benders_by))), 2, 2, 2, 2)
+knitr::kable(Table2,
+             digits = digits,
+             col.names = c(group_benders_by, "Benders", "Benders IIS", "Benders", "Benders IIS")
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = length(group_benders_by), "Time" = 2, "Nodes" = 2))
+```
+
+```{r}
+
+profile.benders = ecdf(all_benders$ratio.benders)
+profile.iis = ecdf(all_benders$ratio.iis)
+
+{
+  xlim = c(1, 200)
+  plot(profile.benders, col = "blue", xlim = xlim, main ="")
+  lines(profile.iis, col = "green", xlim = xlim, main = "")
+  
+  title(main = "Performance profile of nodes over all instances")
+  legend(100, .5, legend = c("profile.benders", "profile.iis"), lty = "solid", col = c("blue", "green"))
+}
 ```
