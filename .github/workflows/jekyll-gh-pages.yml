@@ -40,7 +40,7 @@ jobs:
       - name: Install kableExtra
         run: R -e "install.packages(\"kableExtra\")"
       - name: Render reports
-        run: ./build_website.sh
+        run: ./build.sh
       
       - name: Setup Pages
         uses: actions/configure-pages@v2

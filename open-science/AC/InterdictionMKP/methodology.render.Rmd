@@ -29,6 +29,7 @@ In this document we evaluate the computational properties of the approach from A
 ```{r echo = FALSE}
 library(rmarkdown)
 library(kableExtra)
+
 ```
 
 ### CSV structures
@@ -45,10 +46,13 @@ The results obtained by the Benders-type approaches are given in CSV form with t
 - *time*: the computation time spent solving the problem ;
 - *nodes*: the overall number of created nodes.
 
-For example, `results_benders.csv` reads.
+There are 4 different files, each named `results_X_Y.csv` where 
+- X is 1 if $x$ is binary and 0 if it is relaxed in the separation problem ;
+- Y is 1 if the IIS technique is used when branching and 0 otherwise.
 
+For instance, `results_1_0.csv` contains the following.
 ```{r echo = FALSE}
-raw_benders = read.csv("./results_benders.csv", header = FALSE)
+raw_benders = read.csv("./results_1_0.csv", header = FALSE)
 colnames(raw_benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
 paged_table(raw_benders)
 ```
@@ -116,7 +120,9 @@ read_csv_benders = function(filename) {
   colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
   
   # Fix unsolved instances to TIME_LIMIT
-  raw_results[raw_results$time >= 3600,]$time = 3600
+  if (sum(raw_results$time >= 3600) > 0) {
+    raw_results[raw_results$time >= 3600,]$time = 3600
+  }
   
   # Extract properties from instance file names
   properties = parse_instance_properties(raw_results$instance)
@@ -142,8 +148,10 @@ read_csv_benders = function(filename) {
 We can then read CSV files coming from the benders approach.
 
 ```{r}
-benders = read_csv_benders("./results_benders.csv")
-benders_IIS = read_csv_benders("./results_benders_IIS.csv")
+benders_con_gen = read_csv_benders("./results_0_0.csv")
+benders_bin_gen = read_csv_benders("./results_1_0.csv")
+benders_con_iis = read_csv_benders("./results_0_1.csv")
+benders_bin_iis = read_csv_benders("./results_1_1.csv")
 ```
 
 #### read_csv_ccg
@@ -158,7 +166,9 @@ read_csv_ccg = function (filename) {
   colnames(raw_results) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
   
   # Fix unsolved instances to TIME_LIMIT
-  raw_results[raw_results$time >= 3600,]$time <- 3600
+  if (sum(raw_results$time >= 3600) > 0) {
+    raw_results[raw_results$time >= 3600,]$time <- 3600
+  }
   
   # Extract properties from instance file names
   properties = parse_instance_properties(raw_results$instance)
@@ -186,6 +196,27 @@ Then, we read the results obtained by the CCG approach as follows.
 ccg = read_csv_ccg("./results_ccg.csv")
 ```
 
+### Checking
+
+```{r}
+compare = function(a, b) {
+  A = a[a$time < 3600,c("instance", "gamma", "objective", "time")]
+  B = b[b$time < 3600,c("instance", "gamma", "objective", "time")]
+  
+  merged = merge(A, B, by = c("instance", "gamma"))
+  
+  filter = abs(merged$objective.x - merged$objective.y) > 1e-3
+  if (sum( filter ) > 0) {
+    paged_table( merged[filter,] )
+  }
+}
+
+compare(ccg, benders_con_gen)
+compare(ccg, benders_bin_gen)
+compare(ccg, benders_con_iis)
+compare(ccg, benders_bin_iis)
+```
+
 ## Analysis
 
 ### Computational times
@@ -193,11 +224,11 @@ ccg = read_csv_ccg("./results_ccg.csv")
 Our first analysis regards computational times within different groups. We will group data by `group_by` columns. Note that `str_group_by` contains a "stringified" version of the columns names for clean outputs.
 
 ```{r}
-group_by = c("gamma", "n_knapsacks", "n_items", "alpha")
-str_group_by = c("$\\Gamma$", "$K$", "$N$", "$\\alpha$")
+#group_by = c("gamma", "n_knapsacks", "n_items", "alpha")
+#str_group_by = c("$\\Gamma$", "$K$", "$N$", "$\\alpha$")
 
-#group_by = c("gamma", "n_knapsacks", "n_items")
-#str_group_by = c("$\\Gamma$", "$K$", "$N$")
+group_by = c("gamma", "n_knapsacks", "n_items")
+str_group_by = c("$\\Gamma$", "$K$", "$N$")
 ```
 
 #### Computing summary times by group
@@ -226,8 +257,10 @@ compute_summary_by_group = function(data) {
 We then call this function on each approach.
 
 ```{r}
-summary_benders = compute_summary_by_group(benders)
-summary_benders_IIS = compute_summary_by_group(benders_IIS)
+summary_benders_con_gen = compute_summary_by_group(benders_con_gen)
+summary_benders_bin_gen = compute_summary_by_group(benders_bin_gen)
+summary_benders_con_iis = compute_summary_by_group(benders_con_iis)
+summary_benders_bin_iis = compute_summary_by_group(benders_bin_iis)
 summary_ccg = compute_summary_by_group(ccg)
 ```
 
@@ -253,8 +286,10 @@ compute_unsolved_by_group = function(data) {
 Again, we call this function on each approach.
 
 ```{r}
-unsolved_benders = compute_unsolved_by_group(benders)
-unsolved_benders_IIS = compute_unsolved_by_group(benders_IIS)
+unsolved_benders_con_gen = compute_unsolved_by_group(benders_con_gen)
+unsolved_benders_bin_gen = compute_unsolved_by_group(benders_bin_gen)
+unsolved_benders_con_iis = compute_unsolved_by_group(benders_con_iis)
+unsolved_benders_bin_iis = compute_unsolved_by_group(benders_bin_iis)
 unsolved_ccg = compute_unsolved_by_group(ccg)
 ```
 
@@ -280,8 +315,10 @@ compute_instances_by_group = function(data) {
 Let's call it on each approach.
 
 ```{r}
-total_benders = compute_instances_by_group(benders)
-total_benders_IIS = compute_instances_by_group(benders_IIS)
+total_benders_con_gen = compute_instances_by_group(benders_con_gen)
+total_benders_bin_gen = compute_instances_by_group(benders_bin_gen)
+total_benders_con_iis = compute_instances_by_group(benders_con_iis)
+total_benders_bin_iis = compute_instances_by_group(benders_bin_iis)
 total_ccg = compute_instances_by_group(ccg)
 ```
 
@@ -306,18 +343,24 @@ Table = data.frame(matrix(ncol = length(group_by) + length(column_names), nrow =
 colnames(Table) = c(group_by, column_names)
 
 # We add by-group totals
-Table = add_columns(Table, total_benders, "benders")
-Table = add_columns(Table, total_benders_IIS, "iis")
+Table = add_columns(Table, total_benders_con_gen, "con_gen")
+Table = add_columns(Table, total_benders_bin_gen, "bin_gen")
+Table = add_columns(Table, total_benders_con_iis, "con_iis")
+Table = add_columns(Table, total_benders_bin_iis, "bin_iis")
 Table = add_columns(Table, total_ccg, "ccg")
 
 # We add by-group unsolveds
-Table = add_columns(Table, unsolved_benders, "benders")
-Table = add_columns(Table, unsolved_benders_IIS, "iis")
+Table = add_columns(Table, unsolved_benders_con_gen, "con_gen")
+Table = add_columns(Table, unsolved_benders_bin_gen, "bin_gen")
+Table = add_columns(Table, unsolved_benders_con_iis, "con_iis")
+Table = add_columns(Table, unsolved_benders_bin_iis, "bin_iis")
 Table = add_columns(Table, unsolved_ccg, "ccg")
 
 # We add by-group summaries
-Table = add_columns(Table, summary_benders, "benders")
-Table = add_columns(Table, summary_benders_IIS, "iis")
+Table = add_columns(Table, summary_benders_con_gen, "con_gen")
+Table = add_columns(Table, summary_benders_bin_gen, "bin_gen")
+Table = add_columns(Table, summary_benders_con_iis, "con_iis")
+Table = add_columns(Table, summary_benders_bin_iis, "bin_iis")
 Table = add_columns(Table, summary_ccg, "ccg")
 
 # Finally, we can remove the "fake" columns we introduced to foce R renaming new columns
@@ -335,26 +378,52 @@ To better summarize our data, we make a new table out of this table by selecting
 ```{r}
 Table1 = Table[,c(
   group_by,
-  "total.benders",
-  "total.iis",
+  "total.bin_gen",
   "total.ccg",
-  "unsolved.benders",
-  "unsolved.iis",
+  "unsolved.bin_gen",
   "unsolved.ccg",
-  "mean.benders",
-  "mean.iis",
+  "mean.bin_iis",
   "mean.ccg"
   )]
 ```
 
 ```{r echo = FALSE}
-digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 0, 0, 2, 2, 2)
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 2, 2)
 knitr::kable(Table1,
              digits = digits,
-             col.names = c(str_group_by, "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG", "Benders", "Benders IIS", "CCG")
+             col.names = c(str_group_by, "Benders", "CCG", "Benders", "CCG", "Benders", "CCG")
              ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = length(group_by), "Total" = 3, "Unsolved" = 3, "Time" = 3))
+      add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2))
+```
+
+
+```{r}
+Table2 = Table[,c(
+  group_by,
+  "total.bin_gen",
+  "total.bin_iis",
+  "total.con_gen",
+  "total.con_iis",
+  "unsolved.bin_gen",
+  "unsolved.bin_iis",
+  "unsolved.con_gen",
+  "unsolved.con_iis",
+  "mean.bin_iis",
+  "mean.bin_gen",
+  "mean.con_iis",
+  "mean.con_gen"
+  )]
+```
+
+```{r echo = FALSE}
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2)
+knitr::kable(Table2,
+             digits = digits,
+             col.names = c(str_group_by, "B-Gen", "B-IIS", "C-Gen", "C-IIS", "B-Gen", "B-IIS", "C-Gen", "C-IIS", "B-Gen", "B-IIS", "C-Gen", "C-IIS")
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = length(group_by), "Total" = 4, "Unsolved" = 4, "Time" = 4))
 ```
 
 ### Performance profiles
@@ -382,12 +451,14 @@ add_approach = function(table, approach, suffix) {
 # We first create an initial table with a given approach (here, ccg)
 all_approaches = data.frame(
   "instance" = ccg$instance, 
-  "gamma" = ccg$gamma,
-  "time.ccg" = ccg$time)
+  "gamma" = ccg$gamma)
 
 # We then add other approaches
-all_approaches = add_approach(all_approaches, benders_IIS, suffix = "iis")
-all_approaches = add_approach(all_approaches, benders, suffix = "benders")
+all_approaches = add_approach(all_approaches, ccg, "ccg")
+#all_approaches = add_approach(all_approaches, benders_con_gen, "con_gen")
+all_approaches = add_approach(all_approaches, benders_bin_gen, "bin_gen")
+#all_approaches = add_approach(all_approaches, benders_con_iis, "con_iis")
+#all_approaches = add_approach(all_approaches, benders_bin_iis, "bin_iis")
 ```
 
 For each instance, we compute the best time among all approaches.
@@ -458,10 +529,10 @@ paged_table(all_approaches)
 #### Final result
 
 All the data has been prepared to be able to plot the performance profile of each instances. Note that performance profiles are the ECDF of ratios $\{ \tau_i \}$ for each approach.
-We introduce function `plot_performance_profile` which plots the performance profile over a restricted dataset.
+We introduce function `plot_performance_profile` which plots the performance profile over a restricted data set.
 
 ```{r}
-plot_performance_profile = function(data, xlim = c(1, 500), color = c("blue", "green", "red", "black"), main = "Performance profile") {
+plot_performance_profile = function(data, xlim = c(1, 200), color = palette(), main = "Performance profile") {
   
   # We first select the ratio columns (note that this uses the "global variable" n_approaches)
   ratios = data[, c( ( ncol(data) - n_approaches + 1 ) : ncol(data)  ) ]
@@ -517,16 +588,17 @@ Now, we can use this function to plot differnet performance profiles.
 ```{r, figures-side, fig.show="hold", out.width="100%"}
 plot_performance_profile(all_approaches, main = "All instances")
 plot_performance_profile(all_approaches[all_approaches$gamma == 2,], main = "Gamma = 2")
+plot_performance_profile(all_approaches[all_approaches$gamma == 3,], main = "Gamma = 3")
 plot_performance_profile(all_approaches[all_approaches$gamma == 4,], main = "Gamma = 4")
 ```
 
-### Number of nodes between Benders and Benders IIS
+### Number of nodes between B-Gen and B-IIS
 
 #### Computations
 
 ```{r}
 group_benders_by = c("gamma", "n_knapsacks", "n_items")
-all_benders = merge(benders, benders_IIS, by = group_benders_by)
+all_benders = merge(benders_bin_gen, benders_bin_iis, by = group_benders_by)
 all_benders = all_benders[,c(group_benders_by, "time.x", "time.y", "nodes.x", "nodes.y")]
 colnames(all_benders) = c(group_benders_by, "time.benders", "time.iis", "nodes.benders", "nodes.iis")
 ```
@@ -539,8 +611,13 @@ all_benders$ratio.iis = all_benders$nodes.iis / all_benders$nodes.best
 
 ```{r}
 worst_performance_ratio = max(all_benders[,c("ratio.benders", "ratio.iis")])
-all_benders[all_benders$time.benders >= 3600,]$ratio.benders = worst_performance_ratio
-all_benders[all_benders$time.iis >= 3600,]$ratio.iis = worst_performance_ratio
+
+if (sum(all_benders$time.benders >= 3600) > 0) {
+  all_benders[all_benders$time.benders >= 3600,]$ratio.benders = worst_performance_ratio
+}
+if (sum(all_benders$time.iis >= 3600) > 0) {
+  all_benders[all_benders$time.iis >= 3600,]$ratio.iis = worst_performance_ratio 
+}
 ```
 
 #### Final result
@@ -567,8 +644,8 @@ profile.iis = ecdf(all_benders$ratio.iis)
 
 {
   xlim = c(1, 200)
-  plot(profile.benders, col = "blue", xlim = xlim, main ="")
-  lines(profile.iis, col = "green", xlim = xlim, main = "")
+  plot(profile.benders, col = "blue", xlim = xlim, main ="", cex = 0)
+  lines(profile.iis, col = "green", xlim = xlim, main = "", cex = 0)
   
   title(main = "Performance profile of nodes over all instances")
   legend(100, .5, legend = c("profile.benders", "profile.iis"), lty = "solid", col = c("blue", "green"))
