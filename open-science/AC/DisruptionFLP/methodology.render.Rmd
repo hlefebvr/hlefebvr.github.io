@@ -136,6 +136,48 @@ benders_bin_iis = read_csv_benders("./results_1_1.csv")
 ```
 
 
+#### read_csv_ccg
+
+The `read_csv_ccg`` function is given as follows.
+
+```{r}
+read_csv_ccg = function (filename) {
+  
+  # Read raw results
+  raw_results = read.csv(filename, header = FALSE)
+  colnames(raw_results) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
+  
+  # Fix unsolved instances to TIME_LIMIT
+  if (sum(raw_results$time >= 3600) > 0) {
+    raw_results[raw_results$time >= 3600,]$time <- 3600
+  }
+  
+  # Extract properties from instance file names
+  properties = parse_instance_properties(raw_results$instance)
+  
+  # Build result data frame
+  result = data.frame(
+      properties$instance, 
+      properties$n_facilities,
+      properties$n_customers,
+      raw_results$gamma,
+      raw_results$UB,
+      raw_results$time
+    )
+  colnames(result) = c("instance", "n_facilities", "n_customers", "gamma", "objective", "time")
+  
+  return (result)
+  
+}
+```
+
+Then, we read the results obtained by the CCG approach as follows.
+
+```{r}
+ccg = read_csv_ccg("./results_ccg_DisruptionFLP.csv")
+```
+
+
 ### Checking
 
 ```{r}
@@ -193,6 +235,7 @@ compute_summary_by_group = function(data) {
 We then call this function on each approach.
 
 ```{r}
+summary_ccg = compute_summary_by_group(ccg)
 summary_benders_con_gen = compute_summary_by_group(benders_con_gen)
 summary_benders_bin_gen = compute_summary_by_group(benders_bin_gen)
 summary_benders_con_iis = compute_summary_by_group(benders_con_iis)
@@ -221,6 +264,7 @@ compute_unsolved_by_group = function(data) {
 Again, we call this function on each approach.
 
 ```{r}
+unsolved_ccg = compute_unsolved_by_group(ccg)
 unsolved_benders_con_gen = compute_unsolved_by_group(benders_con_gen)
 unsolved_benders_bin_gen = compute_unsolved_by_group(benders_bin_gen)
 unsolved_benders_con_iis = compute_unsolved_by_group(benders_con_iis)
@@ -249,6 +293,7 @@ compute_instances_by_group = function(data) {
 Let's call it on each approach.
 
 ```{r}
+total_ccg = compute_instances_by_group(ccg)
 total_benders_con_gen = compute_instances_by_group(benders_con_gen)
 total_benders_bin_gen = compute_instances_by_group(benders_bin_gen)
 total_benders_con_iis = compute_instances_by_group(benders_con_iis)
@@ -278,12 +323,13 @@ compute_infeasible_by_group = function(data) {
 Let's call it on each approach.
 
 ```{r}
+infeasible_ccg = compute_infeasible_by_group(ccg)
 infeasible_benders_con_gen = compute_infeasible_by_group(benders_con_gen)
 infeasible_benders_bin_gen = compute_infeasible_by_group(benders_bin_gen)
 infeasible_benders_con_iis = compute_infeasible_by_group(benders_con_iis)
 infeasible_benders_bin_iis = compute_infeasible_by_group(benders_bin_iis)
 
-paged_table(infeasible_benders_bin_gen)
+paged_table(infeasible_ccg)
 ```
 
 
@@ -312,18 +358,21 @@ Table = add_columns(Table, total_benders_con_gen, "con_gen")
 Table = add_columns(Table, total_benders_bin_gen, "bin_gen")
 Table = add_columns(Table, total_benders_con_iis, "con_iis")
 Table = add_columns(Table, total_benders_bin_iis, "bin_iis")
+Table = add_columns(Table, total_ccg, "ccg")
 
 # We add by-group unsolveds
 Table = add_columns(Table, unsolved_benders_con_gen, "con_gen")
 Table = add_columns(Table, unsolved_benders_bin_gen, "bin_gen")
 Table = add_columns(Table, unsolved_benders_con_iis, "con_iis")
 Table = add_columns(Table, unsolved_benders_bin_iis, "bin_iis")
+Table = add_columns(Table, unsolved_ccg, "ccg")
 
 # We add by-group summaries
 Table = add_columns(Table, summary_benders_con_gen, "con_gen")
 Table = add_columns(Table, summary_benders_bin_gen, "bin_gen")
 Table = add_columns(Table, summary_benders_con_iis, "con_iis")
 Table = add_columns(Table, summary_benders_bin_iis, "bin_iis")
+Table = add_columns(Table, summary_ccg, "ccg")
 
 # Finally, we can remove the "fake" columns we introduced to foce R renaming new columns
 Table = Table[,!names(Table) %in% column_names]
@@ -335,6 +384,30 @@ The resulting table therefore contains a merge of all by-group data and is drawn
 paged_table(Table)
 ```
 
+
+To better summarize our data, we make a new table out of this table by selecting interesting columns. This is done as follows.
+
+```{r}
+Table1 = Table[,c(
+  group_by,
+  "total.bin_gen",
+  "total.ccg",
+  "unsolved.bin_gen",
+  "unsolved.ccg",
+  "mean.bin_iis",
+  "mean.ccg"
+  )]
+```
+
+```{r echo = FALSE}
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 2, 2)
+knitr::kable(Table1,
+             digits = digits,
+             col.names = c(str_group_by, "Benders", "CCG", "Benders", "CCG", "Benders", "CCG")
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2))
+```
 
 ```{r}
 Table2 = Table[,c(
@@ -393,9 +466,10 @@ all_approaches = data.frame(
   "gamma" = benders_con_gen$gamma)
 
 # We then add other approaches
-all_approaches = add_approach(all_approaches, benders_con_gen, "con_gen")
-all_approaches = add_approach(all_approaches, benders_bin_gen, "bin_gen")
-all_approaches = add_approach(all_approaches, benders_con_iis, "con_iis")
+all_approaches = add_approach(all_approaches, ccg, "ccg")
+#all_approaches = add_approach(all_approaches, benders_con_gen, "con_gen")
+#all_approaches = add_approach(all_approaches, benders_bin_gen, "bin_gen")
+#all_approaches = add_approach(all_approaches, benders_con_iis, "con_iis")
 all_approaches = add_approach(all_approaches, benders_bin_iis, "bin_iis")
 ```
 
@@ -470,7 +544,7 @@ All the data has been prepared to be able to plot the performance profile of eac
 We introduce function `plot_performance_profile` which plots the performance profile over a restricted data set.
 
 ```{r}
-plot_performance_profile = function(data, xlim = c(1, 10), color = palette(), main = "Performance profile") {
+plot_performance_profile = function(data, xlim = c(1, 50), color = palette(), main = "Performance profile") {
   
   # We first select the ratio columns (note that this uses the "global variable" n_approaches)
   ratios = data[, c( ( ncol(data) - n_approaches + 1 ) : ncol(data)  ) ]

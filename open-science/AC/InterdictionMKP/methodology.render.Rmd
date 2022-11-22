@@ -162,7 +162,7 @@ The `read_csv_ccg`` function is given as follows.
 read_csv_ccg = function (filename) {
   
   # Read raw results
-  raw_results = read.csv("./results_ccg.csv", header = FALSE)
+  raw_results = read.csv(filename, header = FALSE)
   colnames(raw_results) <- c("instance", "gamma", "iter", "LB", "UB", "time", "inner_iter_1", "inner_iter_2")
   
   # Fix unsolved instances to TIME_LIMIT
@@ -532,7 +532,7 @@ All the data has been prepared to be able to plot the performance profile of eac
 We introduce function `plot_performance_profile` which plots the performance profile over a restricted data set.
 
 ```{r}
-plot_performance_profile = function(data, xlim = c(1, 200), color = palette(), main = "Performance profile") {
+plot_performance_profile = function(data, xlim = c(1, 50), color = palette(), main = "Performance profile") {
   
   # We first select the ratio columns (note that this uses the "global variable" n_approaches)
   ratios = data[, c( ( ncol(data) - n_approaches + 1 ) : ncol(data)  ) ]

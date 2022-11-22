@@ -16,3 +16,8 @@ echo "Done"
 echo "Fetching DisruptionFLP-Benders..."
 sshpass -p $UNIBO_MINIPC_PWD scp unibo_mini_pc_10:/home/hlefebvre/AdjustableRobustWithBinaryUncertainty/DisruptionFLP/solver/results_* ./open-science/AC/DisruptionFLP/ || exit
 echo "Done"
+
+# CCG
+echo "Fetching DisruptionFLP-CCG..."
+sshpass -p $UNIBO_MINIPC_PWD scp unibo_mini_pc_10:/home/hlefebvre/compare_RobustOptLagrangianDual.jl/src/results_* ./open-science/AC/DisruptionFLP/ || exit
+echo "Done"
