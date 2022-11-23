@@ -158,6 +158,8 @@ opt_kadapt2_b = create_optimal_kadapt(kadapt2_b, k_star2_b)
 ```{r}
 compute_mean_times_by_group = function(data) {
   
+  data = data[data$time < 3600,]
+  
   mean_times = aggregate(data$time, list(data$n_jobs, data$gamma), mean)
   colnames(mean_times) = c("n_jobs", "gamma", "time")
   
@@ -322,7 +324,7 @@ plot_performance_profile = function(fastest, title = "Performance profile") {
   perf_profile_kadapt_a = ecdf(perf_kadapt_a)
   perf_profile_kadapt_b = ecdf(perf_kadapt_b)
   
-  xlim = c(1, 1000)
+  xlim = c(1, 10)
   ylim = c(0, 1)
   
   plot(perf_profile_colgen, col = "blue", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
@@ -330,7 +332,7 @@ plot_performance_profile = function(fastest, title = "Performance profile") {
   lines(perf_profile_kadapt_b, col = "red", xlim = xlim, ylim = ylim, lty = "dashed", cex = 0)
   
   legend(
-    500, .5, legend = c("ColGen", "KAdapt-a", "KAdapt-b"), col = c("blue", "green", "red"), lty = c("solid", "dotted", "dashed")
+    6, .5, legend = c("ColGen", "KAdapt-a", "KAdapt-b"), col = c("blue", "green", "red"), lty = c("solid", "dotted", "dashed")
   )
 }
 ```

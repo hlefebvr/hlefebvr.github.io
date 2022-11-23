@@ -532,7 +532,7 @@ All the data has been prepared to be able to plot the performance profile of eac
 We introduce function `plot_performance_profile` which plots the performance profile over a restricted data set.
 
 ```{r}
-plot_performance_profile = function(data, xlim = c(1, 50), color = palette(), main = "Performance profile") {
+plot_performance_profile = function(data, xlim = c(1, 500), color = palette(), main = "Performance profile") {
   
   # We first select the ratio columns (note that this uses the "global variable" n_approaches)
   ratios = data[, c( ( ncol(data) - n_approaches + 1 ) : ncol(data)  ) ]
@@ -587,9 +587,17 @@ Now, we can use this function to plot differnet performance profiles.
 
 ```{r, figures-side, fig.show="hold", out.width="100%"}
 plot_performance_profile(all_approaches, main = "All instances")
-plot_performance_profile(all_approaches[all_approaches$gamma == 2,], main = "Gamma = 2")
-plot_performance_profile(all_approaches[all_approaches$gamma == 3,], main = "Gamma = 3")
-plot_performance_profile(all_approaches[all_approaches$gamma == 4,], main = "Gamma = 4")
+
+for (alpha in unique(all_approaches$alpha)) {
+  plot_performance_profile(all_approaches[all_approaches$alpha == alpha,], main = paste0("alpha = ", alpha))
+}
+
+for (gamma in unique(all_approaches$gamma)) {
+  plot_performance_profile(all_approaches[all_approaches$gamma == gamma,], main = paste0("Gamma = ", gamma))
+  for (alpha in unique(all_approaches$alpha)) {
+    plot_performance_profile(all_approaches[all_approaches$gamma == gamma & all_approaches$alpha == alpha,], main = paste0("Gamma = ", gamma, " and alpha = ", alpha))
+  }
+}
 ```
 
 ### Number of nodes between B-Gen and B-IIS
