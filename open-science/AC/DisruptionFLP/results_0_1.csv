@@ -149,3 +149,11 @@ instance_F15_C20__9.txt,3,Optimal,Proved,-402.44,969.289,921
 instance_F15_C20__9.txt,4,Optimal,Proved,-285.63,1597.55,871
 instance_F15_C30__0.txt,2,Optimal,Proved,-294.271,1506.99,149
 instance_F15_C30__0.txt,3,Feasible,TimeLimit,-187.344,3601.11,189
+instance_F15_C30__0.txt,4,Feasible,TimeLimit,-29.2914,3606.26,157
+instance_F15_C30__1.txt,2,Optimal,Proved,-424.994,258.504,221
+instance_F15_C30__1.txt,3,Optimal,Proved,-288.69,1068.38,635
+instance_F15_C30__1.txt,4,Optimal,Proved,-153.349,1657.81,633
+instance_F15_C30__2.txt,2,Optimal,Proved,-334.135,233.642,215
+instance_F15_C30__2.txt,3,Optimal,Proved,-218.051,1649.52,367
+instance_F15_C30__2.txt,4,Feasible,TimeLimit,-56.8425,3600.18,265
+instance_F15_C30__3.txt,2,Optimal,Proved,-238.49,266.15,347
