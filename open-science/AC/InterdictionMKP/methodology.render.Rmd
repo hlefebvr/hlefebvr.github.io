@@ -382,7 +382,7 @@ Table1 = Table[,c(
   "total.ccg",
   "unsolved.bin_gen",
   "unsolved.ccg",
-  "mean.bin_iis",
+  "mean.bin_gen",
   "mean.ccg"
   )]
 ```

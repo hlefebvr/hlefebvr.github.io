@@ -468,7 +468,7 @@ all_approaches = data.frame(
 # We then add other approaches
 all_approaches = add_approach(all_approaches, ccg, "ccg")
 #all_approaches = add_approach(all_approaches, benders_con_gen, "con_gen")
-#all_approaches = add_approach(all_approaches, benders_bin_gen, "bin_gen")
+all_approaches = add_approach(all_approaches, benders_bin_gen, "bin_gen")
 #all_approaches = add_approach(all_approaches, benders_con_iis, "con_iis")
 all_approaches = add_approach(all_approaches, benders_bin_iis, "bin_iis")
 ```

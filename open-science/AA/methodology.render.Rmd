@@ -272,13 +272,38 @@ Table41 = cbind(unsolved_kadapt1_a,
 
 ```{r echo = FALSE}
 knitr::kable(Table41, 
-               digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2), 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
                col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
                caption = "Table 4.1"
              ) %>%
       kable_classic() %>%
       add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
 ```
+
+```{r}
+Table41_mean_unsolved_by_group = aggregate(Table41[,c(3:5)], by = list(Table41$n_jobs), mean)
+colnames(Table41_mean_unsolved_by_group ) = c("n_jobs", "unsolved_k1_a", "unsolved_k1_b", "unsolved_c1")
+
+Table41_mean_times_by_group = aggregate(Table41[,c(6:8)], by = list(Table41$n_jobs), mean)
+colnames(Table41_mean_times_by_group) = c("n_jobs", "time_k1_a", "time_k1_b", "time_c1")
+
+Table41_fastest_by_group = aggregate(Table41[,c(9:11)], by = list(Table41$n_jobs), mean)
+colnames(Table41_fastest_by_group) = c("n_jobs", "fastest_k1_a", "fastest_k1_b", "fastest_c1")
+
+Table41_summary = merge(Table41_mean_unsolved_by_group , Table41_mean_times_by_group, by = c("n_jobs"))
+Table41_summary = merge(Table41_summary, Table41_fastest_by_group, by = c("n_jobs"))
+```
+
+```{r echo = FALSE}
+knitr::kable(Table41_summary, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.1 summary"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
 
 #### For problem $(\widetilde{\mathcal P})$
 
@@ -297,12 +322,36 @@ Table44 = cbind(unsolved_kadapt2_a,
 
 ```{r echo = FALSE}
 knitr::kable(Table44, 
-               digits = c(0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2), 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
                col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
                caption = "Table 4.4"
              ) %>%
       kable_classic() %>%
       add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+```{r}
+Table44_mean_unsolved_by_group = aggregate(Table44[,c(3:5)], by = list(Table44$n_jobs), mean)
+colnames(Table44_mean_unsolved_by_group) = c("n_jobs", "unsolved_k2_a", "unsolved_k2_b", "unsolved_c2")
+
+Table44_mean_times_by_group = aggregate(Table44[,c(6:8)], by = list(Table44$n_jobs), mean)
+colnames(Table44_mean_times_by_group) = c("n_jobs", "time_k2_a", "time_k2_b", "time_c2")
+
+Table44_fastest_by_group = aggregate(Table44[,c(9:11)], by = list(Table44$n_jobs), mean)
+colnames(Table44_fastest_by_group) = c("n_jobs", "fastest_k2_a", "fastest_k2_b", "fastest_c2")
+
+Table44_summary = merge(Table44_mean_unsolved_by_group, Table44_mean_times_by_group, by = c("n_jobs"))
+Table44_summary = merge(Table44_summary, Table44_fastest_by_group, by = c("n_jobs"))
+```
+
+```{r echo = FALSE}
+knitr::kable(Table44_summary, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.4 summary"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
 ```
 
 ### Performance profiles
@@ -389,7 +438,7 @@ Table42 = cbind(
 
 ```{r echo = FALSE}
 knitr::kable(Table42, 
-               digits = c(0, 2, 2, 2), 
+               digits = c(0, 0, 0, 0), 
                col.names = c("$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1") ) %>%
       kable_classic() %>%
       add_header_above(c(" " = 1, "Feasible solutions found (%)" = 3))
