@@ -202,3 +202,16 @@ instance_F15_C40__6.txt,4,Feasible,TimeLimit,-364.11,3601.17,109
 instance_F15_C40__7.txt,2,Optimal,Proved,-458.157,2913.52,509
 instance_F15_C40__7.txt,3,Fail,NotSpecified,-359.109,3600.45,875
 instance_F15_C40__7.txt,4,Feasible,TimeLimit,-235.797,3601.05,419
+instance_F15_C40__8.txt,2,Optimal,Proved,-607.53,610.127,303
+instance_F15_C40__8.txt,3,Optimal,Proved,-526.487,2617.21,719
+instance_F15_C40__8.txt,4,Feasible,TimeLimit,-425.112,3610.53,483
+instance_F15_C40__9.txt,2,Optimal,Proved,-528.406,186.3,197
+instance_F15_C40__9.txt,3,Optimal,Proved,-472.7,1355.71,619
+instance_F15_C40__9.txt,4,Feasible,TimeLimit,-378.83,3602.03,663
+instance_F15_C50__0.txt,2,Optimal,Proved,-669.031,1483.56,407
+instance_F15_C50__0.txt,3,Feasible,TimeLimit,-576.457,3612.57,657
+instance_F15_C50__0.txt,4,Fail,NotSpecified,-430.114,3602.12,353
+instance_F15_C50__1.txt,2,Optimal,Proved,-670.667,1455.81,559
+instance_F15_C50__1.txt,3,Feasible,TimeLimit,-588.525,3605.52,413
+instance_F15_C50__1.txt,4,Feasible,TimeLimit,-488.001,3603.45,209
+instance_F15_C50__2.txt,2,Optimal,Proved,-746.696,2364.43,345

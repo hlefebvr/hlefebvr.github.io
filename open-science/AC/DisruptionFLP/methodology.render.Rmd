@@ -390,9 +390,9 @@ To better summarize our data, we make a new table out of this table by selecting
 ```{r}
 Table1 = Table[,c(
   group_by,
-  "total.bin_gen",
+  "total.bin_iis",
   "total.ccg",
-  "unsolved.bin_gen",
+  "unsolved.bin_iis",
   "unsolved.ccg",
   "mean.bin_iis",
   "mean.ccg"
