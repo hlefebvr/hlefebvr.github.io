@@ -6,3 +6,5 @@ uml
 *.render_files
 .RData
 .Rhistory
+*.generated.zip
+*.generated.csv

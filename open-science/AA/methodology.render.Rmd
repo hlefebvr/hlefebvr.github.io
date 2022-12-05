@@ -29,6 +29,7 @@ output:
 ```{r echo=FALSE}
 library(rmarkdown)
 library(kableExtra)
+library(stringr)
 ```
 
 All our results can be found in the CSV file `results.csv` which contains the following rows and columns.
@@ -379,12 +380,16 @@ plot_performance_profile = function(fastest, title = "Performance profile", pref
     
     save.to.file = function (ecdf_function, method) {
       y.axis = ecdf_function(x.axis)
-      write.csv(data.frame(x = x.axis, y = y.axis), paste0(prefix.output.file, ".", method, ".", "performance_profile.csv"), row.names = FALSE)
+      write.csv(data.frame(x = x.axis, y = y.axis), paste0(prefix.output.file, ".", method, ".", "generated.csv"), row.names = FALSE)
     }
     
     save.to.file(perf_profile_colgen, "colgen")
     save.to.file(perf_profile_kadapt_a, "kadapt_a")
     save.to.file(perf_profile_kadapt_b, "kadapt_b")
+    
+    all_files = dir()
+    files = all_files[str_detect(all_files, prefix.output.file)]
+    zip(zipfile = paste0(prefix.output.file, ".generated.zip"), files = files)
     
   }
   
