@@ -357,7 +357,7 @@ knitr::kable(Table44_summary,
 ### Performance profiles
 
 ```{r}
-plot_performance_profile = function(fastest, title = "Performance profile") {
+plot_performance_profile = function(fastest, title = "Performance profile", prefix.output.file = "") {
   
   perf_colgen = fastest$time_colgen / fastest$best_time
   perf_kadapt_a = fastest$time_kadapt_a / fastest$best_time
@@ -372,6 +372,21 @@ plot_performance_profile = function(fastest, title = "Performance profile") {
   perf_profile_colgen = ecdf(perf_colgen)
   perf_profile_kadapt_a = ecdf(perf_kadapt_a)
   perf_profile_kadapt_b = ecdf(perf_kadapt_b)
+  
+  if (prefix.output.file != "") {
+    
+    x.axis = seq(from = 1, to = 10, by = .05)
+    
+    save.to.file = function (ecdf_function, method) {
+      y.axis = ecdf_function(x.axis)
+      write.csv(data.frame(x = x.axis, y = y.axis), paste0(prefix.output.file, ".", method, ".", "performance_profile.csv"), row.names = FALSE)
+    }
+    
+    save.to.file(perf_profile_colgen, "colgen")
+    save.to.file(perf_profile_kadapt_a, "kadapt_a")
+    save.to.file(perf_profile_kadapt_b, "kadapt_b")
+    
+  }
   
   xlim = c(1, 10)
   ylim = c(0, 1)
@@ -389,9 +404,9 @@ plot_performance_profile = function(fastest, title = "Performance profile") {
 #### For problem $(\mathcal P)$
 
 ```{r, fig.show="hold", out.width="100%"}
-plot_performance_profile(fastest1, title = "Over all instances")
-plot_performance_profile(fastest1[fastest1$n_jobs == 25,], title = "Over instances with n_jobs = 25")
-plot_performance_profile(fastest1[fastest1$gamma <= fastest1$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4")
+plot_performance_profile(fastest1, title = "Over all instances", prefix.output.file = "problem1.all")
+plot_performance_profile(fastest1[fastest1$n_jobs == 25,], title = "Over instances with n_jobs = 25", prefix.output.file = "problem1.25jobs")
+plot_performance_profile(fastest1[fastest1$gamma <= fastest1$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4", prefix.output.file = "problem1.hard")
 ```
 
 #### For problem $(\widetilde{\mathcal P})$

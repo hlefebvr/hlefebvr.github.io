@@ -193,6 +193,7 @@ compare = function(a, b) {
   }
 }
 
+compare(benders_con_gen, ccg)
 compare(benders_con_gen, benders_bin_gen)
 compare(benders_con_gen, benders_con_iis)
 compare(benders_con_gen, benders_bin_iis)
