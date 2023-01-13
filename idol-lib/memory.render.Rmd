@@ -1,0 +1,63 @@
+---
+title: Memory usage benchmark for Env implementation
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../_includes/head.html
+      before_body:
+        - ../_includes/header.html
+        - ../_includes/begin_content.html
+        - ../_includes/toc.html
+        - ../_includes/begin_post_content.html
+      after_body: 
+        - ../_includes/handle_page_title.html
+        - ../_includes/end_post_content.html
+        - ../_includes/end_content.html
+        - ../_includes/footer.html
+---
+
+```{r echo = FALSE}
+library(rmarkdown)
+library(kableExtra)
+```
+
+```{r}
+dataset = read.csv("result.csv", header = FALSE, sep = ";")
+colnames(dataset) = c("method", "n_models", "n_variables", "odds_to_be_in_model", "value", "time", "memory")
+```
+
+```{r echo = FALSE}
+paged_table(dataset)
+```
+
+```{r fig.show="hold"}
+create_plot = function (n_models, odds_to_be_in_model, criteria) {
+  
+  data = dataset[dataset$n_models == n_models & dataset$odds_to_be_in_model == odds_to_be_in_model,]
+  
+  with_vector = data[data$method == "with_vector",]
+  with_map = data[data$method == "with_map",]
+  with_unordered_map = data[data$method == "with_unordered_map",]
+  
+  ymin = min( data[,criteria] )
+  ymax = max( data[,criteria] )
+  
+  plot(with_vector$n_variables, with_vector[,criteria], type = "l", col = "blue", ylim = c(ymin, ymax), main = paste(criteria, "with", n_models, "models and p =", odds_to_be_in_model), xlab = "n. variables", ylab = criteria)
+  lines(with_map$n_variables, with_map[,criteria], col = "red")
+  lines(with_unordered_map$n_variables, with_unordered_map[,criteria], col = "green")
+  legend(0, ymax, c("vector", "map", "unordered_map"), col = c("blue", "red", "green"), lwd = 1)
+}
+
+for (odds_to_be_in_model in unique(dataset$odds_to_be_in_model)) {
+  for (n_models in unique(dataset$n_models)) {
+    for (criteria in c("memory", "time")) {
+      create_plot(n_models, odds_to_be_in_model, criteria)
+    }
+  }
+}
+
+```
