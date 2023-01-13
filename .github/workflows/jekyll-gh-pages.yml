@@ -28,6 +28,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Update
+        run: sudo apt-get update
       - name: Install Jekyll
         run: sudo apt-get install jekyll
       - name: Install dependencies of kableExtra
