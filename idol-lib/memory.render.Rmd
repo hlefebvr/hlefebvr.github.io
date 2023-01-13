@@ -29,7 +29,7 @@ library(kableExtra)
 
 This page contains a benchmark on implementation solutions for the Env class in idol. The Env class is used to handle the optimization objects inside idol and to allow one variable to possibly belong to several optimization models. Thus, one variable can belong to multiple model yet each model must have its own "version" of the variable (e.g., lower bound, upper bound, type, etc.). 
 
-When creating a variable inside idol, through the Model::add_var method for instance. A new variable is created inside Env. It is stored inside a vector and has its corresponding index stored as an attribute. 
+When creating a variable inside idol, through the Model::add_var method for instance. A new variable is created inside Env. It is stored inside a vector and has its corresponding index stored as an attribute of Var. Let `Var t_var` be a given variable object, then all of the variable's "versions" can then be accessed via Env::m_variables[t_var.index()]. Given a Model, say `Model t_model`, the task is to access the `t_var`'s version corresponding to `t_model.`
 
 ## Raw results
 
