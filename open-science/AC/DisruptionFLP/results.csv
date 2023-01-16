@@ -225,6 +225,7 @@ instance_F15_C50__4.txt,3,Optimal,Proved,-708.91,530.46,21
 instance_F15_C50__4.txt,4,Fail,NotSpecified,-581.569,3600,41
 instance_F15_C50__5.txt,2,Fail,NotSpecified,-816.404,3600,91
 instance_F15_C50__5.txt,3,Feasible,TimeLimit,-738.173,3602.04,23
+instance_F15_C50__5.txt,4,Feasible,TimeLimit,-0,3602.66,5
 instance_F15_C50__6.txt,2,Optimal,Proved,-690.038,267.812,25
 instance_F15_C50__6.txt,3,Feasible,TimeLimit,-594.479,3600.01,31
 instance_F15_C50__6.txt,4,Feasible,TimeLimit,-539.509,3600,27
