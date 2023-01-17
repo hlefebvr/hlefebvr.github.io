@@ -432,3 +432,21 @@ knitr::kable(Table1,
       add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2))
 ```
 
+### Unsolved instances
+
+```{r}
+plot_unsolved = function (dataset, main = "Unsolved instances") {
+  data = dataset[, c("unsolved.benders", "unsolved.ccg")]
+  rownames(data) = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
+  data = t(as.matrix(data))
+  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10))
+  legend("topleft",  legend = c("benders", "ccg"), fill = colors$color)
+}
+```
+
+```{r}
+for (gamma in unique(Table$gamma)) {
+  plot_unsolved(Table[Table$gamma == gamma,], main = paste("Unsolved instances for Gamma =", gamma))
+}
+```
+
