@@ -439,7 +439,7 @@ plot_unsolved = function (dataset, main = "Unsolved instances") {
   data = dataset[, c("unsolved.benders", "unsolved.ccg")]
   rownames(data) = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
   data = t(as.matrix(data))
-  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10))
+  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10), cex.names=.8)
   legend("topleft",  legend = c("benders", "ccg"), fill = colors$color)
 }
 ```
@@ -448,5 +448,135 @@ plot_unsolved = function (dataset, main = "Unsolved instances") {
 for (gamma in unique(Table$gamma)) {
   plot_unsolved(Table[Table$gamma == gamma,], main = paste("Unsolved instances for Gamma =", gamma))
 }
+```
+
+## Partial disruptions ($K > 1$)
+
+We start by parsing the results stored in the "./resutls_PartialDisruptionFLP.csv" file.
+
+```{r}
+read_csv_benders_partial = function(filename) {
+  
+  # Read raw results
+  raw_results = read.csv(filename, header = FALSE)
+  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes", "k")
+  
+  # Fix unsolved instances to TIME_LIMIT
+  if (sum(raw_results$time >= 3600) > 0) {
+    raw_results[raw_results$time >= 3600,]$time = 3600
+  }
+  
+  # Extract properties from instance file names
+  properties = parse_instance_properties(raw_results$instance)
+  
+  # Build result data frame
+  result = data.frame(
+      properties$instance, 
+      properties$n_facilities,
+      properties$n_customers,
+      raw_results$gamma,
+      raw_results$objective,
+      raw_results$time,
+      raw_results$nodes,
+      "benders",
+      raw_results$k
+    )
+  colnames(result) = c("instance", "n_facilities", "n_customers", "gamma", "objective", "time", "nodes", "solver", "k")
+  
+  return (result)
+  
+}
+
+raw_benders_partial = read_csv_benders_partial("./results_PartialDisruptionFLP.csv")
+```
+
+```{r, echo = FALSE}
+paged_table(raw_benders_partial)
+```
+
+Then, we transform these raw data to obtain, for each instance, the computational time required to solve the instance for different values of $K$.
+
+```{r}
+by_k = spread(raw_benders_partial[, c("instance", "n_facilities", "n_customers", "gamma", "time", "k")], key = k, value = time)
+rownames(by_k) = NULL
+```
+
+Then, we first make sure that each instance have been solved for $K = 1, 2, 3$ and $4$ by printing rows where `NA` appear.
+```{r}
+paged_table(by_k[!complete.cases(by_k),])
+```
+
+### Table
+
+```{r}
+by_k = na.omit(by_k)
+partial_mean = aggregate(by_k[,c("1", "2", "3", "4")], by = by_k[,c("n_facilities", "n_customers", "gamma")], median)
+```
+
+```{r}
+```{r echo = FALSE}
+knitr::kable(partial_mean,
+             digits = c(0,0,0,2,2,2,2),
+             col.names = c("$|V_1|$", "$|V_1|$", "$\\Gamma$", "1", "2", "3", "4")
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 3, "Median time" = 4))
+```
+
+### Plots
+
+```{r, fig.show='hold'}
+plot_evolution = function(dataset, main = "Evolution of computational times depending on K") {
+  
+  dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, "), Gamma = ", dataset$gamma)
+  
+  longest = max(dataset[ ,"4"])
+  
+  colors = rainbow(length(dataset$type))
+  
+  par(mar = c(5,4,4,8))
+  
+  index = 1
+  for (type in dataset$type) {
+    
+    plot_function = if (index == 1) plot else lines
+    x = c(1,2,3,4)
+    y = as.vector( t(dataset[dataset$type == type, c("1", "2", "3", "4")]) )
+    
+    if (index == 1) {
+      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = "solid", type = "l", cex = 2, col = colors[index], main = "", xlab = "", ylab = "", axes = FALSE)
+    } else {
+      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = "solid", type = "l", cex = 2, col = colors[index], main = "", xlab = "", ylab = "")
+    }
+    
+    index = index + 1
+  }
+  
+  box()
+  axis(side = 1, at = seq(from = 1, to = 4, by = 1))
+  axis(side = 2, at = seq(from = 0, to = longest, by = 500))
+  
+  # Set the plot title
+  title(main = main,
+        xlab = "Median time (s)",
+        ylab = "K")
+  
+  # Set the plot legend
+  legend(
+    "topright",
+    inset=c(-.35, 0),
+    legend = dataset$type,
+    lty = "solid",
+    col = colors,
+    cex = .5,
+    xpd = TRUE,
+    bty = "n"
+  )
+
+}
+```
+
+```{r}
+plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 15,], main = "Gamma = 2 and |V_1| = 15")
 ```
 
