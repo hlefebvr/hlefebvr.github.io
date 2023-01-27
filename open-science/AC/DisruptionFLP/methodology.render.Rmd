@@ -205,8 +205,8 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   times = spread(dataset[,c("instance", "gamma", "solver", "time")], key = solver, value = time)
   times$time.best = apply(times[,-c(1,2)], 1, FUN = min)
   
-  times = na.omit(times)
-  print("WARNING omitting NA")
+  #times = na.omit(times)
+  #print("WARNING omitting NA")
   
   ratios = times[,-ncol(times)][,-c(1,2)] / times$time.best
   colnames(ratios) = paste0(colnames(ratios), ".ratio")
