@@ -205,8 +205,8 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   times = spread(dataset[,c("instance", "gamma", "solver", "time")], key = solver, value = time)
   times$time.best = apply(times[,-c(1,2)], 1, FUN = min)
   
-  #times = na.omit(times)
-  #print("WARNING omitting NA")
+  times = na.omit(times)
+  print("WARNING omitting NA")
   
   ratios = times[,-ncol(times)][,-c(1,2)] / times$time.best
   colnames(ratios) = paste0(colnames(ratios), ".ratio")
@@ -517,11 +517,10 @@ by_k = na.omit(by_k)
 partial_mean = aggregate(by_k[,c("1", "2", "3", "4")], by = by_k[,c("n_facilities", "n_customers", "gamma")], median)
 ```
 
-```{r}
 ```{r echo = FALSE}
 knitr::kable(partial_mean,
              digits = c(0,0,0,2,2,2,2),
-             col.names = c("$|V_1|$", "$|V_1|$", "$\\Gamma$", "1", "2", "3", "4")
+             col.names = c("$|V_1|$", "$|V_2|$", "$\\Gamma$", "1", "2", "3", "4")
              ) %>%
       kable_classic() %>%
       add_header_above(c(" " = 3, "Median time" = 4))
@@ -581,6 +580,6 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 ```
 
 ```{r}
-plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 15,], main = "Gamma = 2 and |V_1| = 15")
+plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
 ```
 
