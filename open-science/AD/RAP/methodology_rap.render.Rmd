@@ -1,0 +1,378 @@
+---
+title: Open methodology for "An exact approach for convex adjustable robust optimization" > Resource Allocation Problem
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../../_includes/head.html
+      before_body: 
+        - ../../../_includes/header.html
+        - ../../../_includes/begin_content.html
+        - ../../../_includes/toc.html
+        - ../../../_includes/begin_post_content.html
+      after_body: 
+        - ../../../_includes/handle_page_title.html
+        - ../../../_includes/end_post_content.html
+        - ../../../_includes/end_content.html
+        - ../../../_includes/footer.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(rmarkdown)
+library(kableExtra)
+library(tidyr)
+```
+
+```{r}
+key = c("instance", "gamma", "deviation")
+time_limit = 3600
+```
+
+```{r}
+results = read.table("./results.tsv", header = FALSE, sep = '')
+colnames(results) <- c("instance", "n_resources", "n_customers", "gamma", "deviation", "tag", "solver", "status", "master_time", "separation_time", "time", "objective", "n_scenarios")
+results$tag = NULL
+
+results$p = results$gamma / results$n_customers
+results$p = ceiling(results$p / .05) * .05
+
+paged_table(results)
+```
+
+```{r}
+ccg = results[results$solver == "CCG",]
+benders = results[results$solver == "GBD",]
+```
+
+### Checking
+
+```{r}
+compare = function(a, b) {
+  A = a[a$time < 3600,c("instance", "gamma", "deviation", "objective", "time")]
+  B = b[b$time < 3600,c("instance", "gamma", "deviation", "objective", "time")]
+  
+  merged = merge(A, B, by = c("instance", "gamma", "deviation"))
+  
+  filter = abs(merged$objective.x - merged$objective.y) / merged$objective.y > 1e-3
+  if (sum( filter ) > 0) {
+    print("For some instances, the two methods do not agree.")
+    paged_table( merged[filter,] )
+  }
+}
+
+compare(results[results$solver == "GENERALIZED_BENDERS_DECOMPOSITION",], results[results$solver == "COLUMN_AND_CONSTRAINT_GENERATION",])
+```
+
+### Performance profiles
+
+```{r}
+solvers = unique(results$solver)
+colors = cbind(as.data.frame(solvers), rainbow(length(solvers)))
+colnames(colors) = c("solver", "color")
+```
+
+
+```{r}
+performance_profile = function (dataset, xlim = NULL, main = "Performance profile") {
+
+  times = spread(dataset[,c("instance", "gamma", "deviation", "solver", "time")], key = solver, value = time)
+  times$time.best = apply(times[,-c(1,2)], 1, FUN = min)
+  
+  times = na.omit(times)
+  print("WARNING omitting NA")
+  
+  ratios = times[,-ncol(times)][,-c(1,2)] / times$time.best
+  colnames(ratios) = paste0(colnames(ratios), ".ratio")
+  
+  worst_ratio = max(ratios)
+  
+  times = cbind(times, ratios)
+  
+  for (solver in solvers) {
+    time_limit_filter = times[,solver] >= time_limit
+    if ( sum(time_limit_filter) > 0 ) {
+      times[time_limit_filter, paste0(solver, ".ratio")] = worst_ratio
+    }
+  }
+  
+  if (is.null(xlim)) {
+    xlim = c(1, worst_ratio)
+  }
+  
+  par(mar = c(5,4,4,8))
+  
+  using_colors = NULL
+  
+  index = 1
+  for (solver in solvers) {
+    
+    plot_function = if (index == 1) plot else lines
+    
+    profile = ecdf(times[,paste0(solver, ".ratio")])
+    
+    using_color =  colors[colors$solver == solver,2]
+    using_colors = rbind(using_colors, using_color)
+    
+    plot_function(profile, xlim = xlim, ylim = c(0,1), lty = "solid", cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    
+    index = index + 1
+  }
+  
+  # Set the plot title
+  title(main = main,
+        xlab = "Performance ratio",
+        ylab = "ECDF")
+  
+  # Set the plot legend
+  legend(
+    "topright",
+    inset=c(-.35, 0),
+    legend = solvers,
+    lty = "solid",
+    col = using_colors,
+    cex = .5,
+    xpd = TRUE,
+    bty = "n"
+  )
+}
+```
+
+```{r}
+performance_profile(results, main = "Performance profile over all instances", xlim = c(1, 1000))
+for (deviation in unique(results$deviation)) {
+  performance_profile(results[results$deviation == deviation,], main = paste0("Performance profile (deviation = ", deviation, ")"), xlim = c(1, 1000))
+}
+for (p in unique(results$p)) {
+  performance_profile(results[results$p == p,], main = paste0("Performance profile (p = ", p, ")"), xlim = c(1, 1000))
+}
+```
+
+## Summary tables
+
+```{r}
+group_by = c("p", "n_resources", "n_customers", "deviation")
+str_group_by = c("$p$", "$|I|$", "$|J|$", "$\\bar d_j/\\tilde d_j$")
+```
+
+### Computing summary times by group
+
+We start by calling `summary` on each group. This will compute, for each group, the minimum, 1st quantile, median, mean, 3rd quantile and maximum execution time. This is done in the following function which takes as parameter the formatted table with all results.
+
+```{r}
+compute_summary_by_group = function(data, field) {
+  
+  # We summarize only the solved instances
+  data = data[data[,field] < 3600,]
+  
+  # We aggregate by `group_by` using `summary`
+  result = aggregate(data[,field], by = data[,group_by], summary)
+  
+  # Here, we call data.frame recursively to flatten `result` (summary does create a nested structure)
+  result = do.call(data.frame, result)
+  
+  # Then, we set column names
+  colnames(result) = c(group_by, paste0(field, ".min"), paste0(field, ".1st_quantile"), paste0(field, ".median"), paste0(field, ".mean"), paste0(field, ".3rd_quantile"), paste0(field, ".max"))
+  
+  return (result)
+}
+```
+
+We then call this function on each approach.
+
+```{r}
+summary_ccg = compute_summary_by_group(ccg, "time")
+summary_benders = compute_summary_by_group(benders, "time")
+```
+
+### Computing summary generated scnearios
+
+```{r}
+cuts_ccg = compute_summary_by_group(ccg, "n_scenarios")[, c(group_by, "n_scenarios.mean")]
+cuts_benders = compute_summary_by_group(benders, "n_scenarios")[, c(group_by, "n_scenarios.mean")]
+```
+
+#### Computing number of unsolved instances by group
+
+We then count the number of instances which could not be solved to optimality within each group. This is done in the following function.
+
+```{r}
+compute_unsolved_by_group = function(data) {
+
+  # Aggregate groups using `sum` over the filter returning 1 iff the time limit is reached
+  result = aggregate(data$time >= 3600, by = data[,group_by], sum)
+  
+  # Set column and row names
+  colnames(result) = c(group_by, "unsolved")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Again, we call this function on each approach.
+
+```{r}
+unsolved_ccg = compute_unsolved_by_group(ccg)
+unsolved_benders = compute_unsolved_by_group(benders)
+```
+
+
+#### Computing number of instances by group
+
+Finally, we also count the number of instances which was tried by each approach. (Note that when experiments are done, they should all be equal).
+
+```{r}
+compute_instances_by_group = function(data) {
+  
+  # Call length on each group to count the number of instances
+  result = aggregate(data$instance, by = data[,group_by], length)
+  
+  # Set row and column names
+  colnames(result) = c(group_by, "total")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Let's call it on each approach.
+
+```{r}
+total_ccg = compute_instances_by_group(ccg)
+total_benders = compute_instances_by_group(benders)
+```
+
+### Summary table
+
+
+#### Final result
+
+We are now ready to build our summary table. In what follows, we introduce a helper function to add the useful columns of a by-group result (i.e., `total_<APPROACH>`, `unsolved_<APPROACH>` or `summary_<APPROACH>`) to the main table, called `Table`.
+
+```{r}
+# Helper function
+add_columns = function(table, data, suffix) {
+  result = merge(table, data, by = group_by, all = TRUE, suffixes = c("", paste(".", suffix, sep = "")))
+  return (result)
+}
+
+# We list the useful columns of the by-group results
+column_names = c("total", "unsolved", "time.min", "time.1st_quantile", "time.median", "time.mean", "time.3rd_quantile", "time.max", "n_scenarios.min", "n_scenarios.1st_quantile", "n_scenarios.median", "n_scenarios.mean", "n_scenarios.3rd_quantile", "n_scenarios.max")
+
+# We create an empty data frame with column names. This is used to
+# (1) create the placeholder for the group identifiers
+# (2) force R to rename each added column by appending a suffix to it
+Table = data.frame(matrix(ncol = length(group_by) + length(column_names), nrow = 0))
+colnames(Table) = c(group_by, column_names)
+
+# We add by-group totals
+Table = add_columns(Table, total_benders, "benders")
+Table = add_columns(Table, total_ccg, "ccg")
+
+# We add by-group unsolveds
+Table = add_columns(Table, unsolved_benders, "benders")
+Table = add_columns(Table, unsolved_ccg, "ccg")
+
+# We add by-group summaries
+Table = add_columns(Table, summary_benders, "benders")
+Table = add_columns(Table, summary_ccg, "ccg")
+
+# We add by-group summaries
+Table = add_columns(Table, cuts_benders, "benders")
+Table = add_columns(Table, cuts_ccg, "ccg")
+
+# Finally, we can remove the "fake" columns we introduced to foce R renaming new columns
+Table = Table[,!names(Table) %in% column_names]
+```
+
+
+The resulting table therefore contains a merge of all by-group data and is drawn hereafter.
+
+```{r echo = FALSE}
+paged_table(Table)
+```
+
+
+To better summarize our data, we make a new table out of this table by selecting interesting columns. This is done as follows.
+
+```{r}
+Table1 = Table[,c(
+  group_by,
+  "total.benders",
+  "total.ccg",
+  "unsolved.benders",
+  "unsolved.ccg",
+  "time.mean.benders",
+  "time.mean.ccg",
+  "n_scenarios.mean.benders",
+  "n_scenarios.mean.ccg"
+  )]
+Table1$p = Table1$p * 100
+Table1$deviation = Table1$deviation * 100
+```
+
+```{r echo = FALSE}
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 2, 2, 2, 2)
+Kable = knitr::kable(Table1,
+             digits = digits,
+             col.names = c(str_group_by, "Benders", "CCG", "Benders", "CCG", "Benders", "CCG", "Benders", "CCG")
+             #,format = "latex"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2 ,"Scnarios" = 2))
+Kable
+#save_kable(Kable, "compare_with_Subramanyam.render.tex")
+```
+
+
+```{r}
+transpose_table_for = function(approach) {
+
+  result = Table1[Table1$p == unique(Table1$p)[[1]], group_by]
+  
+  for (p in unique(Table1$p)) {
+    columns_to_bind = Table1[Table1$p == p, c(paste0("unsolved.", approach), paste0("time.mean.", approach), paste0("n_scenarios.mean.", approach))]
+    columns_to_bind$p = NULL
+    rownames(columns_to_bind) = NULL
+    colnames(columns_to_bind) = c(paste0("unsolved.", approach, ".", p), paste0("time.mean.", approach, ".", p), paste0("n_scenarios.mean.", approach, ".", p))
+    result = cbind(result, columns_to_bind)
+  }
+  
+  result$p = NULL
+  
+  return (result)
+
+}
+
+make_kable = function(table) {
+  digits = c(as.vector(matrix(0, nrow = length(group_by)-1)), 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0)
+  result = knitr::kable(table,
+               digits = digits,
+               col.names = c(str_group_by[-1], "Unsolved", "Time", "Scenarios", "Unsolved", "Time", "Scenarios", "Unsolved", "Time", "Scenarios", "Unsolved", "Time", "Scenarios", "Unsolved", "Time", "Scenarios")
+               #,format = "latex"
+               ) %>%
+        kable_classic() %>%
+        add_header_above(c(" " = length(group_by)-1, "p = 5" = 3, "p = 10" = 3, "p = 15" = 3 ,"p = 20" = 3, "p = 25" = 3))
+  return (result)
+}
+
+```
+
+```{r}
+Table21 = transpose_table_for("benders")
+Table22 = transpose_table_for("ccg")
+
+make_kable(Table21)
+make_kable(Table22)
+```
+
+
