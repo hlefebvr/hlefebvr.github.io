@@ -264,7 +264,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 }
 ```
 
-```{r}
+```{r, dev = c("png", "pdf")}
 {
   performance_profile(all_results)
   performance_profile(all_results, xlim = c(1, 20), main = "Performance profile (with ratio up to 20)")
@@ -428,12 +428,15 @@ Table1 = Table[,c(
 
 ```{r echo = FALSE}
 digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 2, 2)
-knitr::kable(Table1,
+Kable = knitr::kable(Table1,
              digits = digits,
              col.names = c(str_group_by, "Benders", "CCG", "Benders", "CCG", "Benders", "CCG")
+             #,format = "latex"
              ) %>%
       kable_classic() %>%
       add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2))
+Kable
+#save_kable(Kable, "compare_with_Subramanyam.render.tex")
 ```
 
 ### Unsolved instances
@@ -448,7 +451,7 @@ plot_unsolved = function (dataset, main = "Unsolved instances") {
 }
 ```
 
-```{r}
+```{r, dev = c("png", "pdf")}
 for (gamma in unique(Table$gamma)) {
   plot_unsolved(Table[Table$gamma == gamma,], main = paste("Unsolved instances for Gamma =", gamma))
 }
