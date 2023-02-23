@@ -302,7 +302,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 }
 ```
 
-```{r, dev = c("png", "pdf")}
+```{r}
 {
   performance_profile(all_results)
   performance_profile(all_results, xlim = c(1, 100), main = "Performance profile")
@@ -557,7 +557,7 @@ plot_solved = function (dataset, main = "Solved instances") {
 }
 ```
 
-```{r, dev = c("png", "pdf")}
+```{r}
 #for (gamma in unique(Table$gamma)) {
 #  plot_solved(Table[Table$gamma == gamma,], main = paste("Solved instances for Gamma =", gamma))
 #}
@@ -689,7 +689,7 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 }
 ```
 
-```{r, dev = c("png", "pdf")}
+```{r}
 plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
 ```
 
