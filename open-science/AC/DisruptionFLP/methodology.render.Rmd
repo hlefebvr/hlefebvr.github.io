@@ -27,6 +27,14 @@ library(rmarkdown)
 library(rmarkdown)
 library(kableExtra)
 library(tidyr)
+
+options(scipen = 999)
+```
+
+```{r}
+gap = function(LB, UB) {
+  return(100 * abs(LB - UB) / (1e-10 + abs(UB)))
+}
 ```
 
 ```{r}
@@ -35,8 +43,8 @@ time_limit = 3600
 ```
 
 ```{r}
-raw_benders = read.csv("./results.csv", header = FALSE)
-colnames(raw_benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
+raw_benders = read.csv("./results_benders_DisruptionFLP.csv", header = FALSE)
+colnames(raw_benders) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes", "rel_gap", "abs_gap", "n_generated_cuts")
 paged_table(raw_benders)
 ```
 
@@ -62,8 +70,8 @@ parse_instance_properties = function (instances) {
   
   parsed = t(apply(as.matrix(instances), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
   
-  result = data.frame(instances, as.double(parsed[,1]), as.double(parsed[,2]))
-  colnames(result) = c("instance", "n_facilities", "n_customers")
+  result = data.frame(instances, as.double(parsed[,1]), as.double(parsed[,2]), as.double(parsed[,3]))
+  colnames(result) = c("instance", "n_facilities", "n_customers", "ratio")
   
   return (result)
   
@@ -80,7 +88,7 @@ read_csv_benders = function(filename) {
   
   # Read raw results
   raw_results = read.csv(filename, header = FALSE)
-  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes")
+  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes", "rel_gap", "abs_gap", "n_generated_cuts")
   
   # Fix unsolved instances to TIME_LIMIT
   if (sum(raw_results$time >= 3600) > 0) {
@@ -95,13 +103,17 @@ read_csv_benders = function(filename) {
       properties$instance, 
       properties$n_facilities,
       properties$n_customers,
+      properties$ratio,
       raw_results$gamma,
       raw_results$objective,
       raw_results$time,
       raw_results$nodes,
-      "benders"
+      raw_results$rel_gap * 100,
+      "B&C"
     )
-  colnames(result) = c("instance", "n_facilities", "n_customers", "gamma", "objective", "time", "nodes", "solver")
+  colnames(result) = c("instance", "n_facilities", "n_customers", "ratio", "gamma", "objective", "time", "nodes", "gap", "solver")
+  
+  result = result[result$ratio != 150,]
   
   return (result)
   
@@ -111,7 +123,7 @@ read_csv_benders = function(filename) {
 We can then read CSV files coming from the benders approach.
 
 ```{r}
-benders = read_csv_benders("./results.csv")
+benders = read_csv_benders("./results_benders_DisruptionFLP.csv")
 ```
 
 ```{r echo= FALSE}
@@ -142,13 +154,19 @@ read_csv_ccg = function (filename) {
       properties$instance, 
       properties$n_facilities,
       properties$n_customers,
+      properties$ratio,
       raw_results$gamma,
       raw_results$UB,
       raw_results$time,
       NA,
-      "ccg"
+      gap(raw_results$LB, raw_results$UB),
+      "CCG"
     )
-  colnames(result) = c("instance", "n_facilities", "n_customers", "gamma", "objective", "time", "nodes", "solver")
+  colnames(result) = c("instance", "n_facilities", "n_customers", "ratio", "gamma", "objective", "time", "nodes", "gap", "solver")
+  
+  raw_results[abs(raw_results$UB) < 1e-6 & abs(raw_results$LB) < 1e-6,]$gap = 0
+  
+  result = result[result$ratio != 150,]
   
   return (result)
   
@@ -229,6 +247,9 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   par(mar = c(5,4,4,8))
   
   using_colors = NULL
+  using_types = NULL
+  
+  last_ecdf = NULL
   
   index = 1
   for (solver in solvers) {
@@ -239,8 +260,25 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
     
     using_color =  colors[colors$solver == solver,2]
     using_colors = rbind(using_colors, using_color)
+    using_type = "solid"
+    if (using_color == "#00FFFFFF") {
+      using_type = "dashed"
+    }
+    using_types = rbind(using_types, using_type)
     
-    plot_function(profile, xlim = xlim, ylim = c(0,1), lty = "solid", cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    plot_function(profile, xlim = xlim, ylim = c(0,1), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    
+    if (is.null(last_ecdf)) {
+      last_ecdf = profile
+    } else {
+      p = seq(0, 1, length.out = 50000)
+      df = data.frame(
+        quantile(last_ecdf, probs = p),
+        quantile(profile, probs = p)
+      )
+      colnames(df) = solvers
+      print( head( df[df["CCG"] > df["B&C"],], 1 ))
+    }
     
     index = index + 1
   }
@@ -252,13 +290,13 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   
   # Set the plot legend
   legend(
-    "topright",
-    inset=c(-.35, 0),
+    "bottomright",
+    #inset=c(-.35, 0),
     legend = solvers,
-    lty = "solid",
+    lty = using_types,
     col = using_colors,
-    cex = .5,
-    xpd = TRUE,
+    #cex = .5,
+    #xpd = TRUE,
     bty = "n"
   )
 }
@@ -267,19 +305,23 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 ```{r, dev = c("png", "pdf")}
 {
   performance_profile(all_results)
-  performance_profile(all_results, xlim = c(1, 20), main = "Performance profile (with ratio up to 20)")
+  performance_profile(all_results, xlim = c(1, 100), main = "Performance profile")
 }
 
 for (gamma in unique(all_results$gamma)) {
   performance_profile(all_results[all_results$gamma == gamma,], main = paste("With gamma =", gamma))
+}
+
+for (ratio in unique(all_results$ratio)) {
+  performance_profile(all_results[all_results$ratio == ratio,], main = paste("With mu =", ratio / 100))
 }
 ```
 
 ## Summary tables
 
 ```{r}
-group_by = c("gamma", "n_facilities", "n_customers")
-str_group_by = c("$\\Gamma$", "$|V_1|$", "$|V_2|$")
+group_by = c("ratio", "gamma", "n_facilities", "n_customers")
+str_group_by = c("$\\mu$", "$\\Gamma$", "$|V_1|$", "$|V_2|$")
 ```
 
 ### Computing summary times by group
@@ -312,18 +354,18 @@ summary_ccg = compute_summary_by_group(ccg)
 summary_benders = compute_summary_by_group(benders)
 ```
 
-#### Computing number of unsolved instances by group
+#### Computing number of solved instances by group
 
 We then count the number of instances which could not be solved to optimality within each group. This is done in the following function.
 
 ```{r}
-compute_unsolved_by_group = function(data) {
+compute_solved_by_group = function(data) {
 
   # Aggregate groups using `sum` over the filter returning 1 iff the time limit is reached
-  result = aggregate(data$time >= 3600, by = data[,group_by], sum)
+  result = aggregate(data$time < 3600, by = data[,group_by], sum)
   
   # Set column and row names
-  colnames(result) = c(group_by, "unsolved")
+  colnames(result) = c(group_by, "solved")
   rownames(result) = NULL
   
   return (result)
@@ -334,8 +376,64 @@ compute_unsolved_by_group = function(data) {
 Again, we call this function on each approach.
 
 ```{r}
-unsolved_ccg = compute_unsolved_by_group(ccg)
-unsolved_benders = compute_unsolved_by_group(benders)
+solved_ccg = compute_solved_by_group(ccg)
+solved_benders = compute_solved_by_group(benders)
+```
+
+
+#### Computing average gap of unsolved instances by group
+
+We then compute the average final gap over those instances which could not be solved to optimality within each group. This is done in the following function.
+
+```{r}
+compute_gap_by_group = function(data) {
+  
+  # Aggregate groups using `sum` over the filter returning 1 iff the time limit is reached
+  result = aggregate(data$gap, by = data[,group_by], mean)
+  
+  # Set column and row names
+  colnames(result) = c(group_by, "gap")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Again, we call this function on each approach.
+
+```{r}
+gap_ccg = compute_gap_by_group(ccg)
+gap_benders = compute_gap_by_group(benders)
+```
+
+
+#### Computing average number of nodes instances by group
+
+We then compute the average final gap over those instances which could not be solved to optimality within each group. This is done in the following function.
+
+```{r}
+compute_nodes_by_group = function(data) {
+
+  only_solved = data[data$time < 3600,]
+  
+  # Aggregate groups using `sum` over the filter returning 1 iff the time limit is reached
+  result = aggregate(only_solved$node, by = only_solved[,group_by], mean)
+  
+  # Set column and row names
+  colnames(result) = c(group_by, "node")
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+Again, we call this function on each approach.
+
+```{r}
+nodes_ccg = compute_nodes_by_group(ccg)
+nodes_benders = compute_nodes_by_group(benders)
 ```
 
 
@@ -380,7 +478,7 @@ add_columns = function(table, data, suffix) {
 }
 
 # We list the useful columns of the by-group results
-column_names = c("total", "unsolved", "min", "1st_quantile", "median", "mean", "3rd_quantile", "max")
+column_names = c("total", "solved", "min", "1st_quantile", "median", "mean", "3rd_quantile", "max", "gap", "node")
 
 # We create an empty data frame with column names. This is used to
 # (1) create the placeholder for the group identifiers
@@ -389,16 +487,23 @@ Table = data.frame(matrix(ncol = length(group_by) + length(column_names), nrow =
 colnames(Table) = c(group_by, column_names)
 
 # We add by-group totals
-Table = add_columns(Table, total_benders, "benders")
-Table = add_columns(Table, total_ccg, "ccg")
+Table = add_columns(Table, total_benders, "B&C")
+Table = add_columns(Table, total_ccg, "CCG")
 
-# We add by-group unsolveds
-Table = add_columns(Table, unsolved_benders, "benders")
-Table = add_columns(Table, unsolved_ccg, "ccg")
+# We add by-group solved
+Table = add_columns(Table, solved_benders, "B&C")
+Table = add_columns(Table, solved_ccg, "CCG")
 
 # We add by-group summaries
-Table = add_columns(Table, summary_benders, "benders")
-Table = add_columns(Table, summary_ccg, "ccg")
+Table = add_columns(Table, summary_benders, "B&C")
+Table = add_columns(Table, summary_ccg, "CCG")
+
+# We add by-group gap
+Table = add_columns(Table, gap_benders, "B&C")
+Table = add_columns(Table, gap_ccg, "CCG")
+
+# We add by-group gap
+Table = add_columns(Table, nodes_benders, "B&C")
 
 # Finally, we can remove the "fake" columns we introduced to foce R renaming new columns
 Table = Table[,!names(Table) %in% column_names]
@@ -417,44 +522,45 @@ To better summarize our data, we make a new table out of this table by selecting
 ```{r}
 Table1 = Table[,c(
   group_by,
-  "total.benders",
-  "total.ccg",
-  "unsolved.benders",
-  "unsolved.ccg",
-  "mean.benders",
-  "mean.ccg"
+  "solved.B&C",
+  "solved.CCG",
+  "mean.B&C",
+  "mean.CCG",
+  "gap.B&C",
+  "gap.CCG",
+  "node.B&C"
   )]
 ```
 
 ```{r echo = FALSE}
-digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 0, 0, 2, 2)
+digits = c(as.vector(matrix(0, nrow = length(group_by))), 0, 0, 2, 2, 2, 2, 0)
 Kable = knitr::kable(Table1,
              digits = digits,
-             col.names = c(str_group_by, "Benders", "CCG", "Benders", "CCG", "Benders", "CCG")
+             col.names = c(str_group_by, "B&C", "CCG", "B&C", "CCG", "B&C", "CCG", "B&C")
              #,format = "latex"
              ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = length(group_by), "Total" = 2, "Unsolved" = 2, "Time" = 2))
+      add_header_above(c(" " = length(group_by), "Solved" = 2, "Time" = 2, "Gap" = 2, "Node"))
 Kable
 #save_kable(Kable, "compare_with_Subramanyam.render.tex")
 ```
 
-### Unsolved instances
+### Solved instances
 
 ```{r}
-plot_unsolved = function (dataset, main = "Unsolved instances") {
-  data = dataset[, c("unsolved.benders", "unsolved.ccg")]
+plot_solved = function (dataset, main = "Solved instances") {
+  data = dataset[, c("solved.B&C", "solved.CCG")]
   rownames(data) = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
   data = t(as.matrix(data))
-  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10), cex.names=.8)
-  legend("topleft",  legend = c("benders", "ccg"), fill = colors$color)
+  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 30), cex.names=.8)
+  legend("topleft",  legend = c("B&C", "CCG"), fill = colors$color)
 }
 ```
 
 ```{r, dev = c("png", "pdf")}
-for (gamma in unique(Table$gamma)) {
-  plot_unsolved(Table[Table$gamma == gamma,], main = paste("Unsolved instances for Gamma =", gamma))
-}
+#for (gamma in unique(Table$gamma)) {
+#  plot_solved(Table[Table$gamma == gamma,], main = paste("Solved instances for Gamma =", gamma))
+#}
 ```
 
 ## Partial disruptions ($K > 1$)
@@ -466,7 +572,7 @@ read_csv_benders_partial = function(filename) {
   
   # Read raw results
   raw_results = read.csv(filename, header = FALSE)
-  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes", "k")
+  colnames(raw_results) <- c("instance", "gamma", "status", "reason", "objective", "time", "nodes", "LB", "UB", "n_generated_cuts", "k")
   
   # Fix unsolved instances to TIME_LIMIT
   if (sum(raw_results$time >= 3600) > 0) {
@@ -481,14 +587,15 @@ read_csv_benders_partial = function(filename) {
       properties$instance, 
       properties$n_facilities,
       properties$n_customers,
+      properties$ratio,
       raw_results$gamma,
       raw_results$objective,
       raw_results$time,
       raw_results$nodes,
-      "benders",
+      "B&C",
       raw_results$k
     )
-  colnames(result) = c("instance", "n_facilities", "n_customers", "gamma", "objective", "time", "nodes", "solver", "k")
+  colnames(result) = c("instance", "n_facilities", "n_customers", "ratio", "gamma", "objective", "time", "nodes", "solver", "k")
   
   return (result)
   
@@ -504,7 +611,7 @@ paged_table(raw_benders_partial)
 Then, we transform these raw data to obtain, for each instance, the computational time required to solve the instance for different values of $K$.
 
 ```{r}
-by_k = spread(raw_benders_partial[, c("instance", "n_facilities", "n_customers", "gamma", "time", "k")], key = k, value = time)
+by_k = spread(raw_benders_partial[, c("instance", "n_facilities", "n_customers", "ratio", "gamma", "time", "k")], key = k, value = time)
 rownames(by_k) = NULL
 ```
 
@@ -531,7 +638,7 @@ knitr::kable(partial_mean,
 
 ### Plots
 
-```{r, fig.show='hold'}
+```{r, dev=c("png", "pdf"), fig.show='hold'}
 plot_evolution = function(dataset, main = "Evolution of computational times depending on K") {
   
   dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, "), Gamma = ", dataset$gamma)
@@ -564,8 +671,8 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
   
   # Set the plot title
   title(main = main,
-        xlab = "Median time (s)",
-        ylab = "K")
+        ylab = "Median time (s)",
+        xlab = "R")
   
   # Set the plot legend
   legend(
@@ -582,7 +689,7 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 }
 ```
 
-```{r}
+```{r, dev = c("png", "pdf")}
 plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
 ```
 
