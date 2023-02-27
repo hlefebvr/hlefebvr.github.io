@@ -192,7 +192,7 @@ compare = function(a, b) {
   
   merged = merge(A, B, by = c("instance", "gamma"))
   
-  filter = abs(merged$objective.x - merged$objective.y) > 1e-3
+  filter = gap(merged$objective.x, merged$objective.y) > 1e-3
   if (sum( filter ) > 0) {
     print("For some instances, the two methods do not agree.")
     paged_table( merged[filter,] )
@@ -567,6 +567,8 @@ for (ratio in unique(Table$ratio)) {
 
 ## Partial disruptions ($K > 1$)
 
+In this section, we study how B&C performs when increasing the number of unknown coefficients. This leads to the partial disruption FLP application (Note that $K$ has been replaced by $R$ in the paper).
+
 We start by parsing the results stored in the "./resutls_PartialDisruptionFLP.csv" file.
 
 ```{r}
@@ -622,7 +624,7 @@ Then, we first make sure that each instance have been solved for $K = 1, 2, 3$ a
 paged_table(by_k[!complete.cases(by_k),])
 ```
 
-### Table
+### Median computation times
 
 ```{r}
 by_k = na.omit(by_k)
@@ -638,7 +640,7 @@ knitr::kable(partial_mean,
       add_header_above(c(" " = 3, "Median time" = 4))
 ```
 
-### Plots
+### Graphical representation
 
 ```{r, dev=c("png", "pdf"), fig.show='hold'}
 plot_evolution = function(dataset, main = "Evolution of computational times depending on K") {
@@ -696,6 +698,10 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 ```{r}
 plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
 ```
+
+### Solved instances
+
+Here, we count the number of solved instances for each value of $K$.
 
 ```{r}
 data_increasing_R = raw_benders_partial[raw_benders_partial$gamma == 2 & raw_benders_partial$n_facilities == 10,]
