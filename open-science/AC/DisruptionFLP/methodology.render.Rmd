@@ -302,7 +302,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 }
 ```
 
-```{r}
+```{r, dev = c("png", "pdf")}
 {
   performance_profile(all_results)
   performance_profile(all_results, xlim = c(1, 100), main = "Performance profile")
@@ -313,7 +313,7 @@ for (gamma in unique(all_results$gamma)) {
 }
 
 for (ratio in unique(all_results$ratio)) {
-  performance_profile(all_results[all_results$ratio == ratio,], main = paste("With mu =", ratio / 100))
+  performance_profile(all_results[all_results$ratio == ratio,], xlim = c(1, 70), main = paste("With mu =", ratio / 100))
 }
 ```
 
@@ -552,15 +552,17 @@ plot_solved = function (dataset, main = "Solved instances") {
   data = dataset[, c("solved.B&C", "solved.CCG")]
   rownames(data) = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
   data = t(as.matrix(data))
-  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 30), cex.names=.8)
+  barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10), cex.names=.8)
   legend("topleft",  legend = c("B&C", "CCG"), fill = colors$color)
 }
 ```
 
 ```{r}
-#for (gamma in unique(Table$gamma)) {
-#  plot_solved(Table[Table$gamma == gamma,], main = paste("Solved instances for Gamma =", gamma))
-#}
+for (ratio in unique(Table$ratio)) {
+  for (gamma in unique(Table$gamma)) {
+    plot_solved(Table[Table$gamma == gamma & Table$ratio == ratio,], main = paste("Solved instances for Gamma =", gamma))
+  }
+}
 ```
 
 ## Partial disruptions ($K > 1$)
@@ -643,7 +645,9 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
   
   dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, "), Gamma = ", dataset$gamma)
   
-  longest = max(dataset[ ,"4"])
+  #longest = max(dataset[ ,"4"])
+  
+  longest = 3600
   
   colors = rainbow(length(dataset$type))
   
@@ -693,3 +697,23 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
 ```
 
+```{r}
+data_increasing_R = raw_benders_partial[raw_benders_partial$gamma == 2 & raw_benders_partial$n_facilities == 10,]
+solved = aggregate(data_increasing_R$time < 3600, by = list(data_increasing_R$k, data_increasing_R$n_customers), sum)
+colnames(solved) = c("K", "n.customers", "n.solved")
+```
+
+```{r, echo =  FALSE}
+kable(solved)
+```
+
+
+```{r, echo = FALSE}
+data_increasing_R = raw_benders_partial[raw_benders_partial$gamma == 2 & raw_benders_partial$n_facilities == 10,]
+solved = aggregate(data_increasing_R$time < 3600, by = list(data_increasing_R$k), sum)
+colnames(solved) = c("K", "n.solved")
+```
+
+```{r, echo =  FALSE}
+kable(solved)
+```
