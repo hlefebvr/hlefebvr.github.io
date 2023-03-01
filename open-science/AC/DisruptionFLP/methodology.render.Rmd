@@ -244,7 +244,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
     xlim = c(1, worst_ratio)
   }
   
-  par(mar = c(5,4,4,8))
+  #par(mar = c(5,4,4,8))
   
   using_colors = NULL
   using_types = NULL
@@ -308,12 +308,12 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   performance_profile(all_results, xlim = c(1, 100), main = "Performance profile")
 }
 
-for (gamma in unique(all_results$gamma)) {
-  performance_profile(all_results[all_results$gamma == gamma,], main = paste("With gamma =", gamma))
-}
+#for (gamma in unique(all_results$gamma)) {
+#  performance_profile(all_results[all_results$gamma == gamma,], main = paste("With gamma =", gamma))
+#}
 
 for (ratio in unique(all_results$ratio)) {
-  performance_profile(all_results[all_results$ratio == ratio,], xlim = c(1, 70), main = paste("With mu =", ratio / 100))
+  performance_profile(all_results[all_results$ratio == ratio,], xlim = c(1, 70), main = "")
 }
 ```
 
@@ -553,7 +553,7 @@ plot_solved = function (dataset, main = "Solved instances") {
   rownames(data) = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
   data = t(as.matrix(data))
   barplot( data , beside = TRUE, col = colors$color, main = main, ylim = c(0, 10), cex.names=.8)
-  legend("topleft",  legend = c("B&C", "CCG"), fill = colors$color)
+  legend("bottomleft",  legend = c("B&C", "CCG"), fill = colors$color)
 }
 ```
 
@@ -645,7 +645,8 @@ knitr::kable(partial_mean,
 ```{r, dev=c("png", "pdf"), fig.show='hold'}
 plot_evolution = function(dataset, main = "Evolution of computational times depending on K") {
   
-  dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, "), Gamma = ", dataset$gamma)
+  #dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, "), Gamma = ", dataset$gamma)
+  dataset$type = paste0("(", dataset$n_facilities, ",", dataset$n_customers, ")")
   
   #longest = max(dataset[ ,"4"])
   
@@ -653,7 +654,7 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
   
   colors = rainbow(length(dataset$type))
   
-  par(mar = c(5,4,4,8))
+  #par(mar = c(5,4,4,8))
   
   index = 1
   for (type in dataset$type) {
@@ -682,12 +683,12 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
   
   # Set the plot legend
   legend(
-    "topright",
-    inset=c(-.35, 0),
+    "topleft",
+    #inset=c(-.35, 0),
     legend = dataset$type,
     lty = "solid",
     col = colors,
-    cex = .5,
+    cex = 1,
     xpd = TRUE,
     bty = "n"
   )
@@ -695,8 +696,8 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
 }
 ```
 
-```{r}
-plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "Gamma = 2 and |V_1| = 10")
+```{r, dev = c("png", "pdf")}
+plot_evolution(partial_mean[partial_mean$gamma == 2 & partial_mean$n_facilities == 10,], main = "")
 ```
 
 ### Solved instances
