@@ -1,0 +1,25 @@
+---
+layout: post
+title: "[Cheatsheet] Duality"
+category: math
+short: Some usefull formulas regarding duals of optimization problems
+preview: dual.png
+---
+
+
+<div class="theorem">
+    <b>Proposition</b> (Conic duality)
+    $$
+        \begin{array}[t]{ll}
+            \min\ & c^Tx \\
+            \textrm{s.t. } & Ax - b \in K \\
+            & x\in \mathbb R^n
+        \end{array}
+        =
+        \begin{array}[t]{ll}
+            \max\ & b^T\lambda \\
+            \textrm{s.t. } & A^T\lambda = c \\
+            & \lambda\in K^*
+        \end{array}
+    $$
+</div>
