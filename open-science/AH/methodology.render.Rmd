@@ -1,0 +1,174 @@
+---
+title: Open methodology for "?"
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../_includes/head.html
+      before_body:
+        - ../../_includes/header.html
+        - ../../_includes/begin_content.html
+        - ../../_includes/toc.html
+        - ../../_includes/begin_post_content.html
+      after_body: 
+        - ../../_includes/handle_page_title.html
+        - ../../_includes/end_post_content.html
+        - ../../_includes/end_content.html
+        - ../../_includes/footer.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(rmarkdown)
+library(kableExtra)
+library(tidyr)
+```
+
+```{r}
+results = read.csv("results.csv")
+?read.csv
+```
+
+The first column is a "tag" to easily identify lines corresponding to results in log files, it can be omitted. Similarly, the last column is always left blank and can be removed.
+```{r}
+results = results[,-c(1,ncol(results))]
+```
+
+Since the `has_large_scaled` column is set to `1` when the standard phase times out, instances solved by the `standard` method which timed out also have their `has_large_scaled` set to `1`. We fix this consistency mistake with the following.
+
+```{r}
+results[results$method == "standard",]$has_large_scaled = FALSE
+```
+
+Then, we extract from the instance file name several pieces of information.
+
+```{r}
+library(stringr)
+
+parse_instance_properties = function (instances) {
+  
+  parsed = t(apply(as.matrix(instances), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
+  
+  result = data.frame(instances, as.double(parsed[,1]), as.double(parsed[,2]), as.double(parsed[,3]))
+  result = result[,-c(1)]
+  colnames(result) = c("n_facilities", "n_customers", "ratio")
+  
+  return (result)
+  
+}
+
+properties = parse_instance_properties(results$instance)
+
+results = cbind(results, properties)
+```
+
+We can now display our results table.
+
+```{r, echo = FALSE}
+paged_table(results)
+```
+
+We define the list of methods as follows.
+```{r}
+results$solver = paste0(results$method, '_', results$standard_TL)
+solvers = as.data.frame(unique(results$solver))
+colnames(solvers) = "solver"
+
+colors = cbind(solvers, rainbow(nrow(solvers)))
+
+time_limit = 3600
+```
+
+```{r, echo = FALSE}
+knitr::kable(solvers)
+```
+
+## Performance profile
+
+We first introduce the following helper function.
+
+```{r}
+performance_profile = function (dataset, xlim = NULL, main = "Performance profile") {
+
+  times = spread(dataset[,c("instance", "solver", "total_time")], key = solver, value = total_time)
+  times$time.best = apply(times[,-c(1)], 1, FUN = min)
+  
+  times = na.omit(times)
+  print("WARNING omitting NA")
+  
+  times[,-c(1,ncol(times))]
+  
+  ratios = times[,-c(1,ncol(times))] / times$time.best
+  colnames(ratios) = paste0(colnames(ratios), ".ratio")
+  
+  worst_ratio = max(ratios)
+  
+  times = cbind(times, ratios)
+  
+  for (solver in solvers$solver) {
+    time_limit_filter = times[,solver] >= time_limit
+    if ( sum(time_limit_filter) > 0 ) {
+      times[time_limit_filter, paste0(solver, ".ratio")] = worst_ratio
+    }
+  }
+  
+  if (is.null(xlim)) {
+    xlim = c(1, worst_ratio)
+  }
+  
+  #par(mar = c(5,4,4,8))
+  
+  using_colors = NULL
+  using_types = NULL
+  
+  last_ecdf = NULL
+  
+  index = 1
+  for (solver in solvers$solver) {
+    
+    plot_function = if (index == 1) plot else lines
+    
+    profile = ecdf(times[,paste0(solver, ".ratio")])
+    
+    using_color =  colors[colors$solver == solver,2]
+    using_colors = rbind(using_colors, using_color)
+    using_type = "solid"
+    if (using_color == "#00FFFFFF") {
+      using_type = "dashed"
+    }
+    using_types = rbind(using_types, using_type)
+    
+    plot_function(profile, xlim = xlim, ylim = c(0,1), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    
+    index = index + 1
+  }
+  
+  # Set the plot title
+  title(main = main,
+        xlab = "Performance ratio",
+        ylab = "ECDF")
+  
+  # Set the plot legend
+  legend(
+    "bottomright",
+    #inset=c(-.35, 0),
+    legend = solvers$solver,
+    lty = using_types,
+    col = using_colors,
+    #cex = .5,
+    #xpd = TRUE,
+    bty = "n"
+  )
+}
+```
+
+```{r}
+performance_profile(results)
+performance_profile(results, xlim = c(1,3), main = "Performance profile (up to a raiot of 3)")
+```
