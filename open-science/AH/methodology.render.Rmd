@@ -32,7 +32,6 @@ library(tidyr)
 
 ```{r}
 results = read.csv("results.csv")
-?read.csv
 ```
 
 The first column is a "tag" to easily identify lines corresponding to results in log files, it can be omitted. Similarly, the last column is always left blank and can be removed.
@@ -43,29 +42,7 @@ results = results[,-c(1,ncol(results))]
 Since the `has_large_scaled` column is set to `1` when the standard phase times out, instances solved by the `standard` method which timed out also have their `has_large_scaled` set to `1`. We fix this consistency mistake with the following.
 
 ```{r}
-results[results$method == "standard",]$has_large_scaled = FALSE
-```
-
-Then, we extract from the instance file name several pieces of information.
-
-```{r}
-library(stringr)
-
-parse_instance_properties = function (instances) {
-  
-  parsed = t(apply(as.matrix(instances), 1, function(str)  str_extract_all(str, regex("([0-9]+)"))[[1]]))
-  
-  result = data.frame(instances, as.double(parsed[,1]), as.double(parsed[,2]), as.double(parsed[,3]))
-  result = result[,-c(1)]
-  colnames(result) = c("n_facilities", "n_customers", "ratio")
-  
-  return (result)
-  
-}
-
-properties = parse_instance_properties(results$instance)
-
-results = cbind(results, properties)
+results[results$method == "STD",]$has_large_scaled = FALSE
 ```
 
 We can now display our results table.
@@ -76,7 +53,7 @@ paged_table(results)
 
 We define the list of methods as follows.
 ```{r}
-results$solver = paste0(results$method, '_', results$standard_TL)
+results$solver = paste0(results$method, '_H', results$with_heuristic, '_TL', results$standard_TL)
 solvers = as.data.frame(unique(results$solver))
 colnames(solvers) = "solver"
 
@@ -87,6 +64,20 @@ time_limit = 3600
 
 ```{r, echo = FALSE}
 knitr::kable(solvers)
+```
+
+## Per instance
+
+```{r}
+
+make_per_instance_table = function (dataset) {
+  times = spread(dataset[,c("instance", "solver", "total_time")], key = solver, value = total_time)
+  
+  return (times)
+}
+
+table = make_per_instance_table(results)
+knitr::kable(table)
 ```
 
 ## Performance profile
