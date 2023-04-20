@@ -90,6 +90,8 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   times = spread(dataset[,c("instance", "solver", "total_time")], key = solver, value = total_time)
   times$time.best = apply(times[,-c(1)], 1, FUN = min)
   
+  solver_names = data.frame(solver = unique(dataset$solver))
+  
   times = na.omit(times)
   print("WARNING omitting NA")
   
@@ -102,7 +104,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   
   times = cbind(times, ratios)
   
-  for (solver in solvers$solver) {
+  for (solver in solver_names$solver) {
     time_limit_filter = times[,solver] >= time_limit
     if ( sum(time_limit_filter) > 0 ) {
       times[time_limit_filter, paste0(solver, ".ratio")] = worst_ratio
@@ -121,7 +123,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   last_ecdf = NULL
   
   index = 1
-  for (solver in solvers$solver) {
+  for (solver in solver_names$solver) {
     
     plot_function = if (index == 1) function(...) { plot(..., log = 'x') } else lines
     
@@ -149,7 +151,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   legend(
     "bottomright",
     #inset=c(-.35, 0),
-    legend = solvers$solver,
+    legend = solver_names$solver,
     lty = using_types,
     col = using_colors,
     #cex = .5,
@@ -160,6 +162,6 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 ```
 
 ```{r}
-performance_profile(results)
+performance_profile(results[results$solver == "STD_H0_TLInf" | results$solver == "CG_H1_TL500" | results$solver == "CG_H0_TL500",])
 performance_profile(results, xlim = c(1,2), main = "Performance profile (up to a ratio of 2)")
 ```
