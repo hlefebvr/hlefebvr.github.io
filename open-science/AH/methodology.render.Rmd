@@ -1,5 +1,5 @@
 ---
-title: Open methodology for "?"
+title: Open methodology for "?ccg?"
 output: 
   html_document:
     theme: null
@@ -209,6 +209,6 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 ```
 
 ```{r}
-performance_profile(results[results$solver == "STD_H0_TLInf" | results$solver == "CG_H1_TL500" | results$solver == "CG_H0_TL500",])
-performance_profile(results, xlim = c(1,2), main = "Performance profile (up to a ratio of 2)")
+performance_profile(results[results$solver == "STD_H0_TLInf" | results$solver == "CG_H1_TL120" | results$solver == "CG_H0_TL120",])
+performance_profile(results, xlim = c(1,3), main = "Performance profile (up to a ratio of 3)")
 ```
