@@ -66,6 +66,49 @@ time_limit = 3600
 knitr::kable(solvers)
 ```
 
+## Checking results
+
+Here, we create a table in which, for each instance, we report the computed optimal solution (when time limit is not reached only).
+We also compute the standard deviation over these objective values. The standard deviation should be zero when all solution methods report the same solution.
+
+```{r}
+make_check_table = function (dataset) {
+
+  objectives = spread(dataset[,c("instance", "solver", "best_obj")], key = solver, value = best_obj)
+  
+  stdev = apply(objectives, MARGIN = 1, FUN = function(row){
+    values = row[-1]
+    return (sd(values[which(!is.na(values))]))
+  })
+  
+  values = apply(objectives, MARGIN = 1, FUN = function(row){
+    values = row[-1]
+    return (values)
+    #return ( abs(values - median(values[which(!is.na(values))])) )
+  })
+  
+  result = cbind( objectives$instance, as.data.frame(t(values)), as.data.frame(stdev) )
+  
+  colnames(result) = c( colnames(objectives), "stdev")
+  
+  return(result)
+}
+
+Table = make_check_table(results[results$total_time < time_limit,])
+```
+
+The table reads.
+
+```{r}
+paged_table(Table)
+```
+
+Those instance which have a standard deviation greater than zero are given in the following truncated table.
+
+```{r}
+paged_table(Table[!is.na(Table$stdev) & Table$stdev > 0,])
+```
+
 ## Per instance
 
 ```{r}
@@ -77,7 +120,11 @@ make_per_instance_table = function (dataset) {
 }
 
 table = make_per_instance_table(results)
-knitr::kable(table)
+knitr::kable(
+    table,
+    digits = c(0, matrix(2, nrow = length(solvers$solver)))
+  ) %>%
+    kable_classic()
 ```
 
 ## Performance profile
