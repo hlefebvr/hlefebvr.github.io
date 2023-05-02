@@ -184,7 +184,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
     }
     using_types = rbind(using_types, using_type)
     
-    plot_function(profile, xlim = xlim, ylim = c(0,1), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    plot_function(profile, xlim = xlim, ylim = c(0,.45), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
     
     index = index + 1
   }
@@ -209,6 +209,5 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 ```
 
 ```{r}
-performance_profile(results[results$solver == "STD_H0_TLInf" | results$solver == "CG_H1_TL120" | results$solver == "CG_H0_TL120",])
-performance_profile(results, xlim = c(1,3), main = "Performance profile (up to a ratio of 3)")
+performance_profile(results)
 ```
