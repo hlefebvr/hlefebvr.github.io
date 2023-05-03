@@ -45,6 +45,11 @@ Since the `has_large_scaled` column is set to `1` when the standard phase times 
 results[results$method == "STD",]$has_large_scaled = FALSE
 ```
 
+```{r}
+results = results[results$n_facilities < 25,]
+results = results[results$n_facilities != 15 & results$n_customers != 40,]
+```
+
 We can now display our results table.
 
 ```{r, echo = FALSE}
@@ -74,7 +79,7 @@ We also compute the standard deviation over these objective values. The standard
 ```{r}
 make_check_table = function (dataset) {
 
-  objectives = spread(dataset[,c("instance", "solver", "best_obj")], key = solver, value = best_obj)
+  objectives = spread(dataset[,c("instance", "solver", "best_obj", "Gamma")], key = solver, value = best_obj)
   
   stdev = apply(objectives, MARGIN = 1, FUN = function(row){
     values = row[-1]
@@ -114,7 +119,7 @@ paged_table(Table[!is.na(Table$stdev) & Table$stdev > 0,])
 ```{r}
 
 make_per_instance_table = function (dataset) {
-  times = spread(dataset[,c("instance", "solver", "total_time")], key = solver, value = total_time)
+  times = spread(dataset[,c("instance", "solver", "total_time", "Gamma")], key = solver, value = total_time)
   
   return (times)
 }
@@ -132,9 +137,9 @@ knitr::kable(
 We first introduce the following helper function.
 
 ```{r}
-performance_profile = function (dataset, xlim = NULL, main = "Performance profile") {
+performance_profile = function (dataset, xlim = NULL, log = '', main = "Performance profile") {
 
-  times = spread(dataset[,c("instance", "solver", "total_time")], key = solver, value = total_time)
+  times = spread(dataset[,c("instance", "Gamma", "solver", "total_time")], key = solver, value = total_time)
   times$time.best = apply(times[,-c(1)], 1, FUN = min)
   
   solver_names = data.frame(solver = unique(dataset$solver))
@@ -172,7 +177,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
   index = 1
   for (solver in solver_names$solver) {
     
-    plot_function = if (index == 1) function(...) { plot(..., log = 'x') } else lines
+    plot_function = if (index == 1) function(...) { plot(..., log = log) } else lines
     
     profile = ecdf(times[,paste0(solver, ".ratio")])
     
@@ -184,7 +189,7 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
     }
     using_types = rbind(using_types, using_type)
     
-    plot_function(profile, xlim = xlim, ylim = c(0,.45), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    plot_function(profile, xlim = xlim, ylim = c(0, 1), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
     
     index = index + 1
   }
@@ -210,4 +215,5 @@ performance_profile = function (dataset, xlim = NULL, main = "Performance profil
 
 ```{r}
 performance_profile(results)
+performance_profile(results, main = "Performance profile (log-scale)", log = 'x')
 ```
