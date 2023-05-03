@@ -79,20 +79,19 @@ We also compute the standard deviation over these objective values. The standard
 ```{r}
 make_check_table = function (dataset) {
 
-  objectives = spread(dataset[,c("instance", "solver", "best_obj", "Gamma")], key = solver, value = best_obj)
+  objectives = spread(dataset[,c("instance", "Gamma", "solver", "best_obj")], key = solver, value = best_obj)
   
   stdev = apply(objectives, MARGIN = 1, FUN = function(row){
-    values = row[-1]
+    values = row[-c(1,2)]
     return (sd(values[which(!is.na(values))]))
   })
   
   values = apply(objectives, MARGIN = 1, FUN = function(row){
-    values = row[-1]
+    values = row[-c(1,2)]
     return (values)
-    #return ( abs(values - median(values[which(!is.na(values))])) )
   })
   
-  result = cbind( objectives$instance, as.data.frame(t(values)), as.data.frame(stdev) )
+  result = cbind( objectives$instance, objectives$Gamma, as.data.frame(t(values)), as.data.frame(stdev) )
   
   colnames(result) = c( colnames(objectives), "stdev")
   
@@ -111,7 +110,7 @@ paged_table(Table)
 Those instance which have a standard deviation greater than zero are given in the following truncated table.
 
 ```{r}
-paged_table(Table[!is.na(Table$stdev) & Table$stdev > 0,])
+paged_table(Table[!is.na(Table$stdev) & Table$stdev > 1e-3,])
 ```
 
 ## Per instance
@@ -214,6 +213,10 @@ performance_profile = function (dataset, xlim = NULL, log = '', main = "Performa
 ```
 
 ```{r}
-performance_profile(results)
-performance_profile(results, main = "Performance profile (log-scale)", log = 'x')
+performance_profile(results, main = "All")
+performance_profile(results, main = "All (log-scale)", log = 'x')
+```
+```{r}
+performance_profile(results[results$Gamma == 3,], main = "Gamma = 3")
+performance_profile(results[results$Gamma == 4,], main = "Gamma = 4")
 ```
