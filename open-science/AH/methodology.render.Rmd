@@ -220,7 +220,7 @@ performance_profile(results, main = "All")
 performance_profile(results[results$Gamma == 3,], main = "Gamma = 3")
 performance_profile(results[results$Gamma == 4,], main = "Gamma = 4")
 ```
-
+## ECDF of total time
 
 ```{r}
 time_ecdf = function (dataset, xlim = NULL, log = '', main = "ECDF") {
