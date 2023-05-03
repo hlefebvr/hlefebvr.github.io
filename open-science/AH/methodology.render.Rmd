@@ -64,7 +64,7 @@ colnames(solvers) = "solver"
 
 colors = cbind(solvers, rainbow(nrow(solvers)))
 
-time_limit = 3600
+time_limit = 10800
 ```
 
 ```{r, echo = FALSE}
@@ -212,11 +212,67 @@ performance_profile = function (dataset, xlim = NULL, log = '', main = "Performa
 }
 ```
 
-```{r}
+```{r, dev = c("png", "pdf")}
 performance_profile(results, main = "All")
-performance_profile(results, main = "All (log-scale)", log = 'x')
+#performance_profile(results, main = "All (log-scale)", log = 'x')
 ```
 ```{r}
 performance_profile(results[results$Gamma == 3,], main = "Gamma = 3")
 performance_profile(results[results$Gamma == 4,], main = "Gamma = 4")
+```
+
+
+```{r}
+time_ecdf = function (dataset, xlim = NULL, log = '', main = "ECDF") {
+  
+  solver_names = data.frame(solver = unique(dataset$solver))
+  
+  using_colors = NULL
+  using_types = NULL
+  
+  last_ecdf = NULL
+  
+  xlim = c(0, max(dataset$total_time))
+  
+  index = 1
+  for (solver in solver_names$solver) {
+    
+    plot_function = if (index == 1) function(...) { plot(..., log = log) } else lines
+    
+    profile = ecdf(dataset[dataset$solver == solver,]$total_time)
+    
+    using_color =  colors[colors$solver == solver,2]
+    using_colors = rbind(using_colors, using_color)
+    using_type = "solid"
+    if (using_color == "#00FFFFFF") {
+      using_type = "dashed"
+    }
+    using_types = rbind(using_types, using_type)
+    
+    plot_function(profile, xlim = xlim, ylim = c(0, 1), lty = using_type, cex = 0, col = using_color, main = "", xlab = "", ylab = "")
+    
+    index = index + 1
+  }
+  
+  # Set the plot title
+  title(main = main,
+        xlab = "Performance ratio",
+        ylab = "ECDF")
+  
+  # Set the plot legend
+  legend(
+    "bottomright",
+    #inset=c(-.35, 0),
+    legend = solver_names$solver,
+    lty = using_types,
+    col = using_colors,
+    #cex = .5,
+    #xpd = TRUE,
+    bty = "n"
+  )
+}
+```
+
+```{r}
+time_ecdf(results)
 ```
