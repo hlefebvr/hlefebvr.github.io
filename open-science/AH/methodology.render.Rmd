@@ -256,7 +256,7 @@ time_ecdf = function (dataset, xlim = NULL, log = '', main = "ECDF") {
   
   # Set the plot title
   title(main = main,
-        xlab = "Performance ratio",
+        xlab = "Time (s)",
         ylab = "ECDF")
   
   # Set the plot legend
@@ -274,5 +274,5 @@ time_ecdf = function (dataset, xlim = NULL, log = '', main = "ECDF") {
 ```
 
 ```{r, dev = c("png", "pdf")}
-time_ecdf(results[results$method == "STD",], main = "Execution time")
+time_ecdf(results[results$method == "STD" & results$with_heuristic == FALSE,], main = "Execution time")
 ```
