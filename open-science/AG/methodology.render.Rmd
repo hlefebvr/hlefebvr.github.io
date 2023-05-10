@@ -1,0 +1,161 @@
+---
+title: Open methodology for "?adr?"
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../_includes/head.html
+      before_body:
+        - ../../_includes/header.html
+        - ../../_includes/begin_content.html
+        - ../../_includes/toc.html
+        - ../../_includes/begin_post_content.html
+      after_body: 
+        - ../../_includes/handle_page_title.html
+        - ../../_includes/end_post_content.html
+        - ../../_includes/end_content.html
+        - ../../_includes/footer.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(rmarkdown)
+library(kableExtra)
+library(tidyr)
+```
+
+```{r}
+results = read.csv("results.csv", header = FALSE)
+colnames(results) = c("method", "Gamma", "best_obj", "status", "reason", "time", "instance")
+```
+
+```{r}
+methods = unique(results$method)
+colors = rainbow(length(methods))
+colors = as.data.frame(cbind(methods, colors))
+```
+
+```{r}
+paged_table(results)
+```
+
+```{r}
+gap = function(lb, ub) {
+  return ( abs(lb - ub) / (1e-10 + abs(ub))  )
+}
+
+make_gap_table = function(dataset) {
+  
+    result = spread(dataset[,c("instance", "method", "Gamma", "best_obj")], key = method, value = best_obj);
+    
+    methods = unique(dataset$method)
+    
+    for (method in methods) {
+      result[paste0("gap_OPT_",method)] = gap(result$OPT, result[,method]) * 100
+    }
+    
+    return (result)
+}
+
+Table = make_gap_table(results)
+
+paged_table(Table)
+```
+
+```{r, echo = FALSE}
+#knitr::kable(
+#    Table,
+#    digits = c(0, 0, matrix(2, nrow = ncol(Table) - 2))
+#  ) %>%
+#    kable_classic()
+```
+
+```{r}
+plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
+  
+  methods = unique(dataset$method)
+  methods = methods[methods != "OPT"]
+  
+  Table = make_gap_table(dataset)
+  
+  used_colors = NULL
+  
+  index = 0
+  for (method in methods) {
+    
+    plot_function = if (index == 0 ) plot else lines
+    
+    current_color = colors[colors$methods == method ,"colors"]
+    
+    data = Table[,paste0("gap_OPT_",method)]
+    
+    plot_function(ecdf(data), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(0, 20), ylim = c(0, 1))
+    
+    used_colors = rbind(used_colors, current_color)
+    
+    index = index + 1
+  }
+  
+  title(main = main,
+      xlab = xlab,
+      ylab = ylab)
+  
+  legend(
+    "bottomright",
+    legend = methods,
+    lty = "solid",
+    col = used_colors,
+    bty = "n"
+  )
+  
+}
+
+plot_gap(results, main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
+```
+
+```{r}
+plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
+  
+    result = spread(dataset[,c("instance", "method", "Gamma", "time")], key = method, value = time);   
+    
+    methods = unique(dataset$method)
+    
+    used_colors = NULL
+    
+    index = 0
+    for (method in methods) {
+      
+      plot_function = if (index == 0 ) plot else lines
+      
+      current_color = colors[colors$methods == method ,"colors"]
+      
+      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "")
+      
+      used_colors = rbind(used_colors, current_color)
+      
+      index = index + 1
+    }
+    
+    title(main = main,
+        xlab = xlab,
+        ylab = ylab)
+    
+    legend(
+      "bottomright",
+      legend = methods,
+      lty = "solid",
+      col = used_colors,
+      bty = "n"
+    )
+    
+}
+
+plot_times(results, main = "ECDF of time (s)", xlab = "time (s)", ylab = "portion of instances")
+
+```
