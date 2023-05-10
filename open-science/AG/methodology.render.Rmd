@@ -116,7 +116,7 @@ plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
   
 }
 
-plot_gap(results, main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
+plot_gap(results[results$time < 3600,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
 ```
 
 ```{r}
