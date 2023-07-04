@@ -76,6 +76,8 @@ paged_table(Table)
 #    kable_classic()
 ```
 
+## Optimality gap
+
 ```{r}
 plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
   
@@ -118,6 +120,24 @@ plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
 
 plot_gap(results[results$time < 3600,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
 ```
+
+```{r}
+
+plot_gap = function(instance) {
+  
+  dataset = Table[Table$instance == instance,]
+  
+  plot(dataset$Gamma, dataset$gap_OPT_ADR, type = "o", col = "red", main = instance)
+  
+}
+
+for (instance in unique(results$instance)) {
+  plot_gap(instance)
+}
+
+```
+
+## Computation times
 
 ```{r}
 plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
