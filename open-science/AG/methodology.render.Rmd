@@ -135,7 +135,7 @@ plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
       
       current_color = colors[colors$methods == method ,"colors"]
       
-      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "")
+      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(0, 100))
       
       used_colors = rbind(used_colors, current_color)
       
@@ -157,5 +157,34 @@ plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
 }
 
 plot_times(results, main = "ECDF of time (s)", xlab = "time (s)", ylab = "portion of instances")
+
+```
+
+## For one instance 
+
+```{r}
+
+plot_instance = function(instance, field) {
+  
+  dataset = results[results$instance == instance,]
+  opt = dataset[dataset$method == "OPT",]
+  adr = dataset[dataset$method == "ADR",]
+  
+  plot(opt$Gamma, opt[[field]], main = "", xlab = "", ylab = "", type = "o", col = "blue")
+  points(adr$Gamma, adr[[field]], type = "o", col = "red")
+  
+  title(main = instance,
+        xlab = "Gamma",
+        ylab = field)
+  
+  legend("topleft", legend = c("OPT", "ADR"), col = c("blue", "red"), pch = 16)
+  
+}
+
+for (instance in unique(results$instance)) {
+  plot_instance(instance, "time");
+  plot_instance(instance, "best_obj");
+}
+
 
 ```
