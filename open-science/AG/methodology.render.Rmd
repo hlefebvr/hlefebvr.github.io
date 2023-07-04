@@ -95,7 +95,7 @@ plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
     
     data = Table[,paste0("gap_OPT_",method)]
     
-    plot_function(ecdf(data), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(0, 20), ylim = c(0, 1))
+    plot_function(ecdf(data), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", ylim = c(0, 1))
     
     used_colors = rbind(used_colors, current_color)
     
