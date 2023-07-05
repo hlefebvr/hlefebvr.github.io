@@ -78,6 +78,8 @@ paged_table(Table)
 
 ## Optimality gap
 
+### ECDF
+
 ```{r}
 plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
   
@@ -119,22 +121,6 @@ plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
 }
 
 plot_gap(results[results$time < 3600,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
-```
-
-```{r}
-
-plot_gap = function(instance) {
-  
-  dataset = Table[Table$instance == instance,]
-  
-  plot(dataset$Gamma, dataset$gap_OPT_ADR, type = "o", col = "red", main = instance)
-  
-}
-
-for (instance in unique(results$instance)) {
-  plot_gap(instance)
-}
-
 ```
 
 ## Computation times
@@ -180,31 +166,73 @@ plot_times(results, main = "ECDF of time (s)", xlab = "time (s)", ylab = "portio
 
 ```
 
-## For one instance 
+### Per instance
 
-```{r}
+```{r, fig.height=10}
 
-plot_instance = function(instance, field) {
+plot_instance = function(instance, field, logscale = FALSE) {
   
   dataset = results[results$instance == instance,]
   opt = dataset[dataset$method == "OPT",]
-  adr = dataset[dataset$method == "ADR",]
+  adr1 = dataset[dataset$method == "ADR_l1",]
+  adr2 = dataset[dataset$method == "ADR_l2",]
   
-  plot(opt$Gamma, opt[[field]], main = "", xlab = "", ylab = "", type = "o", col = "blue")
-  points(adr$Gamma, adr[[field]], type = "o", col = "red")
+  ylim = NULL
+  log = ""
+  ylab = field
   
-  title(main = instance,
+  if (logscale) {
+    ylim = c(0.0001, max(opt[[field]], adr1[[field]], adr2[[field]]))
+    log = "y"
+    ylab = paste("log",field)
+  }
+  
+  plot(opt$Gamma, opt[[field]], xlab = "", ylab = "", type = "s", col = "green", ylim = ylim, log = log, pch = 16)
+  points(adr1$Gamma, adr1[[field]], type = "s", col = "red", pch = 16)
+  points(adr2$Gamma, adr2[[field]], type = "s", col = "blue", pch = 16)
+  
+  title(main = paste("Computation time for", instance),
         xlab = "Gamma",
-        ylab = field)
+        ylab = ylab)
   
-  legend("topleft", legend = c("OPT", "ADR"), col = c("blue", "red"), pch = 16)
+  legend("topleft", legend = c("OPT", "ADR_l1", "ADR_l2"), col = c("green", "red", "blue"), pch = 16)
+  
+}
+
+plot_best_obj = function(instance) {
+  
+  dataset = results[results$instance == instance,]
+  table = spread(dataset[,c("Gamma", "method", "best_obj")], key = method, value = best_obj)
+  
+  rownames(table) = table$Gamma
+  
+  table$Gamma = NULL
+  table$ADR_l2 = NULL
+  table = -table
+  table$OPT = table$OPT - table$ADR_l1
+  
+  barplot(t(as.matrix(table)), col = c("red", "green"), main = paste("Realized profit for", instance))
+  
+  legend("topright", c("Optimal", "with ADR"), fill = c("green","red"))
+  
+}
+
+plot_gap = function(instance) {
+  
+  dataset = Table[Table$instance == instance,]
+  
+  plot(dataset$Gamma, dataset$gap_OPT_ADR_l1, type = "s", col = "red", xlab = "", ylab = "Gap (%)", main = paste("Optimality gap for", instance))
   
 }
 
 for (instance in unique(results$instance)) {
-  plot_instance(instance, "time");
-  plot_instance(instance, "best_obj");
+  par(mfrow = c(3,1))
+  plot_instance(instance, "time", logscale = TRUE);
+  plot_gap(instance)
+  plot_best_obj(instance);
 }
 
 
 ```
+
+
