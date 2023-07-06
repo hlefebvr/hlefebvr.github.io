@@ -42,6 +42,7 @@ colors = as.data.frame(cbind(methods, colors))
 ```
 
 ```{r}
+results = results[order(results$Gamma),]
 paged_table(results)
 ```
 
@@ -120,7 +121,8 @@ plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
   
 }
 
-plot_gap(results[results$time < 3600,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
+plot_gap(results[results$time < 3600 & results$Gamma != 0,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
+
 ```
 
 ## Computation times
@@ -137,11 +139,11 @@ plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
     index = 0
     for (method in methods) {
       
-      plot_function = if (index == 0 ) plot else lines
+      plot_function = if (index == 0 ) function(...) plot(..., log = "x") else lines
       
       current_color = colors[colors$methods == method ,"colors"]
       
-      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(0, 100))
+      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(1, 3600), ylim = c(0.001, 1))
       
       used_colors = rbind(used_colors, current_color)
       
@@ -162,7 +164,7 @@ plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
     
 }
 
-plot_times(results, main = "ECDF of time (s)", xlab = "time (s)", ylab = "portion of instances")
+plot_times(results[results$Gamma != 0,], main = "ECDF of time (s)", xlab = "log time (s)", ylab = "portion of instances")
 
 ```
 

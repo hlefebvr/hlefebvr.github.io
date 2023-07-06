@@ -1,180 +1,981 @@
-OPT,1,-108,   Optimal,   Proved,0.009173,instance_20_0.txt
-ADR_l1,1,-108,   Optimal,   Proved,0.035438,instance_20_0.txt
-ADR_l2,1,-108,   Optimal,   Proved,0.060204,instance_20_0.txt
-OPT,2,-105,   Optimal,   Proved,0.01713,instance_20_0.txt
-ADR_l1,2,-94.9567,   Optimal,   Proved,0.043305,instance_20_0.txt
-ADR_l2,2,-94.9567,   Optimal,   Proved,0.091968,instance_20_0.txt
-OPT,3,-103,   Optimal,   Proved,0.03625,instance_20_0.txt
-ADR_l1,3,-88.4216,   Optimal,   Proved,0.046653,instance_20_0.txt
-ADR_l2,3,-88.4216,   Optimal,   Proved,0.110363,instance_20_0.txt
-OPT,4,-101,   Optimal,   Proved,0.062532,instance_20_0.txt
-ADR_l1,4,-82.6225,   Optimal,   Proved,0.057102,instance_20_0.txt
-ADR_l2,4,-82.6225,   Optimal,   Proved,0.112897,instance_20_0.txt
-OPT,5,-100,   Optimal,   Proved,0.085641,instance_20_0.txt
-ADR_l1,5,-77.0417,   Optimal,   Proved,0.060972,instance_20_0.txt
-ADR_l2,5,-77.0417,   Optimal,   Proved,0.124888,instance_20_0.txt
-OPT,6,-99,   Optimal,   Proved,0.127278,instance_20_0.txt
-ADR_l1,6,-71.8244,   Optimal,   Proved,0.066523,instance_20_0.txt
-ADR_l2,6,-71.8244,   Optimal,   Proved,0.128655,instance_20_0.txt
-OPT,7,-99,   Optimal,   Proved,0.149828,instance_20_0.txt
-ADR_l1,7,-66.6071,   Optimal,   Proved,0.059759,instance_20_0.txt
-ADR_l2,7,-66.6071,   Optimal,   Proved,0.122527,instance_20_0.txt
-OPT,8,-98,   Optimal,   Proved,0.238497,instance_20_0.txt
-ADR_l1,8,-61.3899,   Optimal,   Proved,0.07285,instance_20_0.txt
-ADR_l2,8,-61.3899,   Optimal,   Proved,0.134421,instance_20_0.txt
-OPT,9,-98,   Optimal,   Proved,0.429743,instance_20_0.txt
-ADR_l1,9,-56.1726,   Optimal,   Proved,0.079716,instance_20_0.txt
-ADR_l2,9,-56.1726,   Optimal,   Proved,0.149871,instance_20_0.txt
-OPT,10,-96,   Optimal,   Proved,0.648164,instance_20_0.txt
-ADR_l1,10,-50.9554,   Optimal,   Proved,0.085187,instance_20_0.txt
-ADR_l2,10,-50.9554,   Optimal,   Proved,0.158446,instance_20_0.txt
-OPT,11,-95,   Optimal,   Proved,1.23384,instance_20_0.txt
-ADR_l1,11,-45.7381,   Optimal,   Proved,0.082732,instance_20_0.txt
-ADR_l2,11,-45.7381,   Optimal,   Proved,0.150691,instance_20_0.txt
-OPT,12,-78,   Optimal,   Proved,0.299163,instance_20_0.txt
-ADR_l1,12,-40.5208,   Optimal,   Proved,0.07023,instance_20_0.txt
-ADR_l2,12,-40.5208,   Optimal,   Proved,0.127806,instance_20_0.txt
-OPT,13,-63,   Optimal,   Proved,0.209969,instance_20_0.txt
-ADR_l1,13,-35.3036,   Optimal,   Proved,0.059907,instance_20_0.txt
-ADR_l2,13,-35.3036,   Optimal,   Proved,0.125211,instance_20_0.txt
-OPT,14,-49,   Optimal,   Proved,0.142697,instance_20_0.txt
-ADR_l1,14,-30.0863,   Optimal,   Proved,0.059719,instance_20_0.txt
-ADR_l2,14,-30.0863,   Optimal,   Proved,0.119707,instance_20_0.txt
-OPT,15,-37,   Optimal,   Proved,0.073504,instance_20_0.txt
-ADR_l1,15,-24.869,   Optimal,   Proved,0.059081,instance_20_0.txt
-ADR_l2,15,-24.869,   Optimal,   Proved,0.112126,instance_20_0.txt
-OPT,16,-27,   Optimal,   Proved,0.078514,instance_20_0.txt
-ADR_l1,16,-19.6518,   Optimal,   Proved,0.05112,instance_20_0.txt
-ADR_l2,16,-19.6518,   Optimal,   Proved,0.100847,instance_20_0.txt
-OPT,17,-18,   Optimal,   Proved,0.049087,instance_20_0.txt
-ADR_l1,17,-14.4345,   Optimal,   Proved,0.047708,instance_20_0.txt
-ADR_l2,17,-14.4345,   Optimal,   Proved,0.104619,instance_20_0.txt
-OPT,18,-10,   Optimal,   Proved,0.007593,instance_20_0.txt
-ADR_l1,18,-9.21726,   Optimal,   Proved,0.049541,instance_20_0.txt
-ADR_l2,18,-9.21726,   Optimal,   Proved,0.106029,instance_20_0.txt
-OPT,19,-4,   Optimal,   Proved,0.005787,instance_20_0.txt
-ADR_l1,19,-4,   Optimal,   Proved,0.043998,instance_20_0.txt
-ADR_l2,19,-4,   Optimal,   Proved,0.110224,instance_20_0.txt
-OPT,20,-0,   Optimal,   Proved,0.000891,instance_20_0.txt
-ADR_l1,20,0,   Optimal,   Proved,0.034578,instance_20_0.txt
-ADR_l2,20,0,   Optimal,   Proved,0.06621,instance_20_0.txt
-OPT,1,-127,   Optimal,   Proved,0.009195,instance_20_1.txt
-ADR_l1,1,-128.455,   Optimal,   Proved,0.036392,instance_20_1.txt
-ADR_l2,1,-128.455,   Optimal,   Proved,0.080612,instance_20_1.txt
-OPT,2,-118,   Optimal,   Proved,0.019868,instance_20_1.txt
-ADR_l1,2,-103.599,   Optimal,   Proved,0.037562,instance_20_1.txt
-ADR_l2,2,-103.599,   Optimal,   Proved,0.074157,instance_20_1.txt
-OPT,3,-114,   Optimal,   Proved,0.048682,instance_20_1.txt
-ADR_l1,3,-96.172,   Optimal,   Proved,0.042823,instance_20_1.txt
-ADR_l2,3,-96.172,   Optimal,   Proved,0.086328,instance_20_1.txt
-OPT,4,-111,   Optimal,   Proved,0.075113,instance_20_1.txt
-ADR_l1,4,-90.0665,   Optimal,   Proved,0.04066,instance_20_1.txt
-ADR_l2,4,-90.0665,   Optimal,   Proved,0.090769,instance_20_1.txt
-OPT,5,-109,   Optimal,   Proved,0.119894,instance_20_1.txt
-ADR_l1,5,-84.4335,   Optimal,   Proved,0.04216,instance_20_1.txt
-ADR_l2,5,-84.4335,   Optimal,   Proved,0.091051,instance_20_1.txt
-OPT,6,-107,   Optimal,   Proved,0.184464,instance_20_1.txt
-ADR_l1,6,-78.8046,   Optimal,   Proved,0.039084,instance_20_1.txt
-ADR_l2,6,-78.8046,   Optimal,   Proved,0.083416,instance_20_1.txt
-OPT,7,-104,   Optimal,   Proved,0.332388,instance_20_1.txt
-ADR_l1,7,-73.1757,   Optimal,   Proved,0.043438,instance_20_1.txt
-ADR_l2,7,-73.1757,   Optimal,   Proved,0.106703,instance_20_1.txt
-OPT,8,-103,   Optimal,   Proved,0.642748,instance_20_1.txt
-ADR_l1,8,-67.5468,   Optimal,   Proved,0.046268,instance_20_1.txt
-ADR_l2,8,-67.5468,   Optimal,   Proved,0.098425,instance_20_1.txt
-OPT,9,-101,   Optimal,   Proved,1.41813,instance_20_1.txt
-ADR_l1,9,-61.9179,   Optimal,   Proved,0.041382,instance_20_1.txt
-ADR_l2,9,-61.9179,   Optimal,   Proved,0.102061,instance_20_1.txt
-OPT,10,-100,   Optimal,   Proved,4.39517,instance_20_1.txt
-ADR_l1,10,-56.289,   Optimal,   Proved,0.043529,instance_20_1.txt
-ADR_l2,10,-56.289,   Optimal,   Proved,0.097307,instance_20_1.txt
-OPT,11,-90,   Optimal,   Proved,1.86973,instance_20_1.txt
-ADR_l1,11,-50.6601,   Optimal,   Proved,0.048561,instance_20_1.txt
-ADR_l2,11,-50.6601,   Optimal,   Proved,0.102943,instance_20_1.txt
-OPT,12,-76,   Optimal,   Proved,0.737936,instance_20_1.txt
-ADR_l1,12,-45.0312,   Optimal,   Proved,0.043962,instance_20_1.txt
-ADR_l2,12,-45.0312,   Optimal,   Proved,0.092792,instance_20_1.txt
-OPT,13,-63,   Optimal,   Proved,0.44767,instance_20_1.txt
-ADR_l1,13,-39.4023,   Optimal,   Proved,0.040313,instance_20_1.txt
-ADR_l2,13,-39.4023,   Optimal,   Proved,0.087065,instance_20_1.txt
-OPT,14,-51,   Optimal,   Proved,0.231215,instance_20_1.txt
-ADR_l1,14,-33.7734,   Optimal,   Proved,0.039565,instance_20_1.txt
-ADR_l2,14,-33.7734,   Optimal,   Proved,0.085729,instance_20_1.txt
-OPT,15,-40,   Optimal,   Proved,0.121944,instance_20_1.txt
-ADR_l1,15,-28.1445,   Optimal,   Proved,0.044386,instance_20_1.txt
-ADR_l2,15,-28.1445,   Optimal,   Proved,0.093797,instance_20_1.txt
-OPT,16,-30,   Optimal,   Proved,0.07522,instance_20_1.txt
-ADR_l1,16,-22.5156,   Optimal,   Proved,0.040055,instance_20_1.txt
-ADR_l2,16,-22.5156,   Optimal,   Proved,0.092336,instance_20_1.txt
-OPT,17,-21,   Optimal,   Proved,0.075054,instance_20_1.txt
-ADR_l1,17,-16.8867,   Optimal,   Proved,0.036813,instance_20_1.txt
-ADR_l2,17,-16.8867,   Optimal,   Proved,0.082711,instance_20_1.txt
-OPT,18,-13,   Optimal,   Proved,0.020414,instance_20_1.txt
-ADR_l1,18,-11.2578,   Optimal,   Proved,0.034382,instance_20_1.txt
-ADR_l2,18,-11.2578,   Optimal,   Proved,0.092072,instance_20_1.txt
-OPT,19,-6,   Optimal,   Proved,0.004216,instance_20_1.txt
-ADR_l1,19,-5.6289,   Optimal,   Proved,0.032797,instance_20_1.txt
-ADR_l2,19,-5.6289,   Optimal,   Proved,0.087825,instance_20_1.txt
-OPT,20,-0,   Optimal,   Proved,0.000678,instance_20_1.txt
-ADR_l1,20,0,   Optimal,   Proved,0.027374,instance_20_1.txt
-ADR_l2,20,0,   Optimal,   Proved,0.043641,instance_20_1.txt
-OPT,1,-141,   Optimal,   Proved,0.017331,instance_20_2.txt
-ADR_l1,1,-142.667,   Optimal,   Proved,0.042677,instance_20_2.txt
-ADR_l2,1,-142.667,   Optimal,   Proved,0.089232,instance_20_2.txt
-OPT,2,-134,   Optimal,   Proved,0.044354,instance_20_2.txt
-ADR_l1,2,-113.52,   Optimal,   Proved,0.034612,instance_20_2.txt
-ADR_l2,2,-113.52,   Optimal,   Proved,0.073825,instance_20_2.txt
-OPT,3,-126,   Optimal,   Proved,0.064173,instance_20_2.txt
-ADR_l1,3,-103.904,   Optimal,   Proved,0.038534,instance_20_2.txt
-ADR_l2,3,-103.904,   Optimal,   Proved,0.091584,instance_20_2.txt
-OPT,4,-122,   Optimal,   Proved,0.101101,instance_20_2.txt
-ADR_l1,4,-96.931,   Optimal,   Proved,0.041219,instance_20_2.txt
-ADR_l2,4,-96.931,   Optimal,   Proved,0.085747,instance_20_2.txt
-OPT,5,-118,   Optimal,   Proved,0.15578,instance_20_2.txt
-ADR_l1,5,-90.5047,   Optimal,   Proved,0.043893,instance_20_2.txt
-ADR_l2,5,-90.5047,   Optimal,   Proved,0.087958,instance_20_2.txt
-OPT,6,-114,   Optimal,   Proved,0.200039,instance_20_2.txt
-ADR_l1,6,-84.3889,   Optimal,   Proved,0.037431,instance_20_2.txt
-ADR_l2,6,-84.3889,   Optimal,   Proved,0.089867,instance_20_2.txt
-OPT,7,-111,   Optimal,   Proved,0.46523,instance_20_2.txt
-ADR_l1,7,-78.2732,   Optimal,   Proved,0.043177,instance_20_2.txt
-ADR_l2,7,-78.2732,   Optimal,   Proved,0.088365,instance_20_2.txt
-OPT,8,-109,   Optimal,   Proved,1.01897,instance_20_2.txt
-ADR_l1,8,-72.1574,   Optimal,   Proved,0.048819,instance_20_2.txt
-ADR_l2,8,-72.1574,   Optimal,   Proved,0.107095,instance_20_2.txt
-OPT,9,-106,   Optimal,   Proved,3.61406,instance_20_2.txt
-ADR_l1,9,-66.0417,   Optimal,   Proved,0.047271,instance_20_2.txt
-ADR_l2,9,-66.0417,   Optimal,   Proved,0.092044,instance_20_2.txt
-OPT,10,-95,   Optimal,   Proved,1.53252,instance_20_2.txt
-ADR_l1,10,-59.9259,   Optimal,   Proved,0.043976,instance_20_2.txt
-ADR_l2,10,-59.9259,   Optimal,   Proved,0.092367,instance_20_2.txt
-OPT,11,-81,   Optimal,   Proved,0.443272,instance_20_2.txt
-ADR_l1,11,-53.8102,   Optimal,   Proved,0.047327,instance_20_2.txt
-ADR_l2,11,-53.8102,   Optimal,   Proved,0.08724,instance_20_2.txt
-OPT,12,-68,   Optimal,   Proved,0.366365,instance_20_2.txt
-ADR_l1,12,-47.6945,   Optimal,   Proved,0.047977,instance_20_2.txt
-ADR_l2,12,-47.6945,   Optimal,   Proved,0.101209,instance_20_2.txt
-OPT,13,-56,   Optimal,   Proved,0.232882,instance_20_2.txt
-ADR_l1,13,-41.5787,   Optimal,   Proved,0.047483,instance_20_2.txt
-ADR_l2,13,-41.5787,   Optimal,   Proved,0.100728,instance_20_2.txt
-OPT,14,-45,   Optimal,   Proved,0.134999,instance_20_2.txt
-ADR_l1,14,-35.463,   Optimal,   Proved,0.045551,instance_20_2.txt
-ADR_l2,14,-35.463,   Optimal,   Proved,0.094698,instance_20_2.txt
-OPT,15,-35,   Optimal,   Proved,0.089711,instance_20_2.txt
-ADR_l1,15,-29.3472,   Optimal,   Proved,0.042533,instance_20_2.txt
-ADR_l2,15,-29.3472,   Optimal,   Proved,0.09316,instance_20_2.txt
-OPT,16,-26,   Optimal,   Proved,0.095858,instance_20_2.txt
-ADR_l1,16,-23.2315,   Optimal,   Proved,0.038661,instance_20_2.txt
-ADR_l2,16,-23.2315,   Optimal,   Proved,0.086037,instance_20_2.txt
-OPT,17,-18,   Optimal,   Proved,0.043278,instance_20_2.txt
-ADR_l1,17,-17.1157,   Optimal,   Proved,0.041225,instance_20_2.txt
-ADR_l2,17,-17.1157,   Optimal,   Proved,0.078886,instance_20_2.txt
-OPT,18,-11,   Optimal,   Proved,0.025504,instance_20_2.txt
-ADR_l1,18,-11,   Optimal,   Proved,0.037379,instance_20_2.txt
-ADR_l2,18,-11,   Optimal,   Proved,0.082523,instance_20_2.txt
-OPT,19,-5,   Optimal,   Proved,0.006428,instance_20_2.txt
-ADR_l1,19,-5,   Optimal,   Proved,0.040576,instance_20_2.txt
-ADR_l2,19,-5,   Optimal,   Proved,0.084967,instance_20_2.txt
-OPT,20,-0,   Optimal,   Proved,0.000679,instance_20_2.txt
-ADR_l1,20,0,   Optimal,   Proved,0.027375,instance_20_2.txt
-ADR_l2,20,0,   Optimal,   Proved,0.043473,instance_20_2.txt
+OPT,13,-11498,  Feasible,TimeLimit,3601.59,s001.kp
+ADR_l1,13,-9513.01,   Optimal,   Proved,0.511806,s001.kp
+ADR_l2,13,-9513.01,   Optimal,   Proved,1.78256,s001.kp
+OPT,5,-17806,   Optimal,   Proved,123.147,s006.kp
+ADR_l1,5,-17107.1,   Optimal,   Proved,0.411404,s006.kp
+ADR_l2,5,-17107.1,   Optimal,   Proved,0.995411,s006.kp
+OPT,7,-15979,   Optimal,   Proved,282.602,s002.kp
+ADR_l1,7,-14349.9,   Optimal,   Proved,0.433076,s002.kp
+ADR_l2,7,-14349.9,   Optimal,   Proved,1.06406,s002.kp
+OPT,21,-9741,  Feasible,TimeLimit,3602.64,s003.kp
+ADR_l1,21,-6642.69,   Optimal,   Proved,0.597332,s003.kp
+ADR_l2,21,-6642.69,   Optimal,   Proved,3.71751,s003.kp
+OPT,35,-2684,   Optimal,   Proved,265.803,s002.kp
+ADR_l1,35,-2467.8,   Optimal,   Proved,0.720976,s002.kp
+ADR_l2,35,-2467.8,   Optimal,   Proved,2.07649,s002.kp
+OPT,37,-2116,   Optimal,   Proved,51.56,s003.kp
+ADR_l1,37,-2004.3,   Optimal,   Proved,0.581224,s003.kp
+ADR_l2,37,-2004.3,   Optimal,   Proved,3.40138,s003.kp
+OPT,23,-9694,  Feasible,TimeLimit,3601.35,s000.kp
+ADR_l1,23,-6586.6,   Optimal,   Proved,0.736742,s000.kp
+ADR_l2,23,-6586.6,   Optimal,   Proved,3.64831,s000.kp
+OPT,1,-19720,   Optimal,   Proved,0.958148,s002.kp
+ADR_l1,1,-19798.6,   Optimal,   Proved,4.00762,s002.kp
+ADR_l2,1,-19798.6,   Optimal,   Proved,5.81344,s002.kp
+OPT,7,-15582,   Optimal,   Proved,265.412,s004.kp
+ADR_l1,7,-14819.9,   Optimal,   Proved,0.453095,s004.kp
+ADR_l2,7,-14819.9,   Optimal,   Proved,1.32496,s004.kp
+OPT,30,-5896,  Feasible,TimeLimit,3600.68,s000.kp
+ADR_l1,30,-4409.42,   Optimal,   Proved,0.704691,s000.kp
+ADR_l2,30,-4409.42,   Optimal,   Proved,3.72855,s000.kp
+OPT,45,-335,   Optimal,   Proved,0.537423,s004.kp
+ADR_l1,45,-335,   Optimal,   Proved,0.472499,s004.kp
+ADR_l2,45,-335,   Optimal,   Proved,1.71283,s004.kp
+OPT,5,-16691,   Optimal,   Proved,114.682,s003.kp
+ADR_l1,5,-15359.7,   Optimal,   Proved,0.489876,s003.kp
+ADR_l2,5,-15359.7,   Optimal,   Proved,1.03045,s003.kp
+OPT,20,-8713,  Feasible,TimeLimit,3600.99,s005.kp
+ADR_l1,20,-6844.74,   Optimal,   Proved,0.870611,s005.kp
+ADR_l2,20,-6844.74,   Optimal,   Proved,1.79299,s005.kp
+OPT,12,-13558,  Feasible,TimeLimit,3602.96,s003.kp
+ADR_l1,12,-11000.6,   Optimal,   Proved,0.389477,s003.kp
+ADR_l2,12,-11000.6,   Optimal,   Proved,1.66264,s003.kp
+OPT,11,-14731,  Feasible,TimeLimit,3603.4,s006.kp
+ADR_l1,11,-12694.6,   Optimal,   Proved,0.662566,s006.kp
+ADR_l2,11,-12694.6,   Optimal,   Proved,2.03744,s006.kp
+OPT,6,-15415,   Optimal,   Proved,258.785,s001.kp
+ADR_l1,6,-14527.8,   Optimal,   Proved,0.395114,s001.kp
+ADR_l2,6,-14527.8,   Optimal,   Proved,0.83701,s001.kp
+OPT,17,-11933,  Feasible,TimeLimit,3602.69,s006.kp
+ADR_l1,17,-9412.96,   Optimal,   Proved,1.0137,s006.kp
+ADR_l2,17,-9412.96,   Optimal,   Proved,2.18186,s006.kp
+OPT,39,-968,   Optimal,   Proved,3.29447,s005.kp
+ADR_l1,39,-968,   Optimal,   Proved,0.421315,s005.kp
+ADR_l2,39,-968,   Optimal,   Proved,1.46432,s005.kp
+OPT,2,-18036,   Optimal,   Proved,0.372391,s001.kp
+ADR_l1,2,-17947.1,   Optimal,   Proved,0.331467,s001.kp
+ADR_l2,2,-17947.1,   Optimal,   Proved,0.729831,s001.kp
+OPT,17,-12530,  Feasible,TimeLimit,3604.41,s000.kp
+ADR_l1,17,-9083.9,   Optimal,   Proved,0.748585,s000.kp
+ADR_l2,17,-9083.9,   Optimal,   Proved,3.15495,s000.kp
+OPT,39,-894,   Optimal,   Proved,1.3184,s001.kp
+ADR_l1,39,-841.967,   Optimal,   Proved,0.461969,s001.kp
+ADR_l2,39,-841.967,   Optimal,   Proved,5.68687,s001.kp
+OPT,3,-18301,   Optimal,   Proved,20.8183,s002.kp
+ADR_l1,3,-17724.1,   Optimal,   Proved,0.334864,s002.kp
+ADR_l2,3,-17724.1,   Optimal,   Proved,0.745436,s002.kp
+OPT,27,-6299,  Feasible,TimeLimit,3600.99,s002.kp
+ADR_l1,27,-5092.56,   Optimal,   Proved,0.865675,s002.kp
+ADR_l2,27,-5092.56,   Optimal,   Proved,3.41778,s002.kp
+OPT,29,-3596,   Optimal,   Proved,27.8318,s005.kp
+ADR_l1,29,-3367.28,   Optimal,   Proved,1.0355,s005.kp
+ADR_l2,29,-3367.28,   Optimal,   Proved,2.16144,s005.kp
+OPT,8,-15307,   Optimal,   Proved,1248.22,s003.kp
+ADR_l1,8,-13347.8,   Optimal,   Proved,0.575705,s003.kp
+ADR_l2,8,-13347.8,   Optimal,   Proved,1.25063,s003.kp
+OPT,24,-6190,  Feasible,TimeLimit,3600.14,s005.kp
+ADR_l1,24,-5038.14,   Optimal,   Proved,0.846943,s005.kp
+ADR_l2,24,-5038.14,   Optimal,   Proved,2.0807,s005.kp
+OPT,3,-19049,   Optimal,   Proved,26.7627,s000.kp
+ADR_l1,3,-18236.4,   Optimal,   Proved,0.39629,s000.kp
+ADR_l2,3,-18236.4,   Optimal,   Proved,0.932279,s000.kp
+OPT,37,-1383,   Optimal,   Proved,6.91672,s005.kp
+ADR_l1,37,-1382.8,   Optimal,   Proved,0.966416,s005.kp
+ADR_l2,37,-1382.8,   Optimal,   Proved,3.69291,s005.kp
+OPT,43,-546,   Optimal,   Proved,0.880385,s004.kp
+ADR_l1,43,-546,   Optimal,   Proved,0.61567,s004.kp
+ADR_l2,43,-546,   Optimal,   Proved,5.93619,s004.kp
+OPT,11,-13979,  Feasible,TimeLimit,3600.42,s003.kp
+ADR_l1,11,-11571.7,   Optimal,   Proved,0.668701,s003.kp
+ADR_l2,11,-11571.7,   Optimal,   Proved,1.88092,s003.kp
+OPT,36,-1599,   Optimal,   Proved,10.0137,s005.kp
+ADR_l1,36,-1598.09,   Optimal,   Proved,0.607121,s005.kp
+ADR_l2,36,-1598.09,   Optimal,   Proved,3.77827,s005.kp
+OPT,30,-3673,   Optimal,   Proved,122.648,s004.kp
+ADR_l1,30,-2965.4,   Optimal,   Proved,0.814786,s004.kp
+ADR_l2,30,-2965.4,   Optimal,   Proved,3.61486,s004.kp
+OPT,25,-5822,  Feasible,TimeLimit,3600.16,s004.kp
+ADR_l1,25,-4480.19,   Optimal,   Proved,0.629326,s004.kp
+ADR_l2,25,-4480.19,   Optimal,   Proved,2.21969,s004.kp
+OPT,10,-14494,   Optimal,   Proved,2191,s002.kp
+ADR_l1,10,-12227,   Optimal,   Proved,0.788081,s002.kp
+ADR_l2,10,-12227,   Optimal,   Proved,2.21869,s002.kp
+OPT,1,-19178,   Optimal,   Proved,1.08535,s005.kp
+ADR_l1,1,-19203.6,   Optimal,   Proved,3.46939,s005.kp
+ADR_l2,1,-19203.6,   Optimal,   Proved,4.01022,s005.kp
+OPT,35,-3591,  Feasible,TimeLimit,3600.06,s000.kp
+ADR_l1,35,-3102.73,   Optimal,   Proved,0.659367,s000.kp
+ADR_l2,35,-3102.73,   Optimal,   Proved,2.1397,s000.kp
+OPT,12,-12424,  Feasible,TimeLimit,3601.72,s004.kp
+ADR_l1,12,-11003.9,   Optimal,   Proved,0.527734,s004.kp
+ADR_l2,12,-11003.9,   Optimal,   Proved,1.4312,s004.kp
+OPT,43,-1044,   Optimal,   Proved,4.05816,s000.kp
+ADR_l1,43,-1042.26,   Optimal,   Proved,0.637314,s000.kp
+ADR_l2,43,-1042.26,   Optimal,   Proved,3.9423,s000.kp
+OPT,14,-12937,  Feasible,TimeLimit,3602.58,s002.kp
+ADR_l1,14,-10060.3,   Optimal,   Proved,1.04999,s002.kp
+ADR_l2,14,-10060.3,   Optimal,   Proved,2.34972,s002.kp
+OPT,1,-20284,   Optimal,   Proved,1.48438,s000.kp
+ADR_l1,1,-20364.8,   Optimal,   Proved,1.62704,s000.kp
+ADR_l2,1,-20364.8,   Optimal,   Proved,3.11919,s000.kp
+OPT,23,-8806,  Feasible,TimeLimit,3600.39,s003.kp
+ADR_l1,23,-5805.25,   Optimal,   Proved,1.04467,s003.kp
+ADR_l2,23,-5805.25,   Optimal,   Proved,2.56602,s003.kp
+OPT,50,-0,   Optimal,   Proved,0.060637,s002.kp
+ADR_l1,50,0,   Optimal,   Proved,0.345794,s002.kp
+ADR_l2,50,0,   Optimal,   Proved,0.6703,s002.kp
+OPT,39,-1376,   Optimal,   Proved,3.93989,s002.kp
+ADR_l1,39,-1331.56,   Optimal,   Proved,0.810482,s002.kp
+ADR_l2,39,-1331.56,   Optimal,   Proved,2.90801,s002.kp
+OPT,46,-145,   Optimal,   Proved,0.448509,s002.kp
+ADR_l1,46,-145,   Optimal,   Proved,0.597242,s002.kp
+ADR_l2,46,-145,   Optimal,   Proved,1.89147,s002.kp
+OPT,41,-870,   Optimal,   Proved,0.707969,s002.kp
+ADR_l1,41,-870,   Optimal,   Proved,0.538001,s002.kp
+ADR_l2,41,-870,   Optimal,   Proved,4.9436,s002.kp
+OPT,1,-18896,   Optimal,   Proved,0.169614,s001.kp
+ADR_l1,1,-18936.6,   Optimal,   Proved,1.39772,s001.kp
+ADR_l2,1,-18936.6,   Optimal,   Proved,2.89255,s001.kp
+OPT,46,-177,   Optimal,   Proved,0.247148,s003.kp
+ADR_l1,46,-177,   Optimal,   Proved,0.488482,s003.kp
+ADR_l2,46,-177,   Optimal,   Proved,1.51471,s003.kp
+OPT,41,-1014,   Optimal,   Proved,1.43844,s003.kp
+ADR_l1,41,-1014,   Optimal,   Proved,0.499233,s003.kp
+ADR_l2,41,-1014,   Optimal,   Proved,2.15101,s003.kp
+OPT,0,-19836,   Optimal,   Proved,0.046606,s001.kp
+ADR_l1,0,-19836,   Optimal,   Proved,181.179,s001.kp
+ADR_l2,0,-19836,   Optimal,   Proved,186.072,s001.kp
+OPT,23,-6258,  Feasible,TimeLimit,3600.08,s001.kp
+ADR_l1,23,-4835.11,   Optimal,   Proved,0.621864,s001.kp
+ADR_l2,23,-4835.11,   Optimal,   Proved,1.76474,s001.kp
+OPT,45,-116,   Optimal,   Proved,0.344885,s005.kp
+ADR_l1,45,-116,   Optimal,   Proved,0.583884,s005.kp
+ADR_l2,45,-116,   Optimal,   Proved,2.75573,s005.kp
+OPT,23,-6794,  Feasible,TimeLimit,3600.35,s005.kp
+ADR_l1,23,-5432.93,   Optimal,   Proved,0.716655,s005.kp
+ADR_l2,23,-5432.93,   Optimal,   Proved,1.50897,s005.kp
+OPT,33,-3618,  Feasible,TimeLimit,3600.09,s003.kp
+ADR_l1,33,-3026.02,   Optimal,   Proved,0.675123,s003.kp
+ADR_l2,33,-3026.02,   Optimal,   Proved,4.19269,s003.kp
+OPT,32,-3890,  Feasible,TimeLimit,3600.07,s002.kp
+ADR_l1,32,-3430.03,   Optimal,   Proved,1.06687,s002.kp
+ADR_l2,32,-3430.03,   Optimal,   Proved,3.48489,s002.kp
+OPT,13,-13764,  Feasible,TimeLimit,3602.38,s006.kp
+ADR_l1,13,-11495.5,   Optimal,   Proved,0.599399,s006.kp
+ADR_l2,13,-11495.5,   Optimal,   Proved,2.06681,s006.kp
+OPT,50,-0,   Optimal,   Proved,0.083893,s004.kp
+ADR_l1,50,0,   Optimal,   Proved,0.456785,s004.kp
+ADR_l2,50,0,   Optimal,   Proved,0.868457,s004.kp
+OPT,45,-110,   Optimal,   Proved,0.17131,s001.kp
+ADR_l1,45,-110,   Optimal,   Proved,0.527629,s001.kp
+ADR_l2,45,-110,   Optimal,   Proved,1.10173,s001.kp
+OPT,30,-5108,  Feasible,TimeLimit,3600.63,s003.kp
+ADR_l1,30,-3792.32,   Optimal,   Proved,0.886602,s003.kp
+ADR_l2,30,-3792.32,   Optimal,   Proved,2.64621,s003.kp
+OPT,41,-863,   Optimal,   Proved,2.13855,s004.kp
+ADR_l1,41,-855.205,   Optimal,   Proved,0.893935,s004.kp
+ADR_l2,41,-855.205,   Optimal,   Proved,4.97443,s004.kp
+OPT,33,-4485,  Feasible,TimeLimit,3600.33,s000.kp
+ADR_l1,33,-3621.8,   Optimal,   Proved,0.867087,s000.kp
+ADR_l2,33,-3621.8,   Optimal,   Proved,3.56964,s000.kp
+OPT,16,-11680,  Feasible,TimeLimit,3602.36,s005.kp
+ADR_l1,16,-8974.68,   Optimal,   Proved,0.620978,s005.kp
+ADR_l2,16,-8974.68,   Optimal,   Proved,1.47209,s005.kp
+OPT,10,-14471,  Feasible,TimeLimit,3602.22,s003.kp
+ADR_l1,10,-12150.7,   Optimal,   Proved,0.697286,s003.kp
+ADR_l2,10,-12150.7,   Optimal,   Proved,1.41086,s003.kp
+OPT,48,-91,   Optimal,   Proved,0.402362,s004.kp
+ADR_l1,48,-91,   Optimal,   Proved,0.532209,s004.kp
+ADR_l2,48,-91,   Optimal,   Proved,1.7579,s004.kp
+OPT,6,-17390,   Optimal,   Proved,310.672,s000.kp
+ADR_l1,6,-15789,   Optimal,   Proved,0.461254,s000.kp
+ADR_l2,6,-15789,   Optimal,   Proved,1.33784,s000.kp
+OPT,18,-11378,  Feasible,TimeLimit,3601,s002.kp
+ADR_l1,18,-8312.35,   Optimal,   Proved,0.681744,s002.kp
+ADR_l2,18,-8312.35,   Optimal,   Proved,2.12528,s002.kp
+OPT,14,-13026,  Feasible,TimeLimit,3601.23,s005.kp
+ADR_l1,14,-10079.3,   Optimal,   Proved,0.691691,s005.kp
+ADR_l2,14,-10079.3,   Optimal,   Proved,1.43284,s005.kp
+OPT,5,-17946,   Optimal,   Proved,129.228,s000.kp
+ADR_l1,5,-16572.7,   Optimal,   Proved,0.4238,s000.kp
+ADR_l2,5,-16572.7,   Optimal,   Proved,1.20809,s000.kp
+OPT,33,-2343,   Optimal,   Proved,15.7627,s005.kp
+ADR_l1,33,-2286.75,   Optimal,   Proved,1.01067,s005.kp
+ADR_l2,33,-2286.75,   Optimal,   Proved,3.77822,s005.kp
+OPT,2,-18937,   Optimal,   Proved,4.34281,s002.kp
+ADR_l1,2,-18679.4,   Optimal,   Proved,0.297115,s002.kp
+ADR_l2,2,-18679.4,   Optimal,   Proved,0.573517,s002.kp
+OPT,19,-11622,  Feasible,TimeLimit,3600.48,s000.kp
+ADR_l1,19,-8180.82,   Optimal,   Proved,1.08163,s000.kp
+ADR_l2,19,-8180.82,   Optimal,   Proved,3.04331,s000.kp
+OPT,40,-1846,   Optimal,   Proved,78.6625,s000.kp
+ADR_l1,40,-1805.32,   Optimal,   Proved,0.688287,s000.kp
+ADR_l2,40,-1805.32,   Optimal,   Proved,4.52198,s000.kp
+OPT,13,-13189,  Feasible,TimeLimit,3603.36,s003.kp
+ADR_l1,13,-10465.6,   Optimal,   Proved,0.821439,s003.kp
+ADR_l2,13,-10465.6,   Optimal,   Proved,1.83081,s003.kp
+OPT,21,-8035,  Feasible,TimeLimit,3600.54,s005.kp
+ADR_l1,21,-6360.85,   Optimal,   Proved,0.776861,s005.kp
+ADR_l2,21,-6360.85,   Optimal,   Proved,2.69907,s005.kp
+OPT,50,-0,   Optimal,   Proved,0.036609,s000.kp
+ADR_l1,50,0,   Optimal,   Proved,0.383685,s000.kp
+ADR_l2,50,0,   Optimal,   Proved,0.731251,s000.kp
+OPT,9,-14838,  Feasible,TimeLimit,3601.34,s003.kp
+ADR_l1,9,-12735.3,   Optimal,   Proved,0.557504,s003.kp
+ADR_l2,9,-12735.3,   Optimal,   Proved,1.31921,s003.kp
+OPT,41,-642,   Optimal,   Proved,1.51776,s005.kp
+ADR_l1,41,-642,   Optimal,   Proved,0.559645,s005.kp
+ADR_l2,41,-642,   Optimal,   Proved,1.92072,s005.kp
+OPT,21,-7120,  Feasible,TimeLimit,3600.77,s001.kp
+ADR_l1,21,-5659,   Optimal,   Proved,0.466193,s001.kp
+ADR_l2,21,-5659,   Optimal,   Proved,2.11878,s001.kp
+OPT,38,-1685,   Optimal,   Proved,10.4807,s002.kp
+ADR_l1,38,-1592.27,   Optimal,   Proved,0.596554,s002.kp
+ADR_l2,38,-1592.27,   Optimal,   Proved,4.65205,s002.kp
+OPT,36,-2467,   Optimal,   Proved,176.305,s003.kp
+ADR_l1,36,-2259.73,   Optimal,   Proved,0.645119,s003.kp
+ADR_l2,36,-2259.73,   Optimal,   Proved,4.33285,s003.kp
+OPT,27,-4877,   Optimal,   Proved,1713.05,s004.kp
+ADR_l1,27,-3832.79,   Optimal,   Proved,0.710549,s004.kp
+ADR_l2,27,-3832.79,   Optimal,   Proved,1.60828,s004.kp
+OPT,16,-12323,  Feasible,TimeLimit,3601.15,s006.kp
+ADR_l1,16,-9904.29,   Optimal,   Proved,0.605885,s006.kp
+ADR_l2,16,-9904.29,   Optimal,   Proved,1.65483,s006.kp
+OPT,50,-0,   Optimal,   Proved,0.041055,s001.kp
+ADR_l1,50,0,   Optimal,   Proved,0.230172,s001.kp
+ADR_l2,50,0,   Optimal,   Proved,0.626315,s001.kp
+OPT,39,-1214,   Optimal,   Proved,4.19339,s004.kp
+ADR_l1,39,-1166.17,   Optimal,   Proved,0.729063,s004.kp
+ADR_l2,39,-1166.17,   Optimal,   Proved,2.18749,s004.kp
+OPT,15,-13373,  Feasible,TimeLimit,3603.74,s000.kp
+ADR_l1,15,-10087.5,   Optimal,   Proved,0.502677,s000.kp
+ADR_l2,15,-10087.5,   Optimal,   Proved,3.16253,s000.kp
+OPT,34,-3223,  Feasible,TimeLimit,3600.06,s003.kp
+ADR_l1,34,-2770.59,   Optimal,   Proved,0.666495,s003.kp
+ADR_l2,34,-2770.59,   Optimal,   Proved,3.38021,s003.kp
+OPT,36,-2330,   Optimal,   Proved,100.241,s002.kp
+ADR_l1,36,-2169.49,   Optimal,   Proved,0.715006,s002.kp
+ADR_l2,36,-2169.49,   Optimal,   Proved,3.45648,s002.kp
+OPT,11,-14685,  Feasible,TimeLimit,3602.65,s005.kp
+ADR_l1,11,-11887.6,   Optimal,   Proved,0.531832,s005.kp
+ADR_l2,11,-11887.6,   Optimal,   Proved,2.15733,s005.kp
+OPT,10,-14911,  Feasible,TimeLimit,3603.2,s005.kp
+ADR_l1,10,-12496.7,   Optimal,   Proved,0.530967,s005.kp
+ADR_l2,10,-12496.7,   Optimal,   Proved,2.25983,s005.kp
+OPT,49,-44,   Optimal,   Proved,0.34799,s004.kp
+ADR_l1,49,-44,   Optimal,   Proved,0.528085,s004.kp
+ADR_l2,49,-44,   Optimal,   Proved,7.61449,s004.kp
+OPT,14,-13805,  Feasible,TimeLimit,3604.61,s000.kp
+ADR_l1,14,-10632.1,   Optimal,   Proved,0.494613,s000.kp
+ADR_l2,14,-10632.1,   Optimal,   Proved,1.70338,s000.kp
+OPT,19,-9459,  Feasible,TimeLimit,3603.01,s005.kp
+ADR_l1,19,-7352.84,   Optimal,   Proved,0.697453,s005.kp
+ADR_l2,19,-7352.84,   Optimal,   Proved,1.20585,s005.kp
+OPT,36,-1564,   Optimal,   Proved,22.3471,s001.kp
+ADR_l1,36,-1428.78,   Optimal,   Proved,0.421516,s001.kp
+ADR_l2,36,-1428.78,   Optimal,   Proved,1.48206,s001.kp
+OPT,19,-11075,  Feasible,TimeLimit,3603.3,s006.kp
+ADR_l1,19,-8431.19,   Optimal,   Proved,0.764097,s006.kp
+ADR_l2,19,-8431.19,   Optimal,   Proved,1.74832,s006.kp
+OPT,49,-24,   Optimal,   Proved,0.366703,s002.kp
+ADR_l1,49,-24,   Optimal,   Proved,0.424711,s002.kp
+ADR_l2,49,-24,   Optimal,   Proved,1.32989,s002.kp
+OPT,14,-12716,  Feasible,TimeLimit,3603.33,s003.kp
+ADR_l1,14,-9948.17,   Optimal,   Proved,0.743889,s003.kp
+ADR_l2,14,-9948.17,   Optimal,   Proved,2.66423,s003.kp
+OPT,3,-19074,   Optimal,   Proved,12.79,s006.kp
+ADR_l1,3,-18724.2,   Optimal,   Proved,0.41089,s006.kp
+ADR_l2,3,-18724.2,   Optimal,   Proved,0.614328,s006.kp
+OPT,48,-46,   Optimal,   Proved,0.224295,s003.kp
+ADR_l1,48,-46,   Optimal,   Proved,0.578447,s003.kp
+ADR_l2,48,-46,   Optimal,   Proved,1.87925,s003.kp
+OPT,26,-6982,  Feasible,TimeLimit,3600.53,s002.kp
+ADR_l1,26,-5425.07,   Optimal,   Proved,0.884003,s002.kp
+ADR_l2,26,-5425.07,   Optimal,   Proved,4.12392,s002.kp
+OPT,47,-118,   Optimal,   Proved,0.224389,s000.kp
+ADR_l1,47,-118,   Optimal,   Proved,0.592093,s000.kp
+ADR_l2,47,-118,   Optimal,   Proved,1.55158,s000.kp
+OPT,30,-3234,   Optimal,   Proved,15.9717,s005.kp
+ADR_l1,30,-3079.2,   Optimal,   Proved,0.880609,s005.kp
+ADR_l2,30,-3079.2,   Optimal,   Proved,4.936,s005.kp
+OPT,28,-4062,   Optimal,   Proved,56.3684,s005.kp
+ADR_l1,28,-3663.38,   Optimal,   Proved,0.668272,s005.kp
+ADR_l2,28,-3663.38,   Optimal,   Proved,1.86505,s005.kp
+OPT,9,-13833,  Feasible,TimeLimit,3603.65,s001.kp
+ADR_l1,9,-12202.9,   Optimal,   Proved,0.441963,s001.kp
+ADR_l2,9,-12202.9,   Optimal,   Proved,1.69647,s001.kp
+OPT,34,-2029,   Optimal,   Proved,50.0758,s001.kp
+ADR_l1,34,-1867.83,   Optimal,   Proved,0.53041,s001.kp
+ADR_l2,34,-1867.83,   Optimal,   Proved,1.88933,s001.kp
+OPT,8,-15393,   Optimal,   Proved,425.036,s002.kp
+ADR_l1,8,-13593.7,   Optimal,   Proved,0.455946,s002.kp
+ADR_l2,8,-13593.7,   Optimal,   Proved,1.17927,s002.kp
+OPT,25,-8047,  Feasible,TimeLimit,3600.45,s003.kp
+ADR_l1,25,-5119.98,   Optimal,   Proved,1.3264,s003.kp
+ADR_l2,25,-5119.98,   Optimal,   Proved,9.60104,s003.kp
+OPT,4,-17623,   Optimal,   Proved,30.8352,s004.kp
+ADR_l1,4,-17362.8,   Optimal,   Proved,0.370558,s004.kp
+ADR_l2,4,-17362.8,   Optimal,   Proved,0.906207,s004.kp
+OPT,49,-2,   Optimal,   Proved,0.25285,s000.kp
+ADR_l1,49,-2,   Optimal,   Proved,0.565632,s000.kp
+ADR_l2,49,-2,   Optimal,   Proved,2.33162,s000.kp
+OPT,22,-7457,  Feasible,TimeLimit,3600.5,s005.kp
+ADR_l1,22,-5892.61,   Optimal,   Proved,0.781821,s005.kp
+ADR_l2,22,-5892.61,   Optimal,   Proved,2.15901,s005.kp
+OPT,3,-17200,   Optimal,   Proved,2.02968,s001.kp
+ADR_l1,3,-17056.4,   Optimal,   Proved,0.401885,s001.kp
+ADR_l2,3,-17056.4,   Optimal,   Proved,0.905037,s001.kp
+OPT,3,-17985,   Optimal,   Proved,30.6895,s005.kp
+ADR_l1,3,-17191.6,   Optimal,   Proved,0.474177,s005.kp
+ADR_l2,3,-17191.6,   Optimal,   Proved,1.19387,s005.kp
+OPT,19,-8129,  Feasible,TimeLimit,3601.32,s001.kp
+ADR_l1,19,-6516.36,   Optimal,   Proved,0.778438,s001.kp
+ADR_l2,19,-6516.36,   Optimal,   Proved,2.10363,s001.kp
+OPT,14,-11376,  Feasible,TimeLimit,3602.95,s004.kp
+ADR_l1,14,-9757.97,   Optimal,   Proved,0.746147,s004.kp
+ADR_l2,14,-9757.97,   Optimal,   Proved,2.39612,s004.kp
+OPT,1,-20080,   Optimal,   Proved,0.497769,s004.kp
+ADR_l1,1,-20129.3,   Optimal,   Proved,5.42182,s004.kp
+ADR_l2,1,-20129.3,   Optimal,   Proved,9.09921,s004.kp
+OPT,49,-14,   Optimal,   Proved,0.314484,s003.kp
+ADR_l1,49,-14,   Optimal,   Proved,0.420524,s003.kp
+ADR_l2,49,-14,   Optimal,   Proved,3.02162,s003.kp
+OPT,30,-3290,   Optimal,   Proved,245.934,s001.kp
+ADR_l1,30,-2781.85,   Optimal,   Proved,0.528632,s001.kp
+ADR_l2,30,-2781.85,   Optimal,   Proved,4.27539,s001.kp
+OPT,41,-491,   Optimal,   Proved,0.223666,s001.kp
+ADR_l1,41,-491,   Optimal,   Proved,0.56135,s001.kp
+ADR_l2,41,-491,   Optimal,   Proved,3.08425,s001.kp
+OPT,5,-17092,   Optimal,   Proved,96.7948,s002.kp
+ADR_l1,5,-15939.1,   Optimal,   Proved,0.434786,s002.kp
+ADR_l2,5,-15939.1,   Optimal,   Proved,1.20504,s002.kp
+OPT,47,-20,   Optimal,   Proved,0.38407,s005.kp
+ADR_l1,47,-20,   Optimal,   Proved,0.448058,s005.kp
+ADR_l2,47,-20,   Optimal,   Proved,1.5165,s005.kp
+OPT,22,-9359,  Feasible,TimeLimit,3601.64,s003.kp
+ADR_l1,22,-6207.51,   Optimal,   Proved,0.607419,s003.kp
+ADR_l2,22,-6207.51,   Optimal,   Proved,2.5299,s003.kp
+OPT,21,-7734,  Feasible,TimeLimit,3601.75,s004.kp
+ADR_l1,21,-6084.87,   Optimal,   Proved,0.894466,s004.kp
+ADR_l2,21,-6084.87,   Optimal,   Proved,1.60297,s004.kp
+OPT,36,-1845,   Optimal,   Proved,12.8975,s004.kp
+ADR_l1,36,-1690.48,   Optimal,   Proved,0.845428,s004.kp
+ADR_l2,36,-1690.48,   Optimal,   Proved,2.67484,s004.kp
+OPT,5,-17016,   Optimal,   Proved,144.169,s005.kp
+ADR_l1,5,-15750.4,   Optimal,   Proved,0.474632,s005.kp
+ADR_l2,5,-15750.4,   Optimal,   Proved,0.844669,s005.kp
+OPT,31,-5414,  Feasible,TimeLimit,3600.36,s000.kp
+ADR_l1,31,-4140.87,   Optimal,   Proved,0.850946,s000.kp
+ADR_l2,31,-4140.87,   Optimal,   Proved,4.04301,s000.kp
+OPT,12,-12034,  Feasible,TimeLimit,3600.31,s001.kp
+ADR_l1,12,-10156.6,   Optimal,   Proved,0.531715,s001.kp
+ADR_l2,12,-10156.6,   Optimal,   Proved,1.22044,s001.kp
+OPT,42,-688,   Optimal,   Proved,0.780994,s002.kp
+ADR_l1,42,-688,   Optimal,   Proved,0.568968,s002.kp
+ADR_l2,42,-688,   Optimal,   Proved,6.10575,s002.kp
+OPT,24,-5843,  Feasible,TimeLimit,3600.23,s001.kp
+ADR_l1,24,-4482.61,   Optimal,   Proved,1.02966,s001.kp
+ADR_l2,24,-4482.61,   Optimal,   Proved,2.22744,s001.kp
+OPT,17,-9723,  Feasible,TimeLimit,3601.07,s004.kp
+ADR_l1,17,-8038.01,   Optimal,   Proved,0.725578,s004.kp
+ADR_l2,17,-8038.01,   Optimal,   Proved,1.59485,s004.kp
+OPT,6,-16550,   Optimal,   Proved,189.797,s002.kp
+ADR_l1,6,-15127.1,   Optimal,   Proved,0.636499,s002.kp
+ADR_l2,6,-15127.1,   Optimal,   Proved,1.53259,s002.kp
+OPT,2,-18297,   Optimal,   Proved,1.58298,s003.kp
+ADR_l1,2,-17928.2,   Optimal,   Proved,0.356019,s003.kp
+ADR_l2,2,-17928.2,   Optimal,   Proved,0.709223,s003.kp
+OPT,41,-1564,   Optimal,   Proved,38.4553,s000.kp
+ADR_l1,41,-1549.27,   Optimal,   Proved,0.648114,s000.kp
+ADR_l2,41,-1549.27,   Optimal,   Proved,4.36519,s000.kp
+OPT,10,-13698,   Optimal,   Proved,3064.23,s004.kp
+ADR_l1,10,-12404,   Optimal,   Proved,0.59449,s004.kp
+ADR_l2,10,-12404,   Optimal,   Proved,1.20161,s004.kp
+OPT,33,-3459,   Optimal,   Proved,3162.65,s002.kp
+ADR_l1,33,-3101.12,   Optimal,   Proved,0.719839,s002.kp
+ADR_l2,33,-3101.12,   Optimal,   Proved,4.98335,s002.kp
+OPT,43,-357,   Optimal,   Proved,0.708622,s005.kp
+ADR_l1,43,-357,   Optimal,   Proved,0.494073,s005.kp
+ADR_l2,43,-357,   Optimal,   Proved,1.65163,s005.kp
+OPT,47,-88,   Optimal,   Proved,0.342,s002.kp
+ADR_l1,47,-88,   Optimal,   Proved,0.741904,s002.kp
+ADR_l2,47,-88,   Optimal,   Proved,2.52407,s002.kp
+OPT,40,-802,   Optimal,   Proved,1.63254,s005.kp
+ADR_l1,40,-802,   Optimal,   Proved,0.497121,s005.kp
+ADR_l2,40,-802,   Optimal,   Proved,1.49907,s005.kp
+OPT,24,-6296,  Feasible,TimeLimit,3600.24,s004.kp
+ADR_l1,24,-4841.89,   Optimal,   Proved,0.63158,s004.kp
+ADR_l2,24,-4841.89,   Optimal,   Proved,1.50346,s004.kp
+OPT,7,-14873,   Optimal,   Proved,726.722,s001.kp
+ADR_l1,7,-13728.2,   Optimal,   Proved,0.576959,s001.kp
+ADR_l2,7,-13728.2,   Optimal,   Proved,1.17557,s001.kp
+OPT,27,-4532,   Optimal,   Proved,160.281,s005.kp
+ADR_l1,27,-3965.3,   Optimal,   Proved,0.600712,s005.kp
+ADR_l2,27,-3965.3,   Optimal,   Proved,1.3692,s005.kp
+OPT,42,-496,   Optimal,   Proved,1.25721,s005.kp
+ADR_l1,42,-496,   Optimal,   Proved,0.652301,s005.kp
+ADR_l2,42,-496,   Optimal,   Proved,1.57584,s005.kp
+OPT,11,-13060,  Feasible,TimeLimit,3600.36,s004.kp
+ADR_l1,11,-11659.7,   Optimal,   Proved,0.550157,s004.kp
+ADR_l2,11,-11659.7,   Optimal,   Proved,1.23137,s004.kp
+OPT,42,-1303,   Optimal,   Proved,10.114,s000.kp
+ADR_l1,42,-1295.64,   Optimal,   Proved,0.594728,s000.kp
+ADR_l2,42,-1295.64,   Optimal,   Proved,4.51381,s000.kp
+OPT,20,-8192,  Feasible,TimeLimit,3602.07,s004.kp
+ADR_l1,20,-6548.46,   Optimal,   Proved,0.788816,s004.kp
+ADR_l2,20,-6548.46,   Optimal,   Proved,1.86591,s004.kp
+OPT,23,-8674,  Feasible,TimeLimit,3601.22,s002.kp
+ADR_l1,23,-6466.31,   Optimal,   Proved,0.862818,s002.kp
+ADR_l2,23,-6466.31,   Optimal,   Proved,3.72177,s002.kp
+OPT,34,-2359,   Optimal,   Proved,20.84,s004.kp
+ADR_l1,34,-2084.69,   Optimal,   Proved,0.782773,s004.kp
+ADR_l2,34,-2084.69,   Optimal,   Proved,2.25119,s004.kp
+OPT,46,-80,   Optimal,   Proved,0.143368,s001.kp
+ADR_l1,46,-80,   Optimal,   Proved,0.44855,s001.kp
+ADR_l2,46,-80,   Optimal,   Proved,1.62905,s001.kp
+OPT,31,-3276,   Optimal,   Proved,53.0684,s004.kp
+ADR_l1,31,-2733.83,   Optimal,   Proved,0.808983,s004.kp
+ADR_l2,31,-2733.83,   Optimal,   Proved,2.23379,s004.kp
+OPT,37,-2787,   Optimal,   Proved,1499.43,s000.kp
+ADR_l1,37,-2583.67,   Optimal,   Proved,0.868067,s000.kp
+ADR_l2,37,-2583.67,   Optimal,   Proved,3.7573,s000.kp
+OPT,12,-14277,  Feasible,TimeLimit,3603.56,s005.kp
+ADR_l1,12,-11278.5,   Optimal,   Proved,0.638463,s005.kp
+ADR_l2,12,-11278.5,   Optimal,   Proved,2.12241,s005.kp
+OPT,10,-15626,  Feasible,TimeLimit,3603.76,s000.kp
+ADR_l1,10,-12961.6,   Optimal,   Proved,0.455198,s000.kp
+ADR_l2,10,-12961.6,   Optimal,   Proved,1.57915,s000.kp
+OPT,31,-4335,  Feasible,TimeLimit,3600.12,s002.kp
+ADR_l1,31,-3762.53,   Optimal,   Proved,0.499495,s002.kp
+ADR_l2,31,-3762.53,   Optimal,   Proved,2.61867,s002.kp
+OPT,26,-7935,  Feasible,TimeLimit,3600.33,s000.kp
+ADR_l1,26,-5578.66,   Optimal,   Proved,0.687209,s000.kp
+ADR_l2,26,-5578.66,   Optimal,   Proved,3.3894,s000.kp
+OPT,1,-18924,   Optimal,   Proved,0.560427,s003.kp
+ADR_l1,1,-18963.7,   Optimal,   Proved,6.00556,s003.kp
+ADR_l2,1,-18963.7,   Optimal,   Proved,6.79762,s003.kp
+OPT,16,-10260,  Feasible,TimeLimit,3602.85,s004.kp
+ADR_l1,16,-8584.76,   Optimal,   Proved,0.729554,s004.kp
+ADR_l2,16,-8584.76,   Optimal,   Proved,1.52069,s004.kp
+OPT,22,-6691,  Feasible,TimeLimit,3600.34,s001.kp
+ADR_l1,22,-5236,   Optimal,   Proved,0.700901,s001.kp
+ADR_l2,22,-5236,   Optimal,   Proved,6.32794,s001.kp
+OPT,39,-2150,   Optimal,   Proved,178.533,s000.kp
+ADR_l1,39,-2064.6,   Optimal,   Proved,0.802159,s000.kp
+ADR_l2,39,-2064.6,   Optimal,   Proved,6.22814,s000.kp
+OPT,27,-7423,  Feasible,TimeLimit,3600.44,s000.kp
+ADR_l1,27,-5271.85,   Optimal,   Proved,0.598706,s000.kp
+ADR_l2,27,-5271.85,   Optimal,   Proved,7.64071,s000.kp
+OPT,15,-12799,  Feasible,TimeLimit,3602.44,s006.kp
+ADR_l1,15,-10409.2,   Optimal,   Proved,0.660598,s006.kp
+ADR_l2,15,-10409.2,   Optimal,   Proved,2.16263,s006.kp
+OPT,3,-17738,   Optimal,   Proved,11.5157,s003.kp
+ADR_l1,3,-17036,   Optimal,   Proved,0.425542,s003.kp
+ADR_l2,3,-17036,   Optimal,   Proved,0.896042,s003.kp
+OPT,9,-15765,  Feasible,TimeLimit,3602.58,s006.kp
+ADR_l1,9,-14019.3,   Optimal,   Proved,0.484149,s006.kp
+ADR_l2,9,-14019.3,   Optimal,   Proved,1.01626,s006.kp
+OPT,11,-15142,  Feasible,TimeLimit,3603.64,s000.kp
+ADR_l1,11,-12332.5,   Optimal,   Proved,0.591919,s000.kp
+ADR_l2,11,-12332.5,   Optimal,   Proved,1.85183,s000.kp
+OPT,9,-14955,   Optimal,   Proved,871.374,s002.kp
+ADR_l1,9,-12857.6,   Optimal,   Proved,0.499199,s002.kp
+ADR_l2,9,-12857.6,   Optimal,   Proved,1.49242,s002.kp
+OPT,8,-16162,   Optimal,   Proved,1415.37,s006.kp
+ADR_l1,8,-14739.6,   Optimal,   Proved,0.611838,s006.kp
+ADR_l2,8,-14739.6,   Optimal,   Proved,1.30374,s006.kp
+OPT,2,-18529,   Optimal,   Proved,4.1793,s005.kp
+ADR_l1,2,-17977,   Optimal,   Proved,0.530479,s005.kp
+ADR_l2,2,-17977,   Optimal,   Proved,0.829343,s005.kp
+OPT,31,-4500,  Feasible,TimeLimit,3600.25,s003.kp
+ADR_l1,31,-3536.89,   Optimal,   Proved,0.733413,s003.kp
+ADR_l2,31,-3536.89,   Optimal,   Proved,4.26526,s003.kp
+OPT,15,-12266,  Feasible,TimeLimit,3603.06,s005.kp
+ADR_l1,15,-9526.98,   Optimal,   Proved,0.834182,s005.kp
+ADR_l2,15,-9526.98,   Optimal,   Proved,2.24843,s005.kp
+OPT,28,-5773,  Feasible,TimeLimit,3600.37,s002.kp
+ADR_l1,28,-4760.05,   Optimal,   Proved,1.10731,s002.kp
+ADR_l2,28,-4760.05,   Optimal,   Proved,2.42809,s002.kp
+OPT,19,-11010,  Feasible,TimeLimit,3601.24,s002.kp
+ADR_l1,19,-7913.99,   Optimal,   Proved,0.778783,s002.kp
+ADR_l2,19,-7913.99,   Optimal,   Proved,2.56231,s002.kp
+OPT,20,-11186,  Feasible,TimeLimit,3603.17,s000.kp
+ADR_l1,20,-7752.72,   Optimal,   Proved,0.70754,s000.kp
+ADR_l2,20,-7752.72,   Optimal,   Proved,2.93441,s000.kp
+OPT,27,-4566,  Feasible,TimeLimit,3600.08,s001.kp
+ADR_l1,27,-3563.65,   Optimal,   Proved,0.615981,s001.kp
+ADR_l2,27,-3563.65,   Optimal,   Proved,1.80121,s001.kp
+OPT,19,-10748,  Feasible,TimeLimit,3602.71,s003.kp
+ADR_l1,19,-7559.63,   Optimal,   Proved,0.880449,s003.kp
+ADR_l2,19,-7559.63,   Optimal,   Proved,2.04429,s003.kp
+OPT,16,-12225,  Feasible,TimeLimit,3603.7,s002.kp
+ADR_l1,16,-9151.6,   Optimal,   Proved,0.842274,s002.kp
+ADR_l2,16,-9151.6,   Optimal,   Proved,3.80833,s002.kp
+OPT,28,-4136,   Optimal,   Proved,2054.95,s001.kp
+ADR_l1,28,-3291.21,   Optimal,   Proved,0.880757,s001.kp
+ADR_l2,28,-3291.21,   Optimal,   Proved,2.35317,s001.kp
+OPT,24,-8143,  Feasible,TimeLimit,3600.48,s003.kp
+ADR_l1,24,-5453.62,   Optimal,   Proved,0.763853,s003.kp
+ADR_l2,24,-5453.62,   Optimal,   Proved,6.48995,s003.kp
+OPT,37,-2004,   Optimal,   Proved,33.76,s002.kp
+ADR_l1,37,-1875.66,   Optimal,   Proved,0.685903,s002.kp
+ADR_l2,37,-1875.66,   Optimal,   Proved,3.73866,s002.kp
+OPT,6,-17257,   Optimal,   Proved,274.169,s006.kp
+ADR_l1,6,-16304.3,   Optimal,   Proved,0.487253,s006.kp
+ADR_l2,6,-16304.3,   Optimal,   Proved,1.08071,s006.kp
+OPT,31,-2908,   Optimal,   Proved,94.0064,s001.kp
+ADR_l1,31,-2547.03,   Optimal,   Proved,0.926315,s001.kp
+ADR_l2,31,-2547.03,   Optimal,   Proved,2.10733,s001.kp
+OPT,46,-245,   Optimal,   Proved,0.43517,s004.kp
+ADR_l1,46,-245,   Optimal,   Proved,0.479935,s004.kp
+ADR_l2,46,-245,   Optimal,   Proved,2.50091,s004.kp
+OPT,37,-1623,   Optimal,   Proved,9.35835,s004.kp
+ADR_l1,37,-1504.81,   Optimal,   Proved,0.725964,s004.kp
+ADR_l2,37,-1504.81,   Optimal,   Proved,3.9299,s004.kp
+OPT,50,-0,   Optimal,   Proved,0.038123,s005.kp
+ADR_l1,50,0,   Optimal,   Proved,0.401711,s005.kp
+ADR_l2,50,0,   Optimal,   Proved,0.549391,s005.kp
+OPT,37,-1335,   Optimal,   Proved,8.16915,s001.kp
+ADR_l1,37,-1223.71,   Optimal,   Proved,0.587804,s001.kp
+ADR_l2,37,-1223.71,   Optimal,   Proved,2.43095,s001.kp
+OPT,29,-5448,  Feasible,TimeLimit,3600.26,s003.kp
+ADR_l1,29,-4047.75,   Optimal,   Proved,0.716457,s003.kp
+ADR_l2,29,-4047.75,   Optimal,   Proved,2.93201,s003.kp
+OPT,45,-230,   Optimal,   Proved,0.401916,s002.kp
+ADR_l1,45,-230,   Optimal,   Proved,0.697168,s002.kp
+ADR_l2,45,-230,   Optimal,   Proved,1.64462,s002.kp
+OPT,18,-11135,  Feasible,TimeLimit,3602.38,s003.kp
+ADR_l1,18,-8030.35,   Optimal,   Proved,0.728307,s003.kp
+ADR_l2,18,-8030.35,   Optimal,   Proved,3.46606,s003.kp
+OPT,4,-17700,   Optimal,   Proved,46.712,s002.kp
+ADR_l1,4,-16813.2,   Optimal,   Proved,0.381785,s002.kp
+ADR_l2,4,-16813.2,   Optimal,   Proved,0.687772,s002.kp
+OPT,34,-4012,  Feasible,TimeLimit,3600.21,s000.kp
+ADR_l1,34,-3362.27,   Optimal,   Proved,0.717338,s000.kp
+ADR_l2,34,-3362.27,   Optimal,   Proved,4.62275,s000.kp
+OPT,32,-4920,  Feasible,TimeLimit,3600.26,s000.kp
+ADR_l1,32,-3881.33,   Optimal,   Proved,0.986904,s000.kp
+ADR_l2,32,-3881.33,   Optimal,   Proved,6.23583,s000.kp
+OPT,16,-13007,  Feasible,TimeLimit,3602.22,s000.kp
+ADR_l1,16,-9574.52,   Optimal,   Proved,0.840042,s000.kp
+ADR_l2,16,-9574.52,   Optimal,   Proved,2.95801,s000.kp
+OPT,39,-1512,   Optimal,   Proved,6.78254,s003.kp
+ADR_l1,39,-1493.43,   Optimal,   Proved,0.632407,s003.kp
+ADR_l2,39,-1493.43,   Optimal,   Proved,3.07232,s003.kp
+OPT,38,-1408,   Optimal,   Proved,6.54014,s004.kp
+ADR_l1,38,-1331.24,   Optimal,   Proved,0.698951,s004.kp
+ADR_l2,38,-1331.24,   Optimal,   Proved,2.31354,s004.kp
+OPT,14,-13401,  Feasible,TimeLimit,3603.51,s006.kp
+ADR_l1,14,-10939.8,   Optimal,   Proved,0.972759,s006.kp
+ADR_l2,14,-10939.8,   Optimal,   Proved,3.22409,s006.kp
+OPT,42,-701,   Optimal,   Proved,1.26513,s004.kp
+ADR_l1,42,-700.603,   Optimal,   Proved,0.58016,s004.kp
+ADR_l2,42,-700.603,   Optimal,   Proved,2.27291,s004.kp
+OPT,21,-9974,  Feasible,TimeLimit,3601.55,s002.kp
+ADR_l1,21,-7165.73,   Optimal,   Proved,1.03913,s002.kp
+ADR_l2,21,-7165.73,   Optimal,   Proved,2.22611,s002.kp
+OPT,6,-16543,   Optimal,   Proved,243.721,s005.kp
+ADR_l1,6,-15072.4,   Optimal,   Proved,0.507546,s005.kp
+ADR_l2,6,-15072.4,   Optimal,   Proved,1.32666,s005.kp
+OPT,42,-356,   Optimal,   Proved,0.157235,s001.kp
+ADR_l1,42,-356,   Optimal,   Proved,0.553014,s001.kp
+ADR_l2,42,-356,   Optimal,   Proved,4.56793,s001.kp
+OPT,4,-17479,   Optimal,   Proved,50.5611,s005.kp
+ADR_l1,4,-16449.7,   Optimal,   Proved,0.404214,s005.kp
+ADR_l2,4,-16449.7,   Optimal,   Proved,1.09956,s005.kp
+OPT,43,-235,   Optimal,   Proved,0.354118,s001.kp
+ADR_l1,43,-235,   Optimal,   Proved,0.56648,s001.kp
+ADR_l2,43,-235,   Optimal,   Proved,1.80641,s001.kp
+OPT,47,-51,   Optimal,   Proved,0.172965,s001.kp
+ADR_l1,47,-51,   Optimal,   Proved,0.434538,s001.kp
+ADR_l2,47,-51,   Optimal,   Proved,1.45225,s001.kp
+OPT,26,-5072,   Optimal,   Proved,641.365,s005.kp
+ADR_l1,26,-4305.4,   Optimal,   Proved,0.718753,s005.kp
+ADR_l2,26,-4305.4,   Optimal,   Proved,1.61958,s005.kp
+OPT,35,-1795,   Optimal,   Proved,42.0495,s001.kp
+ADR_l1,35,-1646.63,   Optimal,   Proved,0.505733,s001.kp
+ADR_l2,35,-1646.63,   Optimal,   Proved,1.8535,s001.kp
+OPT,13,-13356,  Feasible,TimeLimit,3603.72,s002.kp
+ADR_l1,13,-10564.8,   Optimal,   Proved,0.707912,s002.kp
+ADR_l2,13,-10564.8,   Optimal,   Proved,3.37279,s002.kp
+OPT,44,-411,   Optimal,   Proved,0.385465,s003.kp
+ADR_l1,44,-411,   Optimal,   Proved,0.466133,s003.kp
+ADR_l2,44,-411,   Optimal,   Proved,2.08751,s003.kp
+OPT,25,-8503,  Feasible,TimeLimit,3600.28,s000.kp
+ADR_l1,25,-5900.48,   Optimal,   Proved,0.716124,s000.kp
+ADR_l2,25,-5900.48,   Optimal,   Proved,2.03646,s000.kp
+OPT,4,-17201,   Optimal,   Proved,46.0946,s003.kp
+ADR_l1,4,-16161.3,   Optimal,   Proved,0.368142,s003.kp
+ADR_l2,4,-16161.3,   Optimal,   Proved,0.673408,s003.kp
+OPT,28,-5921,  Feasible,TimeLimit,3600.86,s003.kp
+ADR_l1,28,-4303.18,   Optimal,   Proved,1.21229,s003.kp
+ADR_l2,28,-4303.18,   Optimal,   Proved,7.63106,s003.kp
+OPT,25,-7375,  Feasible,TimeLimit,3600.89,s002.kp
+ADR_l1,25,-5770.11,   Optimal,   Proved,0.685296,s002.kp
+ADR_l2,25,-5770.11,   Optimal,   Proved,3.97683,s002.kp
+OPT,29,-3713,   Optimal,   Proved,1334.48,s001.kp
+ADR_l1,29,-3028.81,   Optimal,   Proved,0.987422,s001.kp
+ADR_l2,29,-3028.81,   Optimal,   Proved,2.57709,s001.kp
+OPT,32,-4055,  Feasible,TimeLimit,3600.14,s003.kp
+ADR_l1,32,-3281.46,   Optimal,   Proved,1.00546,s003.kp
+ADR_l2,32,-3281.46,   Optimal,   Proved,3.08277,s003.kp
+OPT,26,-4982,  Feasible,TimeLimit,3600.27,s001.kp
+ADR_l1,26,-3844.41,   Optimal,   Proved,0.815534,s001.kp
+ADR_l2,26,-3844.41,   Optimal,   Proved,2.28001,s001.kp
+OPT,12,-13739,  Feasible,TimeLimit,3602.34,s002.kp
+ADR_l1,12,-11102.3,   Optimal,   Proved,0.611704,s002.kp
+ADR_l2,12,-11102.3,   Optimal,   Proved,2.21168,s002.kp
+OPT,33,-2660,   Optimal,   Proved,42.0748,s004.kp
+ADR_l1,33,-2295.58,   Optimal,   Proved,0.626816,s004.kp
+ADR_l2,33,-2295.58,   Optimal,   Proved,2.06614,s004.kp
+OPT,13,-13723,  Feasible,TimeLimit,3602.51,s005.kp
+ADR_l1,13,-10669.3,   Optimal,   Proved,0.773735,s005.kp
+ADR_l2,13,-10669.3,   Optimal,   Proved,1.63257,s005.kp
+OPT,50,-0,   Optimal,   Proved,0.058847,s003.kp
+ADR_l1,50,0,   Optimal,   Proved,0.463443,s003.kp
+ADR_l2,50,0,   Optimal,   Proved,0.800544,s003.kp
+OPT,43,-526,   Optimal,   Proved,0.771854,s002.kp
+ADR_l1,43,-526,   Optimal,   Proved,0.615033,s002.kp
+ADR_l2,43,-526,   Optimal,   Proved,3.01244,s002.kp
+OPT,46,-310,   Optimal,   Proved,0.352229,s000.kp
+ADR_l1,46,-310,   Optimal,   Proved,0.531515,s000.kp
+ADR_l2,46,-310,   Optimal,   Proved,2.09733,s000.kp
+OPT,29,-6403,  Feasible,TimeLimit,3600.4,s000.kp
+ADR_l1,29,-4687.09,   Optimal,   Proved,0.850602,s000.kp
+ADR_l2,29,-4687.09,   Optimal,   Proved,7.09172,s000.kp
+OPT,40,-1036,   Optimal,   Proved,3.77212,s004.kp
+ADR_l1,40,-1009.83,   Optimal,   Proved,0.745517,s004.kp
+ADR_l2,40,-1009.83,   Optimal,   Proved,2.55351,s004.kp
+OPT,12,-14716,  Feasible,TimeLimit,3600.37,s000.kp
+ADR_l1,12,-11742.6,   Optimal,   Proved,0.451796,s000.kp
+ADR_l2,12,-11742.6,   Optimal,   Proved,2.07063,s000.kp
+OPT,47,-111,   Optimal,   Proved,0.253712,s003.kp
+ADR_l1,47,-111,   Optimal,   Proved,0.574307,s003.kp
+ADR_l2,47,-111,   Optimal,   Proved,1.58469,s003.kp
+OPT,46,-50,   Optimal,   Proved,0.324992,s005.kp
+ADR_l1,46,-50,   Optimal,   Proved,0.305908,s005.kp
+ADR_l2,46,-50,   Optimal,   Proved,4.49889,s005.kp
+OPT,9,-15263,  Feasible,TimeLimit,3602.14,s005.kp
+ADR_l1,9,-13111.1,   Optimal,   Proved,1.11168,s005.kp
+ADR_l2,9,-13111.1,   Optimal,   Proved,1.57138,s005.kp
+OPT,17,-11776,  Feasible,TimeLimit,3601.12,s002.kp
+ADR_l1,17,-8727.01,   Optimal,   Proved,0.72714,s002.kp
+ADR_l2,17,-8727.01,   Optimal,   Proved,7.61827,s002.kp
+OPT,5,-16008,   Optimal,   Proved,94.1214,s001.kp
+ADR_l1,5,-15361.4,   Optimal,   Proved,0.436372,s001.kp
+ADR_l2,5,-15361.4,   Optimal,   Proved,0.966736,s001.kp
+OPT,35,-2837,   Optimal,   Proved,935.149,s003.kp
+ADR_l1,35,-2515.16,   Optimal,   Proved,0.715307,s003.kp
+ADR_l2,35,-2515.16,   Optimal,   Proved,3.24712,s003.kp
+OPT,20,-10313,  Feasible,TimeLimit,3601.14,s002.kp
+ADR_l1,20,-7526.98,   Optimal,   Proved,0.741805,s002.kp
+ADR_l2,20,-7526.98,   Optimal,   Proved,4.17469,s002.kp
+OPT,25,-5616,   Optimal,   Proved,2276.48,s005.kp
+ADR_l1,25,-4661.37,   Optimal,   Proved,0.624305,s005.kp
+ADR_l2,25,-4661.37,   Optimal,   Proved,1.5606,s005.kp
+OPT,15,-12395,  Feasible,TimeLimit,3602.82,s003.kp
+ADR_l1,15,-9455.86,   Optimal,   Proved,0.826864,s003.kp
+ADR_l2,15,-9455.86,   Optimal,   Proved,1.86303,s003.kp
+OPT,22,-9101,  Feasible,TimeLimit,3600.86,s002.kp
+ADR_l1,22,-6814.41,   Optimal,   Proved,0.764377,s002.kp
+ADR_l2,22,-6814.41,   Optimal,   Proved,2.18393,s002.kp
+OPT,36,-3186,  Feasible,TimeLimit,3600.03,s000.kp
+ADR_l1,36,-2843.2,   Optimal,   Proved,0.722857,s000.kp
+ADR_l2,36,-2843.2,   Optimal,   Proved,2.61818,s000.kp
+OPT,6,-16243,   Optimal,   Proved,130.846,s004.kp
+ADR_l1,6,-15649.1,   Optimal,   Proved,0.724828,s004.kp
+ADR_l2,6,-15649.1,   Optimal,   Proved,1.43849,s004.kp
+OPT,31,-2932,   Optimal,   Proved,20.6921,s005.kp
+ADR_l1,31,-2804.97,   Optimal,   Proved,0.722292,s005.kp
+ADR_l2,31,-2804.97,   Optimal,   Proved,2.16893,s005.kp
+OPT,42,-779,   Optimal,   Proved,1.13542,s003.kp
+ADR_l1,42,-779,   Optimal,   Proved,0.595462,s003.kp
+ADR_l2,42,-779,   Optimal,   Proved,2.41021,s003.kp
+OPT,5,-16900,   Optimal,   Proved,53.8257,s004.kp
+ADR_l1,5,-16499.2,   Optimal,   Proved,0.396004,s004.kp
+ADR_l2,5,-16499.2,   Optimal,   Proved,0.612811,s004.kp
+OPT,44,-230,   Optimal,   Proved,0.462859,s005.kp
+ADR_l1,44,-230,   Optimal,   Proved,0.526875,s005.kp
+ADR_l2,44,-230,   Optimal,   Proved,1.50274,s005.kp
+OPT,13,-14279,  Feasible,TimeLimit,3604.51,s000.kp
+ADR_l1,13,-11176.7,   Optimal,   Proved,0.541224,s000.kp
+ADR_l2,13,-11176.7,   Optimal,   Proved,2.00071,s000.kp
+OPT,26,-7117,  Feasible,TimeLimit,3600.72,s003.kp
+ADR_l1,26,-4842.69,   Optimal,   Proved,0.697645,s003.kp
+ADR_l2,26,-4842.69,   Optimal,   Proved,3.54433,s003.kp
+OPT,0,-20561,   Optimal,   Proved,0.310583,s002.kp
+ADR_l1,0,-20561,   Optimal,   Proved,673.497,s002.kp
+ADR_l2,0,-20561,   Optimal,   Proved,940.742,s002.kp
+OPT,12,-14234,  Feasible,TimeLimit,3601.26,s006.kp
+ADR_l1,12,-12091.4,   Optimal,   Proved,0.648084,s006.kp
+ADR_l2,12,-12091.4,   Optimal,   Proved,2.09763,s006.kp
+OPT,38,-1814,   Optimal,   Proved,20.0761,s003.kp
+ADR_l1,38,-1748.86,   Optimal,   Proved,0.635337,s003.kp
+ADR_l2,38,-1748.86,   Optimal,   Proved,2.58588,s003.kp
+OPT,4,-18441,   Optimal,   Proved,40.1601,s000.kp
+ADR_l1,4,-17380.8,   Optimal,   Proved,0.421896,s000.kp
+ADR_l2,4,-17380.8,   Optimal,   Proved,1.17966,s000.kp
+OPT,33,-2285,   Optimal,   Proved,34.5109,s001.kp
+ADR_l1,33,-2091.76,   Optimal,   Proved,0.638268,s001.kp
+ADR_l2,33,-2091.76,   Optimal,   Proved,2.47007,s001.kp
+OPT,8,-14360,   Optimal,   Proved,1745.8,s001.kp
+ADR_l1,8,-12946.8,   Optimal,   Proved,0.453793,s001.kp
+ADR_l2,8,-12946.8,   Optimal,   Proved,1.13677,s001.kp
+OPT,27,-6649,  Feasible,TimeLimit,3601.76,s003.kp
+ADR_l1,27,-4565.41,   Optimal,   Proved,0.865556,s003.kp
+ADR_l2,27,-4565.41,   Optimal,   Proved,2.92365,s003.kp
+OPT,8,-15704,   Optimal,   Proved,1836.25,s005.kp
+ADR_l1,8,-13747.4,   Optimal,   Proved,0.454602,s005.kp
+ADR_l2,8,-13747.4,   Optimal,   Proved,1.00968,s005.kp
+OPT,10,-13228,  Feasible,TimeLimit,3602.3,s001.kp
+ADR_l1,10,-11483.9,   Optimal,   Proved,0.427871,s001.kp
+ADR_l2,10,-11483.9,   Optimal,   Proved,0.984572,s001.kp
+OPT,0,-19780,   Optimal,   Proved,0.312814,s005.kp
+ADR_l1,0,-19780,   Optimal,   Proved,412.301,s005.kp
+ADR_l2,0,-19780,   Optimal,   Proved,780.848,s005.kp
+OPT,17,-10930,  Feasible,TimeLimit,3602.94,s005.kp
+ADR_l1,17,-8423.3,   Optimal,   Proved,0.873354,s005.kp
+ADR_l2,17,-8423.3,   Optimal,   Proved,1.7841,s005.kp
+OPT,35,-2082,   Optimal,   Proved,12.3631,s004.kp
+ADR_l1,35,-1887.02,   Optimal,   Proved,0.621995,s004.kp
+ADR_l2,35,-1887.02,   Optimal,   Proved,2.68919,s004.kp
+OPT,1,-20532,   Optimal,   Proved,0.752912,s006.kp
+ADR_l1,1,-20641.5,   Optimal,   Proved,6.56384,s006.kp
+ADR_l2,1,-20641.5,   Optimal,   Proved,8.25254,s006.kp
+OPT,25,-5406,  Feasible,TimeLimit,3600.5,s001.kp
+ADR_l1,25,-4148.83,   Optimal,   Proved,0.501746,s001.kp
+ADR_l2,25,-4148.83,   Optimal,   Proved,2.7237,s001.kp
+OPT,13,-11956,  Feasible,TimeLimit,3602.55,s004.kp
+ADR_l1,13,-10378.6,   Optimal,   Proved,0.680354,s004.kp
+ADR_l2,13,-10378.6,   Optimal,   Proved,1.57268,s004.kp
+OPT,19,-8666,  Feasible,TimeLimit,3600.66,s004.kp
+ADR_l1,19,-7024.96,   Optimal,   Proved,0.638644,s004.kp
+ADR_l2,19,-7024.96,   Optimal,   Proved,1.85902,s004.kp
+OPT,14,-10897,  Feasible,TimeLimit,3600.49,s001.kp
+ADR_l1,14,-8944.05,   Optimal,   Proved,0.844074,s001.kp
+ADR_l2,14,-8944.05,   Optimal,   Proved,1.69892,s001.kp
+OPT,18,-10414,  Feasible,TimeLimit,3603.28,s005.kp
+ADR_l1,18,-7880.54,   Optimal,   Proved,0.717004,s005.kp
+ADR_l2,18,-7880.54,   Optimal,   Proved,2.33068,s005.kp
+OPT,32,-2575,   Optimal,   Proved,53.6529,s001.kp
+ADR_l1,32,-2317.11,   Optimal,   Proved,0.825607,s001.kp
+ADR_l2,32,-2317.11,   Optimal,   Proved,1.99004,s001.kp
+OPT,4,-16548,   Optimal,   Proved,19.4351,s001.kp
+ADR_l1,4,-16200.5,   Optimal,   Proved,0.388162,s001.kp
+ADR_l2,4,-16200.5,   Optimal,   Proved,0.758265,s001.kp
+OPT,23,-6766,  Feasible,TimeLimit,3600.64,s004.kp
+ADR_l1,23,-5242.15,   Optimal,   Proved,0.646105,s004.kp
+ADR_l2,23,-5242.15,   Optimal,   Proved,3.12554,s004.kp
+OPT,47,-158,   Optimal,   Proved,0.438947,s004.kp
+ADR_l1,47,-158,   Optimal,   Proved,0.560002,s004.kp
+ADR_l2,47,-158,   Optimal,   Proved,2.92121,s004.kp
+OPT,29,-5262,  Feasible,TimeLimit,3600.21,s002.kp
+ADR_l1,29,-4427.55,   Optimal,   Proved,1.2176,s002.kp
+ADR_l2,29,-4427.55,   Optimal,   Proved,2.64718,s002.kp
+OPT,17,-11641,  Feasible,TimeLimit,3603.08,s003.kp
+ADR_l1,17,-8501.23,   Optimal,   Proved,0.641557,s003.kp
+ADR_l2,17,-8501.23,   Optimal,   Proved,3.51802,s003.kp
+OPT,16,-9803,  Feasible,TimeLimit,3601.34,s001.kp
+ADR_l1,16,-7885.12,   Optimal,   Proved,0.439691,s001.kp
+ADR_l2,16,-7885.12,   Optimal,   Proved,1.16357,s001.kp
+OPT,0,-21334,   Optimal,   Proved,0.332245,s006.kp
+ADR_l1,0,-21334,   Optimal,   Proved,371.292,s006.kp
+ADR_l2,0,-21334,   Optimal,   Proved,452.237,s006.kp
+OPT,11,-12686,  Feasible,TimeLimit,3603.44,s001.kp
+ADR_l1,11,-10810.1,   Optimal,   Proved,0.529061,s001.kp
+ADR_l2,11,-10810.1,   Optimal,   Proved,1.47984,s001.kp
+OPT,18,-12053,  Feasible,TimeLimit,3602.33,s000.kp
+ADR_l1,18,-8616.45,   Optimal,   Proved,1.09686,s000.kp
+ADR_l2,18,-8616.45,   Optimal,   Proved,2.66959,s000.kp
+OPT,8,-16479,   Optimal,   Proved,1903.73,s000.kp
+ADR_l1,8,-14306.7,   Optimal,   Proved,0.425964,s000.kp
+ADR_l2,8,-14306.7,   Optimal,   Proved,1.00335,s000.kp
+OPT,8,-14898,   Optimal,   Proved,390.942,s004.kp
+ADR_l1,8,-14007.3,   Optimal,   Proved,0.549339,s004.kp
+ADR_l2,8,-14007.3,   Optimal,   Proved,1.28047,s004.kp
+OPT,6,-16199,   Optimal,   Proved,235.768,s003.kp
+ADR_l1,6,-14634.3,   Optimal,   Proved,0.397876,s003.kp
+ADR_l2,6,-14634.3,   Optimal,   Proved,0.869261,s003.kp
+OPT,9,-14252,   Optimal,   Proved,829.976,s004.kp
+ADR_l1,9,-13201.8,   Optimal,   Proved,0.729477,s004.kp
+ADR_l2,9,-13201.8,   Optimal,   Proved,1.40746,s004.kp
+OPT,38,-2461,   Optimal,   Proved,714.414,s000.kp
+ADR_l1,38,-2324.13,   Optimal,   Proved,0.684133,s000.kp
+ADR_l2,38,-2324.13,   Optimal,   Proved,4.90022,s000.kp
+OPT,24,-9120,  Feasible,TimeLimit,3600.65,s000.kp
+ADR_l1,24,-6231.67,   Optimal,   Proved,1.00357,s000.kp
+ADR_l2,24,-6231.67,   Optimal,   Proved,2.33846,s000.kp
+OPT,48,-6,   Optimal,   Proved,0.296207,s005.kp
+ADR_l1,48,-6,   Optimal,   Proved,0.327814,s005.kp
+ADR_l2,48,-6,   Optimal,   Proved,5.40692,s005.kp
+OPT,22,-10018,  Feasible,TimeLimit,3603.13,s000.kp
+ADR_l1,22,-6950.86,   Optimal,   Proved,0.652909,s000.kp
+ADR_l2,22,-6950.86,   Optimal,   Proved,3.73916,s000.kp
+OPT,32,-2966,   Optimal,   Proved,32.7177,s004.kp
+ADR_l1,32,-2513.97,   Optimal,   Proved,0.855226,s004.kp
+ADR_l2,32,-2513.97,   Optimal,   Proved,2.15494,s004.kp
+OPT,29,-4075,   Optimal,   Proved,443.489,s004.kp
+ADR_l1,29,-3234.32,   Optimal,   Proved,0.779487,s004.kp
+ADR_l2,29,-3234.32,   Optimal,   Proved,2.26288,s004.kp
+OPT,2,-19660,   Optimal,   Proved,6.30301,s000.kp
+ADR_l1,2,-19138.3,   Optimal,   Proved,0.334127,s000.kp
+ADR_l2,2,-19138.3,   Optimal,   Proved,0.892003,s000.kp
+OPT,40,-1107,   Optimal,   Proved,1.60159,s002.kp
+ADR_l1,40,-1094.31,   Optimal,   Proved,0.483442,s002.kp
+ADR_l2,40,-1094.31,   Optimal,   Proved,6.3161,s002.kp
+OPT,15,-10804,  Feasible,TimeLimit,3601.98,s004.kp
+ADR_l1,15,-9160.49,   Optimal,   Proved,1.23764,s004.kp
+ADR_l2,15,-9160.49,   Optimal,   Proved,2.10677,s004.kp
+OPT,17,-9232,  Feasible,TimeLimit,3602.35,s001.kp
+ADR_l1,17,-7411.67,   Optimal,   Proved,0.546307,s001.kp
+ADR_l2,17,-7411.67,   Optimal,   Proved,1.44476,s001.kp
+OPT,44,-367,   Optimal,   Proved,0.458042,s002.kp
+ADR_l1,44,-367,   Optimal,   Proved,0.481678,s002.kp
+ADR_l2,44,-367,   Optimal,   Proved,1.79882,s002.kp
+OPT,10,-15229,  Feasible,TimeLimit,3600.71,s006.kp
+ADR_l1,10,-13344,   Optimal,   Proved,0.645991,s006.kp
+ADR_l2,10,-13344,   Optimal,   Proved,1.54755,s006.kp
+OPT,40,-1252,   Optimal,   Proved,3.08269,s003.kp
+ADR_l1,40,-1250.52,   Optimal,   Proved,0.552965,s003.kp
+ADR_l2,40,-1250.52,   Optimal,   Proved,3.42888,s003.kp
+OPT,15,-10355,  Feasible,TimeLimit,3602.3,s001.kp
+ADR_l1,15,-8398.1,   Optimal,   Proved,0.63937,s001.kp
+ADR_l2,15,-8398.1,   Optimal,   Proved,1.76239,s001.kp
+OPT,48,-52,   Optimal,   Proved,0.261947,s002.kp
+ADR_l1,48,-52,   Optimal,   Proved,0.371954,s002.kp
+ADR_l2,48,-52,   Optimal,   Proved,2.48057,s002.kp
+OPT,11,-14102,  Feasible,TimeLimit,3600.97,s002.kp
+ADR_l1,11,-11660,   Optimal,   Proved,0.476802,s002.kp
+ADR_l2,11,-11660,   Optimal,   Proved,1.64348,s002.kp
+OPT,44,-141,   Optimal,   Proved,0.182365,s001.kp
+ADR_l1,44,-141,   Optimal,   Proved,0.580664,s001.kp
+ADR_l2,44,-141,   Optimal,   Proved,1.56857,s001.kp
+OPT,48,-25,   Optimal,   Proved,0.153271,s001.kp
+ADR_l1,48,-25,   Optimal,   Proved,0.437218,s001.kp
+ADR_l2,48,-25,   Optimal,   Proved,1.32142,s001.kp
+OPT,20,-10648,  Feasible,TimeLimit,3600.8,s006.kp
+ADR_l1,20,-7949.56,   Optimal,   Proved,0.898524,s006.kp
+ADR_l2,20,-7949.56,   Optimal,   Proved,2.77177,s006.kp
+OPT,21,-10714,  Feasible,TimeLimit,3603.08,s000.kp
+ADR_l1,21,-7339.41,   Optimal,   Proved,0.703947,s000.kp
+ADR_l2,21,-7339.41,   Optimal,   Proved,2.15963,s000.kp
+OPT,18,-11464,  Feasible,TimeLimit,3600.75,s006.kp
+ADR_l1,18,-8921.63,   Optimal,   Proved,0.872845,s006.kp
+ADR_l2,18,-8921.63,   Optimal,   Proved,2.93133,s006.kp
+OPT,28,-6952,  Feasible,TimeLimit,3600.76,s000.kp
+ADR_l1,28,-4970.56,   Optimal,   Proved,0.558538,s000.kp
+ADR_l2,28,-4970.56,   Optimal,   Proved,2.23362,s000.kp
+OPT,7,-16693,   Optimal,   Proved,645.039,s006.kp
+ADR_l1,7,-15503.3,   Optimal,   Proved,0.648674,s006.kp
+ADR_l2,7,-15503.3,   Optimal,   Proved,1.27337,s006.kp
+OPT,34,-2063,   Optimal,   Proved,7.68285,s005.kp
+ADR_l1,34,-2042.25,   Optimal,   Proved,0.965637,s005.kp
+ADR_l2,34,-2042.25,   Optimal,   Proved,2.61665,s005.kp
+OPT,28,-4463,   Optimal,   Proved,786.05,s004.kp
+ADR_l1,28,-3527.8,   Optimal,   Proved,0.709143,s004.kp
+ADR_l2,28,-3527.8,   Optimal,   Proved,2.00002,s004.kp
+OPT,4,-18449,   Optimal,   Proved,50.3027,s006.kp
+ADR_l1,4,-17912.1,   Optimal,   Proved,0.447445,s006.kp
+ADR_l2,4,-17912.1,   Optimal,   Proved,0.691401,s006.kp
+OPT,0,-19789,   Optimal,   Proved,0.113254,s003.kp
+ADR_l1,0,-19789,   Optimal,   Proved,473.106,s003.kp
+ADR_l2,0,-19789,   Optimal,   Proved,609.907,s003.kp
+OPT,3,-18422,   Optimal,   Proved,18.7,s004.kp
+ADR_l1,3,-18244.2,   Optimal,   Proved,0.346177,s004.kp
+ADR_l2,3,-18244.2,   Optimal,   Proved,0.823771,s004.kp
+OPT,2,-19251,   Optimal,   Proved,2.47543,s004.kp
+ADR_l1,2,-19138.2,   Optimal,   Proved,0.366647,s004.kp
+ADR_l2,2,-19138.2,   Optimal,   Proved,0.452846,s004.kp
+OPT,49,-3,   Optimal,   Proved,0.100599,s001.kp
+ADR_l1,49,-3,   Optimal,   Proved,0.476986,s001.kp
+ADR_l2,49,-3,   Optimal,   Proved,6.90914,s001.kp
+OPT,20,-7587,  Feasible,TimeLimit,3600.59,s001.kp
+ADR_l1,20,-6085.86,   Optimal,   Proved,0.780752,s001.kp
+ADR_l2,20,-6085.86,   Optimal,   Proved,1.89614,s001.kp
+OPT,43,-562,   Optimal,   Proved,0.693822,s003.kp
+ADR_l1,43,-562,   Optimal,   Proved,0.524253,s003.kp
+ADR_l2,43,-562,   Optimal,   Proved,1.78108,s003.kp
+OPT,49,-2,   Optimal,   Proved,0.6196,s005.kp
+ADR_l1,49,-2,   Optimal,   Proved,0.378236,s005.kp
+ADR_l2,49,-2,   Optimal,   Proved,3.02266,s005.kp
+OPT,7,-16097,   Optimal,   Proved,651.128,s005.kp
+ADR_l1,7,-14403.1,   Optimal,   Proved,0.496264,s005.kp
+ADR_l2,7,-14403.1,   Optimal,   Proved,1.77436,s005.kp
+OPT,38,-1173,   Optimal,   Proved,5.1687,s005.kp
+ADR_l1,38,-1173,   Optimal,   Proved,0.585674,s005.kp
+ADR_l2,38,-1173,   Optimal,   Proved,2.69124,s005.kp
+OPT,30,-4797,  Feasible,TimeLimit,3600.31,s002.kp
+ADR_l1,30,-4095.04,   Optimal,   Proved,0.735606,s002.kp
+ADR_l2,30,-4095.04,   Optimal,   Proved,4.00985,s002.kp
+OPT,18,-8685,  Feasible,TimeLimit,3601.15,s001.kp
+ADR_l1,18,-6958.44,   Optimal,   Proved,0.568084,s001.kp
+ADR_l2,18,-6958.44,   Optimal,   Proved,1.22102,s001.kp
+OPT,18,-9154,  Feasible,TimeLimit,3600.55,s004.kp
+ADR_l1,18,-7515.3,   Optimal,   Proved,0.845926,s004.kp
+ADR_l2,18,-7515.3,   Optimal,   Proved,1.64317,s004.kp
+OPT,20,-10173,  Feasible,TimeLimit,3602.03,s003.kp
+ADR_l1,20,-7088.91,   Optimal,   Proved,0.655312,s003.kp
+ADR_l2,20,-7088.91,   Optimal,   Proved,1.88992,s003.kp
+OPT,32,-2633,   Optimal,   Proved,16.0988,s005.kp
+ADR_l1,32,-2545.65,   Optimal,   Proved,0.651686,s005.kp
+ADR_l2,32,-2545.65,   Optimal,   Proved,1.82342,s005.kp
+OPT,35,-1816,   Optimal,   Proved,9.98644,s005.kp
+ADR_l1,35,-1814.98,   Optimal,   Proved,0.766946,s005.kp
+ADR_l2,35,-1814.98,   Optimal,   Proved,3.73344,s005.kp
+OPT,0,-20961,   Optimal,   Proved,0.345566,s004.kp
+ADR_l1,0,-20961,   Optimal,   Proved,297.488,s004.kp
+ADR_l2,0,-20961,   Optimal,   Proved,283.666,s004.kp
+OPT,44,-439,   Optimal,   Proved,1.32051,s004.kp
+ADR_l1,44,-439,   Optimal,   Proved,0.485565,s004.kp
+ADR_l2,44,-439,   Optimal,   Proved,1.71777,s004.kp
+OPT,45,-549,   Optimal,   Proved,0.591831,s000.kp
+ADR_l1,45,-548.519,   Optimal,   Proved,0.558454,s000.kp
+ADR_l2,45,-548.519,   Optimal,   Proved,1.83588,s000.kp
+OPT,26,-5348,   Optimal,   Proved,2564.25,s004.kp
+ADR_l1,26,-4142.01,   Optimal,   Proved,0.680916,s004.kp
+ADR_l2,26,-4142.01,   Optimal,   Proved,1.61026,s004.kp
+OPT,48,-17,   Optimal,   Proved,0.341114,s000.kp
+ADR_l1,48,-17,   Optimal,   Proved,0.683483,s000.kp
+ADR_l2,48,-17,   Optimal,   Proved,2.19628,s000.kp
+OPT,34,-3065,   Optimal,   Proved,931.998,s002.kp
+ADR_l1,34,-2780.51,   Optimal,   Proved,0.686462,s002.kp
+ADR_l2,34,-2780.51,   Optimal,   Proved,2.84303,s002.kp
+OPT,16,-12013,  Feasible,TimeLimit,3602.36,s003.kp
+ADR_l1,16,-8973.87,   Optimal,   Proved,0.698636,s003.kp
+ADR_l2,16,-8973.87,   Optimal,   Proved,1.93559,s003.kp
+OPT,0,-20995,   Optimal,   Proved,0.366001,s000.kp
+ADR_l1,0,-20995,   Optimal,   Proved,508.068,s000.kp
+ADR_l2,0,-20995,   Optimal,   Proved,647.945,s000.kp
+OPT,15,-12513,  Feasible,TimeLimit,3600.9,s002.kp
+ADR_l1,15,-9592.31,   Optimal,   Proved,1.02429,s002.kp
+ADR_l2,15,-9592.31,   Optimal,   Proved,2.28974,s002.kp
+OPT,38,-1113,   Optimal,   Proved,3.04767,s001.kp
+ADR_l1,38,-1030.87,   Optimal,   Proved,0.689693,s001.kp
+ADR_l2,38,-1030.87,   Optimal,   Proved,2.62189,s001.kp
+OPT,44,-793,   Optimal,   Proved,1.21964,s000.kp
+ADR_l1,44,-791.978,   Optimal,   Proved,0.648014,s000.kp
+ADR_l2,44,-791.978,   Optimal,   Proved,2.36428,s000.kp
+OPT,7,-16956,   Optimal,   Proved,773.305,s000.kp
+ADR_l1,7,-15036.9,   Optimal,   Proved,0.42033,s000.kp
+ADR_l2,7,-15036.9,   Optimal,   Proved,0.986869,s000.kp
+OPT,40,-677,   Optimal,   Proved,0.747823,s001.kp
+ADR_l1,40,-659.245,   Optimal,   Proved,0.545172,s001.kp
+ADR_l2,40,-659.245,   Optimal,   Proved,2.79599,s001.kp
+OPT,9,-16001,  Feasible,TimeLimit,3601.54,s000.kp
+ADR_l1,9,-13616.3,   Optimal,   Proved,0.489474,s000.kp
+ADR_l2,9,-13616.3,   Optimal,   Proved,2.2082,s000.kp
+OPT,2,-19783,   Optimal,   Proved,4.42241,s006.kp
+ADR_l1,2,-19567.2,   Optimal,   Proved,0.450966,s006.kp
+ADR_l2,2,-19567.2,   Optimal,   Proved,0.513799,s006.kp
+OPT,24,-7995,  Feasible,TimeLimit,3602.06,s002.kp
+ADR_l1,24,-6118.21,   Optimal,   Proved,0.675639,s002.kp
+ADR_l2,24,-6118.21,   Optimal,   Proved,1.91147,s002.kp
+OPT,45,-275,   Optimal,   Proved,0.351358,s003.kp
+ADR_l1,45,-275,   Optimal,   Proved,0.431361,s003.kp
+ADR_l2,45,-275,   Optimal,   Proved,1.37573,s003.kp
+OPT,22,-7240,  Feasible,TimeLimit,3600.52,s004.kp
+ADR_l1,22,-5653.83,   Optimal,   Proved,0.800794,s004.kp
+ADR_l2,22,-5653.83,   Optimal,   Proved,2.52462,s004.kp
+OPT,7,-15734,   Optimal,   Proved,475.775,s003.kp
+ADR_l1,7,-13979.3,   Optimal,   Proved,0.47599,s003.kp
+ADR_l2,7,-13979.3,   Optimal,   Proved,1.01036,s003.kp
