@@ -211,11 +211,13 @@ plot_best_obj = function(instance) {
   table$Gamma = NULL
   table$ADR_l2 = NULL
   table = -table
-  table$OPT = table$OPT - table$ADR_l1
+  #table$OPT = table$OPT - table$ADR_l1
   
-  barplot(t(as.matrix(table)), col = c("red", "green"), main = paste("Realized profit for", instance))
+  #print(table)
   
-  legend("topright", c("Optimal", "with ADR"), fill = c("green","red"))
+  barplot(t(as.matrix(table)), col = c("red", "green"), main = paste("Realized profit for", instance), beside = TRUE)
+  
+  legend("topright", c("with ADR", "Optimal"), fill = c("red","green"))
   
 }
 
