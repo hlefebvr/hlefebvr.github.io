@@ -664,9 +664,9 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
     y = as.vector( t(dataset[dataset$type == type, c("1", "2", "3", "4")]) )
     
     if (index == 1) {
-      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = "solid", type = "l", cex = 2, col = colors[index], main = "", xlab = "", ylab = "", axes = FALSE)
+      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = index, type = "l", cex = 2, col = "black", main = "", xlab = "", ylab = "", axes = FALSE)
     } else {
-      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = "solid", type = "l", cex = 2, col = colors[index], main = "", xlab = "", ylab = "")
+      plot_function(x, y, xlim = c(1, 4), ylim = c(0,longest), lty = index, type = "l", cex = 2, col = "black", main = "", xlab = "", ylab = "")
     }
     
     index = index + 1
@@ -686,8 +686,8 @@ plot_evolution = function(dataset, main = "Evolution of computational times depe
     "topleft",
     #inset=c(-.35, 0),
     legend = dataset$type,
-    lty = "solid",
-    col = colors,
+    lty = c(1:index),
+    col = "black",
     cex = 1,
     xpd = TRUE,
     bty = "n"
