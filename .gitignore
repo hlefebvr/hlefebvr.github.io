@@ -2,6 +2,7 @@ _site
 uml
 .jekyll-cache
 *.render.html
+*.do_not_render.html
 .Rproj.user
 *.render_files
 *.do_not_render_files
