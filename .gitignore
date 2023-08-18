@@ -4,6 +4,7 @@ uml
 *.render.html
 .Rproj.user
 *.render_files
+*.do_not_render_files
 .RData
 .Rhistory
 *.generated.zip
