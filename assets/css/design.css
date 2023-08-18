@@ -314,3 +314,33 @@ iframe {
     font-style: italic;
     padding: 10px;
 }
+
+.home-window {
+    margin:10px;
+    background-color: #e7f2fa;
+    font-family: arial;
+    font-size:.9em;
+}
+
+.home-window-title {
+    color:white;
+    font-weight: bold;
+    background-color: #6ab0de;
+    padding:5px
+}
+
+.home-window-content {
+    padding:10px;
+}
+
+.home-window-button {
+    display: inline-block;
+    padding:20px;
+    background-color: #0C356A;
+    color:white;
+    font-size:1.2em;
+}
+
+.home-window-button:hover {
+    color:#e7f2fa;
+}
