@@ -1,5 +1,5 @@
 ---
-title: Open methodology for "Adjustable robust optimization with discrete uncertainty" > DisruptionFLP
+title: Open methodology for "Using column generation in constraint-and-column generation for adjustable robust optimization" > FLP
 output: 
   html_document:
     theme: null
