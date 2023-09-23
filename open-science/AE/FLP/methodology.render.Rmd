@@ -30,7 +30,7 @@ library(ggplot2)
 ```
 
 ```{r}
-data = read.csv("results.flp.csv", header = FALSE)
+data = read.csv("results_new.csv", header = FALSE)
 colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "n_facilities", "n_customers", "Gamma", "blank")
 data = data[, !(names(data) %in% c("tag", "blank"))]
 data = data[data$n_customers != 40,]
@@ -128,3 +128,9 @@ summary_table <- cbind(
 # Print the table
 summary_table
 ```
+
+
+```{r}
+data[data$total_time < 10800 & data$adversarial_unexpected_status != "" & data$with_heuristic == TRUE,]
+```
+

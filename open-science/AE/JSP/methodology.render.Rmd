@@ -31,7 +31,7 @@ library(dplyr)
 ```
 
 ```{r}
-data = read.csv("results.jsp.csv", header = FALSE)
+data = read.csv("results.csv", header = FALSE)
 colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
 data = data[, !(names(data) %in% c("tag", "blank"))]
 data[data$total_time > 7200,]$total_time = 7200
@@ -127,3 +127,31 @@ summary_table <- cbind(
 # Print the table
 summary_table
 ```
+
+
+```{r}
+library(ggplot2)
+
+ccg = data[data$method == "STD_TLInf_H0" & data$total_time < 7200,]
+
+ggplot(ccg, aes(x = as.factor(Gamma), y = n_iterations)) +
+  geom_boxplot() +
+  facet_grid(. ~ n_jobs) +
+  labs(x = "|J|", y = "Number of scenarios") +
+  theme_minimal()
+```
+
+```{r}
+library(dplyr)
+
+result <- data[data$total_time < 7200,] %>%
+  group_by(instance, Gamma) %>%
+  summarize(same_best_obj = sd(best_obj))
+
+result
+```
+
+```{r}
+data[data$total_time < 7200 & data$adversarial_unexpected_status != "" & data$with_heuristic == TRUE,]
+```
+
