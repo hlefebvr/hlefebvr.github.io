@@ -35,6 +35,7 @@ data = read.csv("results.csv", header = FALSE)
 colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
 data = data[, !(names(data) %in% c("tag", "blank"))]
 data[data$total_time > 7200,]$total_time = 7200
+#data = data[data$n_jobs == 25,]
 paged_table(data)
 ```
 
@@ -139,6 +140,14 @@ ggplot(ccg, aes(x = as.factor(Gamma), y = n_iterations)) +
   facet_grid(. ~ n_jobs) +
   labs(x = "|J|", y = "Number of scenarios") +
   theme_minimal()
+
+ggplot(ccg, aes(x = master_time, color = factor(Gamma))) +
+  stat_ecdf(geom = "step") +
+  xlab("n_iterations") +
+  ylab("ECDF") +
+  labs(color = "Gamma") +
+  scale_color_manual(values = c("red", "blue", "green")) # You can specify your own colors
+
 ```
 
 ```{r}

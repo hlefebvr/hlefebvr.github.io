@@ -1,5 +1,5 @@
 ---
-title: Open methodology for "Exact approach for convex adjustable robust optimization" > Resource Allocation Problem (RAP)
+title: Open methodology for "Exact approach for convex adjustable robust optimization" > Facility Location Problem (FLP)
 output: 
   html_document:
     theme: null
@@ -37,15 +37,13 @@ time_limit = 7200
 
 ```{r}
 results = read.table("./results.csv", header = FALSE, sep = ',')
-colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
+colnames(results) <- c("tag", "instance", "n_facilities", "n_customers", "Gamma", "deviation", "time_limit", "method", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
 results$tag = NULL
 
-results$p = results$Gamma / results$n_clients
+results$p = results$Gamma / results$n_customers
 results$p = ceiling(results$p / .05) * .05
 
-# results = results[results$n_servers != 20 & results$n_clients != 40,]
-results = results[results$n_servers != 20 & results$n_clients != 50,]
-results = results[results$n_servers != 25 & results$n_clients != 25,]
+results = results[results$p != .5,]
 
 paged_table(results)
 ```
@@ -63,7 +61,7 @@ ggplot(results, aes(x = total_time, color = method)) +
 ```{r}
 results_solved = results %>%
   filter(total_time < 7200) %>%
-  group_by(method, n_servers, n_clients, p) %>%
+  group_by(method, n_facilities, n_customers, p) %>%
   summarize(
     solved = n(),
     total_time = mean(total_time),
@@ -75,15 +73,15 @@ results_solved = results %>%
 
 results_unsolved <- results %>%
   filter(total_time >= 7200) %>%
-  group_by(method, n_servers, n_clients, p) %>%
+  group_by(method, n_facilities, n_customers, p) %>%
   summarize(
     unsolved = n(),
     unsolved_iteration_count = mean(iteration_count)
   ) %>%
   ungroup()
 
-# Merge the two results based on the common columns n_servers, n_clients, p
-final_result <- merge(results_solved, results_unsolved, by = c("method", "n_servers", "n_clients", "p"), all = TRUE)
+# Merge the two results based on the common columns n_facilities, n_customers, p
+final_result <- merge(results_solved, results_unsolved, by = c("method", "n_facilities", "n_customers", "p"), all = TRUE)
 
 # Replace NA values with 0
 #final_result[is.na(final_result)] <- 0
