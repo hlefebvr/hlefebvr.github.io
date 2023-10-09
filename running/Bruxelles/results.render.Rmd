@@ -38,7 +38,7 @@ data = read.csv("results.csv", header = FALSE)
 colnames(data) = c("rank", "bib", "name", "nat_flag", "10km_time_in_ms", "21_1km_time_in_ms", "30km_time_in_ms", "checkpoint", "time", "estimation", "avg", "category_rank", "category")
 ```
 
-## Cleaning thw data
+## Cleaning the data
 
 First, we add a column for gender.
 
