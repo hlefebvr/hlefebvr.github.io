@@ -27,23 +27,71 @@ library(rmarkdown)
 library(kableExtra)
 library(tidyr)
 library(ggplot2)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 ```
 
+## Loading the data
+
+Our results can be found in the `results.jsp.csv` file with the following columns:
+
+- "tag": a tag always equal to "result" used grep the result line in our execution log file.
+- "instance": the path to the instance.
+- "standard_phase_time_limit": the time limit for the standard phase (i.e., without using CG).
+- "master_solver": the solver used for solving the CCG master problem: STD for standard, i.e., Gurobi, CG for column generation.
+- "status": the final status.
+- "reason": the final status reason.
+- "has_large_scaled": true if the CG phase has been started, false otherwise.
+- "n_iterations": the number of iterations.
+- "total_time": the total time to solve the problem.
+- "master_time": the time spent solving the master problem.
+- "adversarial_time": the time spent solving the adversarial problem.
+- "best_bound": the best bound found.
+- "best_obj": the best feasible point value.
+- "relative_gap": the final relative gap.
+- "absolute_gap": the final absolute gap.
+- "adversarial_unexpected_status": the status of the adversarial problem solver if it is not Optimal.
+-  "with_heuristic": true if the CG-based heuristic is used.
+- "with_non_optimal_pricing": always false.
+- "n_jobs": the number of jobs in the instance.
+- "Gamma": the value for the uncertainty budget $\Gamma$.
+- "blank": this column is left blank.
+
 ```{r}
-data = read.csv("results.csv", header = FALSE)
+data = read.csv("results.jsp.csv", header = FALSE)
 colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
-data = data[, !(names(data) %in% c("tag", "blank"))]
-data[data$total_time > 7200,]$total_time = 7200
-#data = data[data$n_jobs == 25,]
-paged_table(data)
 ```
+
+
+We start by removing the "tag" and the "blank" columns.
+
+```{r}
+data = data[, !(names(data) %in% c("tag", "blank"))]
+```
+
+For homogeneity, we fix the total_time of unsolved instances to the time limit. 
+
+```{r}
+data[data$total_time > 7200,]$total_time = 7200
+```
+
+Then, we create a column named "method" which gives a specific name to each method, comprising the approach for solving the CCG master problem,
+the time limit of the standard phase and a flag indicating if the CG-based heuristic was used.
 
 ```{r}
 data$method = paste0(data$master_solver, "_TL", data$standard_phase_time_limit, "_H", data$with_heuristic)
 unique(data$method)
 data = data[data$method != "STD_TLInf_H1" & data$method != "CG_TL120_H0" & data$method != "CG_TL120_H1",]
 ```
+
+Our final data reads.
+
+```{r, echo = FALSE}
+paged_table(data)
+```
+
+## Empirical Cumulative Distribution Function (ECDF)
+
+We plot the ECDF of computation time over our set of instances for all approaches.
 
 ```{r}
 ggplot(data, aes(x = total_time, col = method)) + stat_ecdf(pad = FALSE) + coord_cartesian(xlim = c(0,7200))
@@ -52,8 +100,6 @@ ggplot(data, aes(x = total_time, col = method)) + stat_ecdf(pad = FALSE) + coord
 We export these results in csv to print them in tikz.
 
 ```{r}
-library(dplyr)
-
 data_with_ecdf = data %>%
   group_by(method) %>%
   arrange(total_time) %>%
@@ -69,21 +115,13 @@ for (method in unique(data_with_ecdf$method)) {
 }
 ```
 
-```{r}
-for (method in unique(data_with_ecdf$method)) {
-  filtered_data <- data[data$method == method,] %>%
-    filter(total_time == 7200) %>%
-    group_by(n_iterations) %>%
-    summarize(count = n()) %>%
-    ungroup()
-  
-  # Create a bar plot
-  barplot(filtered_data$count, names.arg = filtered_data$n_iterations, xlab = "n_iterations", ylab = "Number of Lines",  main = paste0("Number of unsolved instances, ", method))
-}
-```
+## Summary table
+
+In this section, we create a table summarizing the main outcome of our computational experiments.
+
+We first focus on the solved instances.
 
 ```{r}
-# Calculate the summary statistics for instances with total_time < 7200
 summary_data_lt_7200 <- data %>%
   filter(total_time < 7200) %>%
   group_by(n_jobs, Gamma, method) %>%
@@ -93,12 +131,16 @@ summary_data_lt_7200 <- data %>%
     avg_adversarial_time = mean(adversarial_time, na.rm = TRUE),
     avg_n_iterations = mean(n_iterations, na.rm = TRUE),
     sum_has_large_scaled = sum(has_large_scaled),
-    num_lines = n()
+    num_lines = n(),
+    .groups = "drop"
   ) %>%
   ungroup() %>%
   arrange(n_jobs, Gamma, method)
+```
 
-# Calculate the summary statistics for instances with total_time >= 7200
+Then, we compute averages over the unsolved instances.
+
+```{r}
 summary_data_ge_7200 <- data %>%
   filter(total_time >= 7200) %>%
   group_by(n_jobs, Gamma, method) %>%
@@ -108,8 +150,12 @@ summary_data_ge_7200 <- data %>%
   ) %>%
   ungroup() %>%
   arrange(n_jobs, Gamma, method)
+```
 
-# Transpose the data for method to be above the table
+
+Finally, we merge our results.
+
+```{r}
 transposed_data_lt_7200 <- summary_data_lt_7200 %>%
   pivot_wider(names_from = method, values_from = avg_total_time:num_lines)
 
@@ -117,50 +163,10 @@ transposed_data_ge_7200 <- summary_data_ge_7200 %>%
   pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved) %>%
   select(-n_jobs, -Gamma)
 
-# Create a table using kable
-summary_table <- cbind(
+cbind(
   transposed_data_lt_7200,
   transposed_data_ge_7200
 ) %>%
   kable() %>%
   kable_styling(full_width = FALSE, position = "center")
-
-# Print the table
-summary_table
 ```
-
-
-```{r}
-library(ggplot2)
-
-ccg = data[data$method == "STD_TLInf_H0" & data$total_time < 7200,]
-
-ggplot(ccg, aes(x = as.factor(Gamma), y = n_iterations)) +
-  geom_boxplot() +
-  facet_grid(. ~ n_jobs) +
-  labs(x = "|J|", y = "Number of scenarios") +
-  theme_minimal()
-
-ggplot(ccg, aes(x = master_time, color = factor(Gamma))) +
-  stat_ecdf(geom = "step") +
-  xlab("n_iterations") +
-  ylab("ECDF") +
-  labs(color = "Gamma") +
-  scale_color_manual(values = c("red", "blue", "green")) # You can specify your own colors
-
-```
-
-```{r}
-library(dplyr)
-
-result <- data[data$total_time < 7200,] %>%
-  group_by(instance, Gamma) %>%
-  summarize(same_best_obj = sd(best_obj))
-
-result
-```
-
-```{r}
-data[data$total_time < 7200 & data$adversarial_unexpected_status != "" & data$with_heuristic == TRUE,]
-```
-

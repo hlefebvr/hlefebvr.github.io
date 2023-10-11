@@ -49,7 +49,7 @@ Our results can be found in the `results.flp.csv` file with the following column
 - "best_obj": the best feasible point value.
 - "relative_gap": the final relative gap.
 - "absolute_gap": the final absolute gap.
-- "adversarial_unexpected_status": the status of the adversarial problem solver if it is not Optinal.
+- "adversarial_unexpected_status": the status of the adversarial problem solver if it is not Optimal.
 -  "with_heuristic": true if the CG-based heuristic is used.
 - "n_facilities": the number of facilities in the instance.
 - "n_customers":  the number of customers in the instance.
