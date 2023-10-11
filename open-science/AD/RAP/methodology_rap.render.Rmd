@@ -23,32 +23,77 @@ output:
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE}
 library(rmarkdown)
 library(kableExtra)
-library(tidyr)
 library(ggplot2)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 ```
 
-```{r}
-time_limit = 7200
-```
+## Loading the data
+
+The raw results can be found in the file `results.csv` with the following columns:
+
+- tag: a tag which should always equal "result" used to `grep` the result line in the execution log file.
+- instance: the name or path of the instance.
+- n_servers: the number of servers in the instance.
+- n_clients: the number of clients in the instance.
+- Gamma: the value of $\Gamma$ which was used.
+- deviation: the maximum deviation, in percentage, from the nominal demand.
+- time_limit: the time limit which was used when solving the instance.
+- method: the name of the method which was used to solve the instance.
+- total_time: the total time used to solve the instance.
+- master_time: the time spent solving the master problem.
+- separation_time: the time spent solving the separation problem.
+- best_bound: the best bound found.
+- iteration_count: the number of iterations.
+- fail: should be empty if the execution of the algorithm went well.
+
+We start by reading the file and by removing the "tag" column.
 
 ```{r}
 results = read.table("./results.csv", header = FALSE, sep = ',')
 colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
 results$tag = NULL
+```
 
+We then check that all instances were solved without issue by checking the "fail" column.
+
+```{r}
+sum(results$fail)
+```
+
+Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
+
+```{r}
 results$p = results$Gamma / results$n_clients
 results$p = ceiling(results$p / .05) * .05
+```
 
-# results = results[results$n_servers != 20 & results$n_clients != 40,]
+We also get rid of instances which were too large to be solved by both approaches.
+
+```{r}
+results = results[results$n_servers != 20 & results$n_clients != 40,]
 results = results[results$n_servers != 20 & results$n_clients != 50,]
-results = results[results$n_servers != 25 & results$n_clients != 25,]
+#results = results[results$n_servers != 25 & results$n_clients != 25,]
+```
 
+All in all, our result data reads.
+
+```{r, echo = FALSE}
 paged_table(results)
 ```
+
+
+Additionally, we define the variable `time_limit` which stores the time limit used in our computation.
+
+```{r}
+time_limit = 7200
+```
+
+## Empirical Cumulative Distribution Function (ECDF)
+
+We plot the ECDF of computation time over our set of instances for all approaches.
 
 ```{r}
 ggplot(results, aes(x = total_time, color = method)) +
@@ -60,35 +105,58 @@ ggplot(results, aes(x = total_time, color = method)) +
   theme_minimal()
 
 ```
+
+## Summary table
+
+In this section, we create a table summarizing the outcome of our experiments.
+
+We start by computing average computation times over the solved instances.
+
 ```{r}
 results_solved = results %>%
-  filter(total_time < 7200) %>%
+  filter(total_time < time_limit) %>%
   group_by(method, n_servers, n_clients, p) %>%
   summarize(
     solved = n(),
     total_time = mean(total_time),
     master_time = mean(master_time),
     separation_time = mean(separation_time),
-    solved_iteration_count = mean(iteration_count)
+    solved_iteration_count = mean(iteration_count),
+    .groups = "drop"
   ) %>%
   ungroup()
+```
 
+Then, we also consider unsolved instances: we count the number of such instances and compute the average iteration count.
+
+```{r}
 results_unsolved <- results %>%
-  filter(total_time >= 7200) %>%
+  filter(total_time >= time_limit) %>%
   group_by(method, n_servers, n_clients, p) %>%
   summarize(
     unsolved = n(),
-    unsolved_iteration_count = mean(iteration_count)
+    unsolved_iteration_count = mean(iteration_count),
+    .groups = "drop"
   ) %>%
   ungroup()
 
-# Merge the two results based on the common columns n_servers, n_clients, p
+```
+
+We then merge the two tables.
+
+```{r}
 final_result <- merge(results_solved, results_unsolved, by = c("method", "n_servers", "n_clients", "p"), all = TRUE)
+```
 
-# Replace NA values with 0
-#final_result[is.na(final_result)] <- 0
+Finally, we replace all `NA` entries by 0.
 
+```{r}
+final_result[is.na(final_result)] = 0
+```
 
+Here is our table.
+
+```{r, echo = FALSE}
 knitr::kable(final_result, 
                digits = c(0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 2), 
                col.names = c("Method", "|V_1|", "|V_2|", "p", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter"),
@@ -97,5 +165,33 @@ knitr::kable(final_result,
       kable_classic() %>%
       add_header_above(c(" " = 4, "Solved instances" = 5, "Unsolved instances" = 2)
 )
+```
+
+## Number of iterations
+
+### GBD 
+
+```{r}
+ggplot(results[results$total_time < time_limit & results$method == "GBD",], aes(x = iteration_count)) +
+  geom_histogram(binwidth = 10) +
+  labs(
+    title = "Distribution of TIME_S",
+    x = "Number of iterations",
+    y = "Number of instances"
+  ) +
+  theme_minimal()
+```
+
+### CCG
+
+```{r}
+ggplot(results[results$total_time < time_limit & results$method == "CCG",], aes(x = iteration_count)) +
+  geom_histogram(binwidth = 1) +
+  labs(
+    title = "Distribution of TIME_S",
+    x = "Number of iterations",
+    y = "Number of instances"
+  ) +
+  theme_minimal()
 ```
 
