@@ -82,18 +82,28 @@ margin: 0;
     opacity: 1;
 }
 
-a {
-color: black;
-text-decoration: none;
-transition: 250ms;
-}
-
 a:hover {
 color: #8B0000;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.main a, .home-bio a, .projects a {
+  text-decoration: none;
+  color: #8B0000;
+  padding-right: 16px;
+  background-image:url('/assets/images/link-45deg.svg');
+  background-repeat: no-repeat;
+  background-position-x: right;
+  background-position-y: center;
+  background-size:15px;
+}
+
 #nav {
-display: inline-block;
+  display: inline-block;
 }
 
 .content {
@@ -170,10 +180,6 @@ margin-bottom: 5px;
 list-style-image: url("/assets/images/graduate.svg");
 }
 
-.education li a {
-display: block;
-}
-
 .education li b {
 color: black;
 }
@@ -213,25 +219,25 @@ border-radius: 5px;
 }
 
 .attachment {
+    color:black  !important;
     margin: 5px;
     padding: 20px 20px 20px 30px;
     border: 1px solid #efefef;
     -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,.05); 
     box-shadow: 0px 1px 2px 0px rgba(0,0,0,.05);
     background-color: white;
-    background-image: url("/assets/images/paperclip.svg");
-    background-repeat: no-repeat;
-    background-position-x: 5px;
-    background-position-y: center;
+    background-repeat: no-repeat !important;
+    background-position-x: 5px !important;
+    background-position-y: center !important;
     display: inline-block;
 }
 
 .attachment-download {
-    background-image: url("/assets/images/paperclip.svg");
+    background-image: url("/assets/images/paperclip.svg") !important;
 }
 
 .attachment-link {
-    background-image: url("/assets/images/link-45deg.svg");
+    background-image: url("/assets/images/link-45deg.svg") !important;
 }
 
 .category-item {
@@ -261,6 +267,11 @@ border-radius: 5px;
     width: 300px;
     padding-right: 20px;
     padding-top: 20px;
+}
+
+#toc a {
+  color:black !important;
+  background: none !important;
 }
 
 .sticky {
