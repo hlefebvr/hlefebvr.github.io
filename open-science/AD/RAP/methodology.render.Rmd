@@ -115,7 +115,7 @@ We start by computing average computation times over the solved instances.
 ```{r}
 results_solved = results %>%
   filter(total_time < time_limit) %>%
-  group_by(method, n_servers, n_clients, p) %>%
+  group_by(method, n_servers, n_clients, p, deviation) %>%
   summarize(
     solved = n(),
     total_time = mean(total_time),
@@ -132,7 +132,7 @@ Then, we also consider unsolved instances: we count the number of such instances
 ```{r}
 results_unsolved <- results %>%
   filter(total_time >= time_limit) %>%
-  group_by(method, n_servers, n_clients, p) %>%
+  group_by(method, n_servers, n_clients, p, deviation) %>%
   summarize(
     unsolved = n(),
     unsolved_iteration_count = mean(iteration_count),
@@ -145,7 +145,7 @@ results_unsolved <- results %>%
 We then merge the two tables.
 
 ```{r}
-final_result <- merge(results_solved, results_unsolved, by = c("method", "n_servers", "n_clients", "p"), all = TRUE)
+final_result <- merge(results_solved, results_unsolved, by = c("method", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
 ```
 
 Finally, we replace all `NA` entries by 0.
@@ -158,12 +158,12 @@ Here is our table.
 
 ```{r, echo = FALSE}
 knitr::kable(final_result, 
-               digits = c(0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 2), 
-               col.names = c("Method", "|V_1|", "|V_2|", "p", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter"),
+               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2), 
+               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter"),
                caption = "Summary table"
              ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = 4, "Solved instances" = 5, "Unsolved instances" = 2)
+      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 2)
 )
 ```
 
@@ -173,7 +173,7 @@ knitr::kable(final_result,
 
 ```{r}
 ggplot(results[results$total_time < time_limit & results$method == "GBD",], aes(x = iteration_count)) +
-  geom_histogram(binwidth = 10) +
+  geom_histogram(binwidth = 10, fill = "lightblue", color = "black") +
   labs(
     title = "Distribution of TIME_S",
     x = "Number of iterations",
@@ -186,7 +186,7 @@ ggplot(results[results$total_time < time_limit & results$method == "GBD",], aes(
 
 ```{r}
 ggplot(results[results$total_time < time_limit & results$method == "CCG",], aes(x = iteration_count)) +
-  geom_histogram(binwidth = 1) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
   labs(
     title = "Distribution of TIME_S",
     x = "Number of iterations",
