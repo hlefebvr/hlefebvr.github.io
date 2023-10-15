@@ -20,7 +20,7 @@ output:
         - ../../../_includes/footer.html
 ---
 
-<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last automatic compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 
 
 ```{r echo=FALSE, warning=FALSE}
