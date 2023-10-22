@@ -352,8 +352,8 @@ iframe {
 .home-window {
     margin:10px;
     background-color: #e7f2fa;
-    font-family: arial;
-    font-size:.9em;
+    border-radius:5px;
+    border:1px solid #6ab0de;
 }
 
 .home-window-title {
