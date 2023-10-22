@@ -25,218 +25,42 @@ output:
 
 ```{r echo=FALSE}
 library(rmarkdown)
-library(rmarkdown)
 library(kableExtra)
 library(tidyr)
+library(ggplot2)
 ```
 
 ```{r}
-results = read.csv("results.csv", header = FALSE)
-colnames(results) = c("method", "Gamma", "best_obj", "status", "reason", "time", "instance")
+results_adr = read.csv("adr-results.csv", header = FALSE)
+colnames(results_adr) = c("tag", "instance", "Gamma", "total_time", "status", "reason", "best_bound", "best_obj")
+
+results_adr$tag = NULL
 ```
 
 ```{r}
-methods = unique(results$method)
-colors = rainbow(length(methods))
-colors = as.data.frame(cbind(methods, colors))
+results_ccg = read.csv("ccg-results.csv", header = FALSE)
+colnames(results_ccg) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
+
+results_ccg = results_ccg[,colnames(results_adr)]
 ```
 
 ```{r}
-results = results[order(results$Gamma),]
+results_ccg$method = "ccg"
+results_adr$method = "adr"
+results = rbind(results_ccg, results_adr)
+```
+
+```{r, echo = FALSE}
 paged_table(results)
 ```
 
 ```{r}
-gap = function(lb, ub) {
-  return ( abs(lb - ub) / (1e-10 + abs(ub))  )
-}
-
-make_gap_table = function(dataset) {
-  
-    result = spread(dataset[,c("instance", "method", "Gamma", "best_obj")], key = method, value = best_obj);
-    
-    methods = unique(dataset$method)
-    
-    for (method in methods) {
-      result[paste0("gap_OPT_",method)] = gap(result$OPT, result[,method]) * 100
-    }
-    
-    return (result)
-}
-
-Table = make_gap_table(results)
-
-paged_table(Table)
+ggplot(results, aes(x = total_time, col = method)) +
+  stat_ecdf(pad = FALSE) +
+  coord_cartesian(xlim = c(0,7200)) +
+  theme_minimal()
 ```
-
-```{r, echo = FALSE}
-#knitr::kable(
-#    Table,
-#    digits = c(0, 0, matrix(2, nrow = ncol(Table) - 2))
-#  ) %>%
-#    kable_classic()
-```
-
-## Optimality gap
-
-### ECDF
 
 ```{r}
-plot_gap = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
-  
-  methods = unique(dataset$method)
-  methods = methods[methods != "OPT"]
-  
-  Table = make_gap_table(dataset)
-  
-  used_colors = NULL
-  
-  index = 0
-  for (method in methods) {
-    
-    plot_function = if (index == 0 ) plot else lines
-    
-    current_color = colors[colors$methods == method ,"colors"]
-    
-    data = Table[,paste0("gap_OPT_",method)]
-    
-    plot_function(ecdf(data), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", ylim = c(0, 1))
-    
-    used_colors = rbind(used_colors, current_color)
-    
-    index = index + 1
-  }
-  
-  title(main = main,
-      xlab = xlab,
-      ylab = ylab)
-  
-  legend(
-    "bottomright",
-    legend = methods,
-    lty = "solid",
-    col = used_colors,
-    bty = "n"
-  )
-  
-}
-
-plot_gap(results[results$time < 3600 & results$Gamma != 0,], main = "ECDF of optimality gap", xlab = "optimality gap (%)", ylab = "portion of instances")
 
 ```
-
-## Computation times
-
-```{r}
-plot_times = function(dataset, main = NULL, xlab = NULL, ylab = NULL) {
-  
-    result = spread(dataset[,c("instance", "method", "Gamma", "time")], key = method, value = time);   
-    
-    methods = unique(dataset$method)
-    
-    used_colors = NULL
-    
-    index = 0
-    for (method in methods) {
-      
-      plot_function = if (index == 0 ) function(...) plot(..., log = "x") else lines
-      
-      current_color = colors[colors$methods == method ,"colors"]
-      
-      plot_function(ecdf(result[,method]), col = current_color, lty = "solid", cex = 0, main = "", xlab = "", ylab = "", xlim = c(1, 3600), ylim = c(0.001, 1))
-      
-      used_colors = rbind(used_colors, current_color)
-      
-      index = index + 1
-    }
-    
-    title(main = main,
-        xlab = xlab,
-        ylab = ylab)
-    
-    legend(
-      "bottomright",
-      legend = methods,
-      lty = "solid",
-      col = used_colors,
-      bty = "n"
-    )
-    
-}
-
-plot_times(results[results$Gamma != 0,], main = "ECDF of time (s)", xlab = "log time (s)", ylab = "portion of instances")
-
-```
-
-### Per instance
-
-```{r, fig.height=10}
-
-plot_instance = function(instance, field, logscale = FALSE) {
-  
-  dataset = results[results$instance == instance,]
-  opt = dataset[dataset$method == "OPT",]
-  adr1 = dataset[dataset$method == "ADR_l1",]
-  adr2 = dataset[dataset$method == "ADR_l2",]
-  
-  ylim = NULL
-  log = ""
-  ylab = field
-  
-  if (logscale) {
-    ylim = c(0.0001, max(opt[[field]], adr1[[field]], adr2[[field]]))
-    log = "y"
-    ylab = paste("log",field)
-  }
-  
-  plot(opt$Gamma, opt[[field]], xlab = "", ylab = "", type = "s", col = "green", ylim = ylim, log = log, pch = 16)
-  points(adr1$Gamma, adr1[[field]], type = "s", col = "red", pch = 16)
-  points(adr2$Gamma, adr2[[field]], type = "s", col = "blue", pch = 16)
-  
-  title(main = paste("Computation time for", instance),
-        xlab = "Gamma",
-        ylab = ylab)
-  
-  legend("topleft", legend = c("OPT", "ADR_l1", "ADR_l2"), col = c("green", "red", "blue"), pch = 16)
-  
-}
-
-plot_best_obj = function(instance) {
-  
-  dataset = results[results$instance == instance,]
-  table = spread(dataset[,c("Gamma", "method", "best_obj")], key = method, value = best_obj)
-  
-  rownames(table) = table$Gamma
-  
-  table$Gamma = NULL
-  table$ADR_l2 = NULL
-  table = -table
-  #table$OPT = table$OPT - table$ADR_l1
-  
-  #print(table)
-  
-  barplot(t(as.matrix(table)), col = c("red", "green"), main = paste("Realized profit for", instance), beside = TRUE)
-  
-  legend("topright", c("with ADR", "Optimal"), fill = c("red","green"))
-  
-}
-
-plot_gap = function(instance) {
-  
-  dataset = Table[Table$instance == instance,]
-  
-  plot(dataset$Gamma, dataset$gap_OPT_ADR_l1, type = "s", col = "red", xlab = "", ylab = "Gap (%)", main = paste("Optimality gap for", instance))
-  
-}
-
-for (instance in unique(results$instance)) {
-  par(mfrow = c(3,1))
-  plot_instance(instance, "time", logscale = TRUE);
-  plot_gap(instance)
-  plot_best_obj(instance);
-}
-
-
-```
-
-
