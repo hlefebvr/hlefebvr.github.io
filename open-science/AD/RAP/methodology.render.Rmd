@@ -106,6 +106,24 @@ ggplot(results, aes(x = total_time, color = method)) +
 
 ```
 
+We now export our data for plotting in tikz.
+
+```{r}
+data_with_ecdf = results %>%
+  group_by(method) %>%
+  arrange(total_time) %>%
+  mutate(ecdf_value = ecdf(total_time)(total_time)) %>%
+  ungroup()
+
+for (method in unique(data_with_ecdf$method)) {
+  output = data_with_ecdf[data_with_ecdf$method == method,]
+  output = output[,c("total_time", "ecdf_value")]
+  output$log_total_time = output$total_time
+  output = output[output$total_time < 7200,]
+  write.csv(output, file = paste0(method, ".csv"), row.names = FALSE)
+}
+```
+
 ## Summary table
 
 In this section, we create a table summarizing the outcome of our experiments.
