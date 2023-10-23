@@ -73,9 +73,9 @@ results$p = ceiling(results$p / .05) * .05
 We also get rid of instances which were too large to be solved by both approaches.
 
 ```{r}
-results = results[results$n_servers != 20 & results$n_clients != 40,]
-results = results[results$n_servers != 20 & results$n_clients != 50,]
-#results = results[results$n_servers != 25 & results$n_clients != 25,]
+results = results[!(results$n_servers == 20 & results$n_clients == 50),]
+results = results[!(results$n_servers == 20 & results$n_clients == 50),]
+results = results[!(results$n_servers == 25 & results$n_clients == 25),]
 ```
 
 All in all, our result data reads.

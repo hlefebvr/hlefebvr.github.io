@@ -78,7 +78,7 @@ results$p = ceiling(results$p / .05) * .05
 We also get rid of instances which were too large to be solved by both approaches.
 
 ```{r}
-results = results[results$p != .5,]
+# results = results[results$p != .5,]
 ```
 
 All in all, our result data reads.
