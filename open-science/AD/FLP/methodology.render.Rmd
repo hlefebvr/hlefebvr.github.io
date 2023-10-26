@@ -98,13 +98,6 @@ All in all, our result data reads.
 paged_table(results)
 ```
 
-
-Additionally, we define the variable `time_limit` which stores the time limit used in our computation.
-
-```{r}
-time_limit = 7200
-```
-
 ## Unsolved instances
 
 ```{r}
@@ -119,6 +112,8 @@ for (method in unique(results$method)) {
     labs(x = "Size", y = "Total Unsolved Cases", title = method) +
     theme_minimal()
 
+  ggsave(paste0("unsolved_", method, ".pdf"), plot = p, width = 10, height = 6)
+  
   print(p)
 }
 ```
@@ -195,10 +190,12 @@ plot_performance_profile = function(dataset,
 
 
 ```{r}
-plot_performance_profile(results, criterion_column = "total_time", solver_column = "method") +
+performance_profile = plot_performance_profile(results, criterion_column = "total_time", solver_column = "method") +
   labs(x = "Performance ratio", y = "% of instances") +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
+print(performance_profile)
+ggsave("performance_profile.pdf", plot = performance_profile)
 ```
 
 
@@ -306,4 +303,47 @@ for (method in unique(results$method)) {
 }
 ```
 
+## Understanding unsolved instances
+
+We first consider those instances with 15 facilities and p = 0.3 since these are the instances which both approaches cannot solve at all.
+
+```{r}
+subset = results[results$n_facilities == 15 & results$p > .25,]
+```
+
+Then, observe how, for the subset of instances such that iteration_count is 1 for at least one of the methods, the computation times are the same (which makes sense because, actually, the same routines are executed - intial master and first separation).
+
+```{r}
+filtered_subset = subset %>%
+  group_by(instance) %>%
+  filter(any(iteration_count < 1))
+
+ggplot(filtered_subset, aes(x = method, y = master_time)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "Master time") +
+  theme_minimal()
+
+ggplot(filtered_subset, aes(x = method, y = separation_time)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "Separation time") +
+  theme_minimal()
+```
+
+However, for some instances, GBD can do more iterations because the master problem is nicer whereas CCG has a convex MINLP problem which he cannot solve within the time limit. 
+
+```{r}
+for (method in unique(subset$method)) {
+  
+  p = ggplot(subset[subset$method == method,], aes(x = iteration_count)) +
+    geom_bar() +
+    labs(
+      title = method,
+      x = "Number of iterations",
+      y = "Number of instances"
+    ) +
+    theme_minimal()
+    
+  print(p) 
+}
+```
 
