@@ -59,6 +59,7 @@ results$tag = NULL
 
 results = results[!(results$n_facilities == 10 & results$n_customers == 30),]
 results = results[!(results$n_facilities == 15 & results$n_customers == 40),]
+results = results[!(results$n_facilities == 25 & results$n_customers == 25),]
 ```
 
 We then check that all instances were solved without issue by checking the "fail" column.
