@@ -57,11 +57,6 @@ colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "de
 results$tag = NULL
 ```
 
-We then check that all instances were solved without issue by checking the "fail" column.
-
-```{r}
-sum(results$fail)
-```
 
 Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
 
@@ -81,6 +76,12 @@ We also get rid of instances which were too large to be solved by both approache
 ```{r}
 results = results[!(results$n_clients == 40),]
 #results = results[!(results$n_servers == 25 & results$n_clients == 25),]
+```
+
+We then check that all instances were solved without issue by checking the "fail" column.
+
+```{r}
+sum(results$fail)
 ```
 
 We add a tag for unsolved instances.
@@ -198,6 +199,19 @@ print(performance_profile)
 ggsave("performance_profile.pdf", plot = performance_profile)
 ```
 
+
+As a complement, we also draw the ECDF.
+
+```{r}
+ggplot(results, aes(x = total_time, color = method)) +
+  stat_ecdf(geom = "step") +
+  xlab("Total Time") +
+  ylab("ECDF") +
+  labs(title = "ECDF of Total Time by Method")  +
+  scale_x_continuous(breaks = seq(0, max(results$total_time), by = 500), labels = seq(0, max(results$total_time), by = 500)) +
+  theme_minimal()
+```
+
 ## Summary table
 
 In this section, we create a table summarizing the outcome of our experiments.
@@ -232,30 +246,34 @@ results_unsolved <- results %>%
   ) %>%
   ungroup()
 
+results_fail <- results %>%
+  filter(fail == TRUE) %>%
+  group_by(method, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    fail = n(),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
 ```
 
 We then merge the two tables.
 
 ```{r}
 final_result <- merge(results_solved, results_unsolved, by = c("method", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
-```
-
-Finally, we replace all `NA` entries by 0.
-
-```{r}
-final_result[is.na(final_result)] = 0
+final_result <- merge(final_result, results_fail, by = c("method", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
 ```
 
 Here is our table.
 
 ```{r, echo = FALSE}
 knitr::kable(final_result, 
-               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2), 
-               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter"),
+               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 0), 
+               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter", "# Errors"),
                caption = "Summary table"
              ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 2)
+      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 3)
 )
 ```
 
