@@ -89,6 +89,10 @@ We add a tag for unsolved instances.
 ```{r}
 time_limit = 7200
 
+if (sum(results$fail) > 0) {
+  results[results$fail == TRUE,]$total_time = time_limit
+}
+
 results$unsolved = results$total_time >= time_limit | results$fail
 ```
 
