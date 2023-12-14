@@ -71,7 +71,9 @@ data = data[, !(names(data) %in% c("tag", "blank"))]
 For homogeneity, we fix the total_time of unsolved instances to the time limit. 
 
 ```{r}
-data[data$total_time > 7200,]$total_time = 7200
+if (sum(data$total_time > 7200) > 0 ) {
+  data[data$total_time > 7200,]$total_time = 7200 
+}
 ```
 
 Then, we create a column named "method" which gives a specific name to each method, comprising the approach for solving the CCG master problem,
