@@ -27,6 +27,7 @@ output:
 library(rmarkdown)
 library(kableExtra)
 library(ggplot2)
+library(stringr)
 suppressPackageStartupMessages(library(dplyr))
 ```
 
@@ -106,9 +107,52 @@ kable(final_summary,
 
 ## ECDF Plot
 
+### MILPS and NLPs
+
 ```{r}
 ggplot(results[results$repeated_scenario == 0,], aes(x = total_time, col = type)) + 
   stat_ecdf(pad = FALSE) +
   coord_cartesian(xlim = c(0,7200)) +
   theme_minimal()
+```
+
+### Sub-Groups in NLPs
+
+```{r}
+nlp_results = results[results$type == "NLP",]
+
+matches = str_match(nlp_results$instance, "_p(\\d+)_k(\\d+)_s(\\d+)\\.")
+
+# Extract the parameters from the matches
+nlp_results$param_p <- as.integer(matches[, 2])
+nlp_results$param_k <- as.integer(matches[, 3])
+nlp_results$param_s <- as.integer(matches[, 4])
+```
+
+These are log-scaled.
+
+```{r}
+ggplot(nlp_results[nlp_results$repeated_scenario == 0,], aes(x = total_time, col = paste0(param_s, " %"))) + 
+  stat_ecdf(pad = FALSE) +
+  # coord_cartesian(xlim = c(0,7200)) +
+  scale_x_log10() +
+  theme_minimal() +
+  labs(color = "Sparsity")
+```
+```{r}
+ggplot(nlp_results[nlp_results$repeated_scenario == 0,], aes(x = total_time, col = paste0(param_p, " %"))) + 
+  stat_ecdf(pad = FALSE) +
+  # coord_cartesian(xlim = c(0,7200)) +
+  scale_x_log10() +
+  theme_minimal() +
+  labs(color = "% of follower vars in nonconvex")
+```
+
+```{r}
+ggplot(nlp_results[nlp_results$repeated_scenario == 0,], aes(x = total_time, col = paste0(param_k, " %"))) + 
+  stat_ecdf(pad = FALSE) +
+  # coord_cartesian(xlim = c(0,7200)) +
+  scale_x_log10() +
+  theme_minimal() +
+  labs(color = "% of follower nonconvex ctrs")
 ```
