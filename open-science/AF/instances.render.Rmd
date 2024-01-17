@@ -53,10 +53,10 @@ filtered = results
 
 filtered = filtered[filtered$all_follower_variables_are_bounded == 1 & filtered$all_linking_variables_are_binary == 1,]
 
-filtered = filtered[filtered$n_follower_vars < 50,]
-filtered = filtered[filtered$n_follower_ctrs < 50,]
-filtered = filtered[filtered$n_leader_vars < 50,]
-filtered = filtered[filtered$n_leader_ctrs < 50,]
+filtered = filtered[filtered$n_follower_vars < 25,]
+#filtered = filtered[filtered$n_follower_ctrs < 25,]
+filtered = filtered[filtered$n_leader_vars < 25,]
+#filtered = filtered[filtered$n_leader_ctrs < 25,]
 
 paged_table(filtered)
 ```

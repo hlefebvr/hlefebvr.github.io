@@ -1,0 +1,103 @@
+---
+title: Open methodology for "Bilevel CCG" > Methodology
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../_includes/head.html
+      before_body: 
+        - ../../_includes/header.html
+        - ../../_includes/begin_content.html
+        - ../../_includes/toc.html
+        - ../../_includes/begin_post_content.html
+      after_body: 
+        - ../../_includes/handle_page_title.html
+        - ../../_includes/end_post_content.html
+        - ../../_includes/end_content.html
+        - ../../_includes/footer.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+
+```{r echo=FALSE, warning=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(ggplot2)
+suppressPackageStartupMessages(library(dplyr))
+```
+
+## Loading the data
+
+```{r}
+results = read.table("./results.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "instance", "n_leader_vars", "n_leader_ctrs", "n_follower_vars", "n_follower_ctrs", "n_uncertainty_vars", "n_uncertainty_ctrs", "n_second_stage_vars", "n_second_stage_ctrs", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "n_iterations", "repeated_scenario", "blank")
+results = results %>% mutate(type = ifelse(grepl("milp", instance, ignore.case = TRUE), "MILP", "NLP"))
+results$tag = NULL
+results$blank = NULL
+results$gap_percent = (results$best_obj - results$best_bound) / results$best_obj * 100
+```
+
+```{r, echo = FALSE}
+paged_table(results)
+```
+
+```{r}
+# Solved instances
+solved_summary <- results %>%
+  filter(total_time < 7200) %>%
+  group_by(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs) %>%
+  summarise(
+    solved_avg_total_time = mean(total_time),
+    solved_avg_master_time = mean(master_time),
+    solved_avg_adversarial_time = mean(adversarial_time),
+    solved_avg_n_iterations = mean(n_iterations),
+    solved_avg_gap = mean(gap_percent),
+    solved_count = n()
+  )
+
+# Failed instances
+failed_summary <- results %>%
+  filter(repeated_scenario == 1) %>%
+  group_by(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs) %>%
+  summarise(
+    failed_avg_total_time = mean(total_time),
+    failed_avg_n_iterations = mean(n_iterations),
+    failed_avg_gap = mean(gap_percent),
+    failed_count = n()
+  )
+
+# Unsolved instances
+unsolved_summary <- results %>%
+  filter(!(total_time < 7200) & !(repeated_scenario == 1)) %>%
+  group_by(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs) %>%
+  summarise(
+    unsolved_avg_n_iterations = mean(n_iterations),
+    unsolved_avg_gap = mean(gap_percent),
+    unsolved_count = n()
+  )
+
+# Merge summaries
+final_summary <- full_join(solved_summary, failed_summary, by = c("type", "n_leader_vars", "n_leader_ctrs", "n_follower_vars", "n_follower_ctrs")) %>%
+  full_join(unsolved_summary, by = c("type", "n_leader_vars", "n_leader_ctrs", "n_follower_vars", "n_follower_ctrs")) %>%
+  arrange(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs)
+
+
+# Replace NAs with 0 for counts
+#final_summary[is.na(final_summary)] <- "-"
+
+options(knitr.kable.NA = '--')
+
+# Print the final summary
+kable(final_summary, 
+      format = "html",
+      col.names = c("Type", "N. Var.", "N. Ctr.", "N. Var.", "N. Ctr.", "Total", "Master", "Separation", "N. Iterations", "Gap (%)", "Count", "Total", "N. Iterations", "Gap (%)", "Count", "N. Iterations", "Gap (%)", "Count"),
+      digits = c(matrix(0, ncol = 5), matrix(2, ncol = 5), 0, matrix(2, ncol = 3), 0, matrix(2, ncol = 2), 0)) %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  add_header_above(c(" ", "Leader" = 2, "Follower" = 2, "Time" = 3, " " = 3, "Time", " " = 6)) %>%
+  add_header_above(c("Instance" = 5, "Solved" = 6, "Failed" = 4, "Unsolved" = 3))
+
+```
