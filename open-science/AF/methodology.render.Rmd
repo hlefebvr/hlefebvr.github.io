@@ -33,17 +33,28 @@ suppressPackageStartupMessages(library(dplyr))
 
 ## Loading Results
 
+### CCG
+
 ```{r}
-results = read.table("./results.csv", header = FALSE, sep = ',')
-colnames(results) <- c("tag", "instance", "n_leader_vars", "n_leader_ctrs", "n_follower_vars", "n_follower_ctrs", "n_uncertainty_vars", "n_uncertainty_ctrs", "n_second_stage_vars", "n_second_stage_ctrs", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "n_iterations", "repeated_scenario", "blank")
+results = read.table("./results_ccg.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "instance", "n_leader_vars", "n_leader_ctrs", "n_follower_vars", "n_follower_ctrs", "n_uncertainty_vars", "n_uncertainty_ctrs", "n_second_stage_vars", "n_second_stage_ctrs", "total_time", "master_time", "exact_follower_time", "penalized_follower_time", "best_bound", "best_obj", "n_inner_iterations", "n_outer_iterations", "repeated_scenario", "feasible_found", "blank")
 results = results %>% mutate(type = ifelse(grepl("milp", instance, ignore.case = TRUE), "MILP", "NLP"))
 results$tag = NULL
 results$blank = NULL
 results$gap_percent = (results$best_obj - results$best_bound) / results$best_obj * 100
+results$approach = "ccg"
 ```
 
 ```{r, echo = FALSE}
 paged_table(results)
+```
+
+### Mibs Solver 
+
+```{r}
+results_mibs = read.table("./results_mibs.csv", header = FALSE, sep = ',')
+colnames(results_mibs) <- c("instance", "total_time", "best_obj", "log_file")
+results_mibs$approach = "mibs"
 ```
 
 ## Summary Table
@@ -56,8 +67,10 @@ solved_summary <- results %>%
   summarise(
     solved_avg_total_time = mean(total_time),
     solved_avg_master_time = mean(master_time),
-    solved_avg_adversarial_time = mean(adversarial_time),
-    solved_avg_n_iterations = mean(n_iterations),
+    solved_avg_exact_follower_time = mean(exact_follower_time),
+    solved_avg_penalized_follower_time = mean(exact_follower_time),
+    solved_avg_n_inner_iterations = mean(n_inner_iterations),
+    solved_avg_n_outer_iterations = mean(n_outer_iterations),
     solved_avg_gap = mean(gap_percent),
     solved_count = n(),
     .groups = "drop"
@@ -69,7 +82,8 @@ failed_summary <- results %>%
   group_by(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs) %>%
   summarise(
     failed_avg_total_time = mean(total_time),
-    failed_avg_n_iterations = mean(n_iterations),
+    failed_avg_n_inner_iterations = mean(n_inner_iterations),
+    failed_avg_n_outer_iterations = mean(n_outer_iterations),
     failed_avg_gap = mean(gap_percent),
     failed_count = n(),
     .groups = "drop"
@@ -80,7 +94,8 @@ unsolved_summary <- results %>%
   filter(!(total_time < 7200) & !(repeated_scenario == 1)) %>%
   group_by(type, n_leader_vars, n_leader_ctrs, n_follower_vars, n_follower_ctrs) %>%
   summarise(
-    unsolved_avg_n_iterations = mean(n_iterations),
+    unsolved_avg_n_inner_iterations = mean(n_inner_iterations),
+    unsolved_avg_n_outer_iterations = mean(n_outer_iterations),
     unsolved_avg_gap = mean(gap_percent),
     unsolved_count = n(),
     .groups = "drop"
@@ -100,15 +115,31 @@ options(knitr.kable.NA = '--')
 # Print the final summary
 kable(final_summary, 
       format = "html",
-      col.names = c("Type", "N. Var.", "N. Ctr.", "N. Var.", "N. Ctr.", "Total", "Master", "Separation", "N. Iterations", "Gap (%)", "Count", "Total", "N. Iterations", "Gap (%)", "Count", "N. Iterations", "Gap (%)", "Count"),
-      digits = c(matrix(0, ncol = 5), matrix(2, ncol = 5), 0, matrix(2, ncol = 3), 0, matrix(2, ncol = 2), 0)) %>%
+      col.names = c("Type", "N. Var.", "N. Ctr.", "N. Var.", "N. Ctr.", "Total", "Master", "Exact F.", "Penalized F.", "Inner", "Outer", "Gap (%)", "Count", "Total", "Inner", "Outer", "Gap (%)", "Count", "Inner", "Outer", "Gap (%)", "Count"),
+      digits = c(matrix(0, ncol = 5), matrix(2, ncol = 7), 0, matrix(2, ncol = 4), 0, matrix(2, ncol = 3), 0)) %>%
   kable_classic(full_width = F, html_font = "Cambria") %>%
-  add_header_above(c(" ", "Leader" = 2, "Follower" = 2, "Time" = 3, " " = 3, "Time", " " = 6)) %>%
-  add_header_above(c("Instance" = 5, "Solved" = 6, "Failed" = 4, "Unsolved" = 3))
+  add_header_above(c(" ", "Leader" = 2, "Follower" = 2, "Time" = 4, "Iterations" = 2, " " = 2, "Time", "Iterations" = 2, " " = 2, "Iterations" = 2, " " = 2)) %>%
+  add_header_above(c("Instance" = 5, "Solved" = 8, "Failed" = 5, "Unsolved" = 4))
 
 ```
 
 ## ECDF Plot
+
+### Comparing with MibS 
+
+```{r}
+results_milp = rbind(
+  results[,c("instance", "approach", "total_time", "best_obj")],
+  results_mibs[,c("instance", "approach", "total_time", "best_obj")]
+)
+```
+
+```{r}
+ggplot(results_milp, aes(x = total_time, col = approach)) + 
+  stat_ecdf(pad = FALSE) +
+  coord_cartesian(xlim = c(0,7200)) +
+  theme_minimal()
+```
 
 ### MILPS and NLPs
 
@@ -159,3 +190,4 @@ ggplot(nlp_results[nlp_results$repeated_scenario == 0,], aes(x = total_time, col
   theme_minimal() +
   labs(color = "% of follower nonconvex ctrs")
 ```
+
