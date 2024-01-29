@@ -129,7 +129,7 @@ kable(final_summary,
 
 ```{r}
 results_milp = rbind(
-  results[,c("instance", "approach", "total_time", "best_obj")],
+  results[results$type == "MILP",c("instance", "approach", "total_time", "best_obj")],
   results_mibs[,c("instance", "approach", "total_time", "best_obj")]
 )
 ```
@@ -137,7 +137,8 @@ results_milp = rbind(
 ```{r}
 ggplot(results_milp, aes(x = total_time, col = approach)) + 
   stat_ecdf(pad = FALSE) +
-  coord_cartesian(xlim = c(0,7200)) +
+  #coord_cartesian(xlim = c(0,7200)) +
+  scale_x_log10() +
   theme_minimal()
 ```
 
