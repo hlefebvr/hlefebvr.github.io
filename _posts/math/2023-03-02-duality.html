@@ -1,0 +1,57 @@
+---
+layout: post
+title: "A Cheatsheet on Duality Theorems"
+category: math
+short: Some usefull formulas regarding duals of optimization problems
+preview: dual.png
+---
+
+<h2>Explicit Duals</h2>
+
+<div class="theorem">
+    <b>Proposition</b> (Convex Duality)
+    Consider the following optimization problem.
+    $$
+        \begin{array}{ll} 
+            \displaystyle \min_x \ & f(x) \\
+            \text{s.t.} \ & g(x) \le 0, \\
+            & h(x) = 0,
+        \end{array}
+    $$
+    Then, its dual problem is given by
+    $$
+        \begin{array}{ll} 
+            \displaystyle \max_{\lambda, \mu} \ & - ( f + \lambda^\top g + \mu^\top h )^*(0) \\
+            \text{s.t.} \ & \lambda\ge 0,
+        \end{array}
+    $$
+    which, assuming \( h(x) := Ax - b \), can be re-written as
+    $$
+        \begin{array}{ll} 
+            \displaystyle \max_{\lambda,\mu,u} \ & \displaystyle -f^*(u^0) - \sum_{i=1}^m \lambda_i g_i^*\left( \frac{u^i}{\lambda_i} \right) + b^\top \mu \\
+            \text{s.t.} \ & \displaystyle  \sum_{i=0}^m u^i + A^\top\mu = 0, \\
+            & \lambda\ge 0
+        \end{array} 
+    $$
+</div>
+
+<div class="theorem">
+    <b>Proposition</b> (Conic Duality)
+    Consider the following conic program.
+    $$
+        \begin{array}[t]{ll}
+            \displaystyle \min_x \ & c^Tx \\
+            \textrm{s.t. } & Ax - b \in K \\
+            & x\in \mathbb R^n
+        \end{array}
+    $$
+    Then, its dual problem is 
+    $$
+        \begin{array}[t]{ll}
+            \displaystyle \max_\lambda \ & b^T\lambda \\
+            \textrm{s.t. } & A^T\lambda = c \\
+            & \lambda\in K^*,
+        \end{array}
+    $$
+    in which \(K^*\) denotes the dual cone of \( K \).
+</div>
