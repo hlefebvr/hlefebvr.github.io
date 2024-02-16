@@ -302,10 +302,12 @@ border-radius: 5px;
 .theorem {
     padding: 20px;
     margin-top: 10px;
+    border:1px solid rgb(190, 190, 190);
+    border-radius: 3px;
 }
 
 .unproved {
-    border-left: 2px dotted #8B0000;
+    border-left: 2px solid gray;
 }
 
 .category-item-image {
