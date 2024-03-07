@@ -53,9 +53,9 @@ filtered = results
 
 filtered = filtered[filtered$all_follower_variables_are_bounded == 1 & filtered$all_linking_variables_are_binary == 1,]
 
-filtered = filtered[filtered$n_follower_vars < 25,]
+#filtered = filtered[filtered$n_follower_vars < 25,]
 #filtered = filtered[filtered$n_follower_ctrs < 25,]
-filtered = filtered[filtered$n_leader_vars < 25,]
+filtered = filtered[filtered$n_leader_vars <= 20,]
 #filtered = filtered[filtered$n_leader_ctrs < 25,]
 
 paged_table(filtered)
@@ -64,8 +64,8 @@ paged_table(filtered)
 ## Matrix sizes 
 
 ```{r}
-p_vars = c(.2, .3, .4, .5)
-k_ctrs = c(.2, .3, .4, .5)
+p_vars = c(.25, .5, .75)
+k_ctrs = c(.25, .5, .75)
 
 for (p in p_vars) {
   filtered[,paste0("n_follower_nonconv_vars_p", p)] = ceiling( filtered$n_follower_vars * p )

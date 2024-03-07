@@ -1,0 +1,72 @@
+---
+title: Open methodology for "Decision Diagram" > Knapsack Regret (KP)
+output: 
+  html_document:
+    theme: null
+    css: /assets/css/design.css
+    self_contained: false
+    highlight: null
+    include:
+      in_header: ../../_includes/head.html
+      before_body: 
+        - ../../_includes/header.html
+        - ../../_includes/begin_content.html
+        - ../../_includes/toc.html
+        - ../../_includes/begin_post_content.html
+      after_body: 
+        - ../../_includes/handle_page_title.html
+        - ../../_includes/end_post_content.html
+        - ../../_includes/end_content.html
+        - ../../_includes/footer.html
+---
+
+<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
+
+```{r echo=FALSE, warning=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(ggplot2)
+suppressPackageStartupMessages(library(dplyr))
+```
+
+## Loading the data
+
+```{r}
+results = read.table("/home/henri/Research/decision-diagram/ADlib/DevApps/DD4RO/experiments/results.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "solver", "instance", "status", "reason", "total_time", "best_obj", "best_bound", "n_vertices", "n_arcs", "blank")
+results$tag = NULL
+results$blank = NULL
+results$type = gsub("^\\.\\/data\\/generated\\/(.*?)_N.*", "\\1", results$instance)
+```
+
+```{r, echo = FALSE}
+paged_table(results)
+```
+
+```{r}
+```
+
+```{r}
+for (type in unique(results$type)) {
+  vertices = ggplot(results[!is.na(results$n_vertices),], aes(x = n_vertices, col = solver)) +
+    geom_boxplot() +
+    labs(title = paste0("Distribution of n_vertices for instances of type ", type), x = "Number of Vertices", y = "Frequency") +
+    theme(legend.position="bottom", legend.direction = "vertical")
+
+  arcs = ggplot(results[!is.na(results$n_arcs),], aes(x = n_arcs, col = solver)) +
+    geom_boxplot() +
+    labs(title = paste0("Distribution of n_arcs for instances of type ", type), x = "Number of Arcs", y = "Frequency") +
+    theme(legend.position="bottom", legend.direction = "vertical")
+  
+  ecdf = ggplot(results[results$type == type,], aes(x = total_time, col = solver)) +
+    stat_ecdf(pad = FALSE) +
+    ggtitle(paste0("ECDF for instances of type ", type)) +
+    theme(legend.position="bottom", legend.direction = "vertical")
+  
+  print(vertices)
+  print(arcs)
+  print(ecdf)
+  
+}
+```
