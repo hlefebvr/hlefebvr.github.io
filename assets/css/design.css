@@ -119,6 +119,7 @@ margin: auto;
 padding: 15px 0px 15px 0px;
 color: #2b2b2b;
 font-family: 'Lora', 'Times New Roman', Times, serif;
+font-size:1.15em;
 }
 
 .content-home {
@@ -130,6 +131,7 @@ margin: auto;
 display: inline-block;
 width: 35%;
 vertical-align: top;
+line-height: 1.5em;
 }
 
 .home-vignette img {
@@ -146,6 +148,7 @@ color: rgba(0, 0, 0, 0.55);
 .home-bio {
 width: 64%;
 display: inline-block;
+line-height: 1.5em;
 }
 
 .home-bio h2 {
@@ -389,4 +392,8 @@ pre {
 
 .table-div {
     overflow-x: auto;
+}
+
+summary {
+    margin-top: 10px;
 }

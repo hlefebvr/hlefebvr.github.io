@@ -29,6 +29,8 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
     <b>Definition</b>
     The convex conjugate of \( f \) is noted \( f^* \) and is defined as
     $$ f^*(\mathbf y) = \sup_{ \mathbf x\in \textrm{dom}(f) } \{ \mathbf y^\top\mathbf x - f(\mathbf x) \} $$
+    The concave conjugate of \( f \) is noted \( f_* \) and is defined as 
+    $$ f_*(\mathbf y) = \inf_{ \mathbf x\in\textrm{dom}(f) } \{ \mathbf y^\top\mathbf x - f(\mathbf x) \} $$
 </div>
 
 <div class="theorem">
@@ -45,7 +47,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem">
     <b>Proposition</b> (Convexity)
-    \( f^* \) is closed and convex.
+    \( f^* \) is closed and convex. It is always lower semi-continuous.
     <details>
         <summary>Proof</summary>
         <div>
@@ -55,9 +57,20 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
+    <b>Proposition</b> (Order Reversing)
+    $$ f \le g \Rightarrow f^* \ge g^* $$
+    <details>
+        <summary>Proof</summary>
+        <div>
+            TODO
+        </div>
+    </details>
+</div>
+
+<div class="theorem unproved">
     <b>Proposition</b> (Double conjugate)
-    \( f^{**} \le f \). 
-    Moreover, if \( f \) is closed and convex, then \( f = f^{**} \).
+    $$ \text{cl}(\text{vex}(f)) = f^{**} \le f $$
+    Moreover, if \( f = f^{**} \) if and only if it is convex and lower semi-continuous.
     <details>
     <summary>Proof</summary>
     <div>
@@ -141,7 +154,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Convex quadratic functions)
+    <b>Proposition</b> (Convex Quadratic Functions)
     Assume \( f(\mathbf x) = \frac 12\mathbf x^\top\mathbf A\mathbf x + \mathbf b^\top\mathbf x + c \) with \( \mathbf A \) a psd matrix, then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -149,7 +162,9 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
-    where \(\mathbf A^\dagger\) is the Moore-Penrose pseudo inverse of \( \mathbf A \). If \( f \) is strictly convex (i.e., \( \mathbf A \) is positive definite), then \( \mathbf A^\dagger = \mathbf A^{-1} \) and the column span of \( \mathbf A \) is \( \mathbb R^n \).
+    where \(\mathbf A^\dagger\) is the Moore-Penrose pseudo inverse of \( \mathbf A \). <br /><br />
+    
+    If \( f \) is strictly convex (i.e., \( \mathbf A \) is positive definite), then \( \mathbf A^\dagger = \mathbf A^{-1} \) and the column span of \( \mathbf A \) is \( \mathbb R^n \).
     <details>
     <summary>Proof</summary>
     <div>
@@ -163,7 +178,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
     Assume \( f(\mathbf x) = \max_{i=1,...,n} x_i \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
-            0 & \textrm{if } \sum_{i=1}^n y_i = 1, \mathbf y \ge \mathbf 0 \\
+            0 & \textrm{if } \displaystyle \sum_{i=1}^n y_i = 1, \mathbf y \ge \mathbf 0 \\
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
@@ -177,10 +192,10 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem unproved">
     <b>Proposition</b> (Soft max)
-    Assume \( f(\mathbf x) = \log\left(\sum_{i=1}^n e^{x_i}\right) \), then,
+    Assume \( \displaystyle f(\mathbf x) = \log\left(\sum_{i=1}^n e^{x_i}\right) \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
-            \sum_{i=1}^n y_i\log(y_i) & \textrm{if } \sum_{i=1}^n y_i = 1, \mathbf y \ge \mathbf 0 \\
+            \displaystyle \sum_{i=1}^n y_i\log(y_i) & \textrm{if } \displaystyle \sum_{i=1}^n y_i = 1, \mathbf y \ge \mathbf 0 \\
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
@@ -200,7 +215,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
             0 & \textrm{if } ||\mathbf y||_* \le 1 \\
             +\infty & \textrm{otherwise}
         \end{cases}
-    $$ where \( ||\bullet||_* \) is the dual norm of \( ||\bullet|| \).
+    $$ where \( ||\cdot||_* \) is the dual norm of \( ||\cdot|| \).
     <details>
     <summary>Proof</summary>
     <div>
@@ -210,8 +225,8 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Negative entropy)
-    Assume \( f(\mathbf x) = \sum_{i=1}^n x_i\log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
+    <b>Proposition</b> (Negative Entropy)
+    Assume \( f(\mathbf x) = \displaystyle \sum_{i=1}^n x_i\log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \sum_{i=1}^n e^{y_i-1}
     $$
@@ -225,10 +240,10 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem unproved">
     <b>Proposition</b> (Negative logarithm)
-    Assume \( f(\mathbf x) = -\sum_{i=1}^n \log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
+    Assume \( \displaystyle f(\mathbf x) = -\sum_{i=1}^n \log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
-            -\sum_{i=1}^n \log{-y_i} - n & \textrm{if } \mathbf y \le \mathbf 0 \\
+            \displaystyle -\sum_{i=1}^n \log{-y_i} - n & \textrm{if } \mathbf y \le \mathbf 0 \\
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
@@ -266,7 +281,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 <h2>Calculus Rules</h2>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Addition to affine mappings)
+    <b>Proposition</b> (Addition with an Affine Mapping)
     Assume \( f(\mathbf x) = \tilde f(\mathbf x) + \mathbf a^\top\mathbf x + b \), then,
     $$
         f^*(\mathbf y) =  \tilde f^*\left( \mathbf y - \mathbf a \right) - b
@@ -280,10 +295,20 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Composition with invertible affine mappings)
-    Assume \( f(\mathbf x) = \tilde f(\mathbf A\mathbf x + \mathbf b) \) with \( \det(\mathbf A) \neq 0 \), then,
+    <b>Proposition</b> (Composition with an Affine Mapping)
+    Assume \( f(\mathbf x) = \tilde f(\mathbf A\mathbf x + \mathbf b) \). <br /><br />
+    
+    If \( A \) is invertible, then,
     $$
-        f^*(\mathbf y) =  \tilde f^*\left( \mathbf A^{-T}\mathbf y \right) - \mathbf b^\top\mathbf A^{-T}\mathbf y
+        f^*(\mathbf y) =  \tilde f^*\left( \mathbf A^{-\top}\mathbf y \right) - \mathbf b^\top\mathbf A^{-T}\mathbf y
+    $$
+    <br />
+    Otherwise, 
+    $$
+        f^*(\mathbf y) = \begin{array}[t]{rl} 
+            \displaystyle \inf_{\mathbf \lambda} \ & \tilde f^*(\mathbf \lambda) - \mathbf \lambda^\top \mathbf b \\
+            \text{s.t.} \ & \mathbf A^\top\mathbf \lambda = \mathbf y.
+        \end{array}
     $$
     <details>
     <summary>Proof</summary>
@@ -310,12 +335,12 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem unproved">
     <b>Proposition</b> (Non-separable sum)
-    Assume \( f(\mathbf x) = \sum_{i=1}^p f_i(\mathbf x) \), then,
+    Assume \( \displaystyle f(\mathbf x) = \sum_{i=1}^p f_i(\mathbf x) \), then,
     $$
         f^*(\mathbf y) = \begin{array}[t]{ll}
-            \inf & \sum_{i=1}^p f_i^*(\mathbf v^{(i)}) \\
-            \textrm{s.t. } & \sum_{i=1}^p \mathbf v^{(i)} = \mathbf y \\
-            & \mathbf V\in\mathbb R^{p\times n}
+            \displaystyle \inf_{\mathbf v^{(1)}, \dots, \mathbf v^{(p)}} & \displaystyle \sum_{i=1}^p f_i^*(\mathbf v^{(i)}) \\
+            \textrm{s.t. } & \displaystyle \sum_{i=1}^p \mathbf v^{(i)} = \mathbf y \\
+            & \mathbf v^{(1)}, \dots, \mathbf v^{(p)} \in\mathbb R^{n}
         \end{array}
     $$
     <details>
@@ -329,7 +354,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem unproved">
     <b>Proposition</b> (Scalar multiplication)
-    Assume \( f(\mathbf x) = \alpha \tilde f(\mathbf x) \), then,
+    Assume \( f(\mathbf x) = \alpha \tilde f(\mathbf x) \) with \( \alpha > 0 \), then,
     $$
         f^*(\mathbf y) = \alpha \tilde f^*\left(\frac{\mathbf y}\alpha\right)
     $$
@@ -343,7 +368,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 <div class="theorem">
     <b>Proposition</b> (Convex/Concave conjugate)
-    Let \( f \) be a given function, then \( (-f)_*(\mathbf y) = -f^*(-\mathbf y) \).
+    Let \( f \) be a given function, then $$ (-f)_*(\mathbf y) = -f^*(-\mathbf y). $$
     <details>
     <summary>Proof</summary>
     <div>
