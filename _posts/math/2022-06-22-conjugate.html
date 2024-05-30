@@ -2,7 +2,7 @@
 layout: post
 title: "A Cheatsheet on Convex Conjugates"
 category: math
-short: Some usefull formulas regarding convex conjugates
+short: Some useful formulas regarding convex conjugates
 preview: conjugate.png
 ---
 
@@ -14,8 +14,7 @@ preview: conjugate.png
     <i>With a thick gray left-border, propositions which have no proofs on this page yet due to lack of time (though the result is correct!).</i>
 </div>
 
-<div class="theorem">
-    <b>Notations</b>
+<div class="notation">
     Throughout this page, we will denote \( \overline{\mathbb R} = \mathbb R \cup \{ -\infty, +\infty \} \) the extended real number line. For a given function \( f:\mathbb R^n \rightarrow \overline{\mathbb R} \), we let \( \textrm{dom}(f) = \{ \mathbf x\in\mathbb R^n : f(\mathbf x) < +\infty \} \) be the domain of \(f\).
 </div>
 
@@ -25,8 +24,7 @@ preview: conjugate.png
 Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function. 
 </p>
 
-<div class="theorem">
-    <b>Definition</b>
+<div class="definition">
     The convex conjugate of \( f \) is noted \( f^* \) and is defined as
     $$ f^*(\mathbf y) = \sup_{ \mathbf x\in \textrm{dom}(f) } \{ \mathbf y^\top\mathbf x - f(\mathbf x) \} $$
     The concave conjugate of \( f \) is noted \( f_* \) and is defined as 
@@ -34,7 +32,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem">
-    <b>Proposition</b> (Fenchel inequality)
+    (Fenchel inequality)
     For any \( \mathbf x\in\mathbb R^n \) and any \( \mathbf y\in\mathbb R^n \), the following holds.
     $$ \mathbf y^\top\mathbf x \le f(\mathbf x) + f^*(\mathbf y) $$
     <details>
@@ -46,7 +44,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem">
-    <b>Proposition</b> (Convexity)
+    (Convexity)
     \( f^* \) is closed and convex. It is always lower semi-continuous.
     <details>
         <summary>Proof</summary>
@@ -57,7 +55,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Order Reversing)
+    (Order Reversing)
     $$ f \le g \Rightarrow f^* \ge g^* $$
     <details>
         <summary>Proof</summary>
@@ -68,7 +66,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Double conjugate)
+    (Double conjugate)
     $$ \text{cl}(\text{vex}(f)) = f^{**} \le f $$
     Moreover, if \( f = f^{**} \) if and only if it is convex and lower semi-continuous.
     <details>
@@ -80,7 +78,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Subgradients)
+    (Subgradients)
     Asume \( f \) is closed and convex, then $$ \mathbf y \in \partial f(\mathbf x) \Leftrightarrow \mathbf x \in \partial f^*(\mathbf y) \Leftrightarrow \mathbf x^\top\mathbf y = f(\mathbf x) + f^*(\mathbf y). $$
     <details>
     <summary>Proof</summary>
@@ -91,7 +89,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Strongly convex)
+    (Strongly convex)
     Asume \( f \) is closed and strongly convex with parameter \( \mu > 0 \) for the norm \( ||.|| \), then \( \textrm{dom}(f^*) = \mathbb R^n \). Moreover, \( f^* \) is differentiable everywhere with
     $$ \nabla f^*(\mathbf y) = \textrm{argmax} \{ \mathbf y^\top\mathbf x - f(\mathbf x) : \mathbf x \in\mathbb R^n \} $$
     and \( \nabla f^*(\mathbf y) \) is \( \frac 1\mu \)-Lipschitz continuous with respect to the dual norm \( ||.||_* \), i.e., 
@@ -105,7 +103,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Fenchel duality)
+    (Fenchel duality)
     Asume \( f \) is proper and convex and let \(g : \mathbb R^n \rightarrow \overline{\mathbb R} \) be a given proper concave function. If the following Slater's conditions hold,
     $$ \exists \hat{\mathbf x} \in \textrm{int}(\textrm{dom}(f))\cap\textrm{int}(\textrm{dom}(-g)), $$
     then the following equality holds.
@@ -119,7 +117,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem">
-    <b>Proposition</b> (Maximizing a concave function over a convex set)
+    (Maximizing a concave function over a convex set)
     Let \( X\subseteq\mathbb R^n \) be a convex set with non-empty interior and let \( g:\mathbb R^n\rightarrow \mathbb R \) be a proper concave function over \( X \), then the following holds.
     $$
         \sup_{\mathbf x\in X} g(\mathbf x)
@@ -137,7 +135,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 <h2>Examples</h2>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Affine functions)
+    (Affine functions)
     Assume \( f(\mathbf x) = \mathbf a^\top\mathbf x + \mathbf b \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -154,7 +152,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Convex Quadratic Functions)
+    (Convex Quadratic Functions)
     Assume \( f(\mathbf x) = \frac 12\mathbf x^\top\mathbf A\mathbf x + \mathbf b^\top\mathbf x + c \) with \( \mathbf A \) a psd matrix, then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -174,7 +172,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Max)
+    (Max)
     Assume \( f(\mathbf x) = \max_{i=1,...,n} x_i \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -191,7 +189,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Soft max)
+    (Soft max)
     Assume \( \displaystyle f(\mathbf x) = \log\left(\sum_{i=1}^n e^{x_i}\right) \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -208,7 +206,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Norms)
+    (Norms)
     Assume \( f(\mathbf x) = ||\mathbf x|| \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -225,7 +223,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Negative Entropy)
+    (Negative Entropy)
     Assume \( f(\mathbf x) = \displaystyle \sum_{i=1}^n x_i\log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \sum_{i=1}^n e^{y_i-1}
@@ -239,7 +237,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Negative logarithm)
+    (Negative logarithm)
     Assume \( \displaystyle f(\mathbf x) = -\sum_{i=1}^n \log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -256,7 +254,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Indicator of a convex set/cone)
+    (Indicator of a convex set/cone)
     Let \( X \) be a given convex set, then, by definition,
     $$
         \delta^*(\mathbf y | X) = \sup_{\mathbf x\in X} \mathbf y^\top\mathbf x.
@@ -281,7 +279,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 <h2>Calculus Rules</h2>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Addition with an Affine Mapping)
+    (Addition with an Affine Mapping)
     Assume \( f(\mathbf x) = \tilde f(\mathbf x) + \mathbf a^\top\mathbf x + b \), then,
     $$
         f^*(\mathbf y) =  \tilde f^*\left( \mathbf y - \mathbf a \right) - b
@@ -295,7 +293,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Composition with an Affine Mapping)
+    (Composition with an Affine Mapping)
     Assume \( f(\mathbf x) = \tilde f(\mathbf A\mathbf x + \mathbf b) \). <br /><br />
     
     If \( A \) is invertible, then,
@@ -319,7 +317,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Separable sum)
+    (Separable sum)
     Assume \( f(\mathbf x_1, \mathbf x_2) = f_1(\mathbf x_i) + f_2(\mathbf x_2) \), then,
     $$
         f^*(\mathbf y_1, \mathbf y_2) = f_1^*(\mathbf y_1) + f_2^*(\mathbf y_2)
@@ -334,7 +332,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Non-separable sum)
+    (Non-separable sum)
     Assume \( \displaystyle f(\mathbf x) = \sum_{i=1}^p f_i(\mathbf x) \), then,
     $$
         f^*(\mathbf y) = \begin{array}[t]{ll}
@@ -353,7 +351,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 
 
 <div class="theorem unproved">
-    <b>Proposition</b> (Scalar multiplication)
+    (Scalar multiplication)
     Assume \( f(\mathbf x) = \alpha \tilde f(\mathbf x) \) with \( \alpha > 0 \), then,
     $$
         f^*(\mathbf y) = \alpha \tilde f^*\left(\frac{\mathbf y}\alpha\right)
@@ -367,7 +365,7 @@ Let \( f: \mathbb R^n \rightarrow \overline{\mathbb R}  \) be a given function.
 </div>
 
 <div class="theorem">
-    <b>Proposition</b> (Convex/Concave conjugate)
+    (Convex/Concave conjugate)
     Let \( f \) be a given function, then $$ (-f)_*(\mathbf y) = -f^*(-\mathbf y). $$
     <details>
     <summary>Proof</summary>

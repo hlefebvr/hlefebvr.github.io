@@ -1,10 +1,46 @@
 ---
 layout: post
 category: math
-title: "A Cheatsheet on (Elementary) Matrix Computations"
-short: Some nice formulas to work with matrices
+title: "A Cheatsheet on Matrix Computations"
+short: This is a personal cheatsheet with formulas I often use, and often forget.
 preview: matrix.png
 ---
+
+<h2>Inequalities</h2>
+
+<div class="theorem">
+    (Cauchy-Schwarz)
+    Let \( u \) and \( v \) be arbitrary vectors in an inner product space over the scalar field \( \mathbb R \) or \( \mathbb C \).
+    Then,
+    $$
+        |x^\top y| \le \lVert x \rVert \lVert y \rVert
+    $$
+    with equality holding if and only if \( u \) and \( v \) are linearly dependent. 
+    <details>
+        <summary>Proof</summary>
+        Available on the <a href="https://en.wikipedia.org/wiki/Cauchy%E2%80%93Schwarz_inequality">Cauchy–Schwarz inequality</a> Wikipedia page.
+    </details>
+</div>
+
+<div class="theorem">
+    Let \( A\in\mathbb R^{m\times n} \) be a given full-rank matrix. Then, for any \( x\in\mathbb R^n \), 
+    $$
+        \sigma_{\min}(A) \lVert x \rVert \le \lVert Ax \rVert
+    $$
+</div>
+
+<h2>Derivatives</h2>
+
+<ul>
+    <li> \( \nabla_{\mathbf x} \mathbf a = \mathbf 0 \) </li>
+    <li> \( \nabla_{\mathbf x} \mathbf a^\top\mathbf x = \mathbf a \) </li>
+    <li> \( \nabla_{\mathbf X} \mathbf a^\top\mathbf X\mathbf b = \mathbf a\mathbf b^\top \) </li>
+    <li> \( \nabla_{\mathbf X} \mathbf a^\top\mathbf X^\top\mathbf b = \mathbf b\mathbf a^\top \) </li>
+    <li> \( \nabla_{\mathbf x} (\mathbf x^\top\mathbf A\mathbf x + \mathbf b^\top\mathbf x) = (\mathbf A + \mathbf A^\top)\mathbf x + \mathbf b \) </li>
+    <li> \( \nabla_{\mathbf x} || \mathbf x - \mathbf a ||_2 = \frac{ \mathbf x - \mathbf a }{ || \mathbf x - \mathbf a ||_2 } \) </li>
+    <li> \( \nabla_{\mathbf x} ||\mathbf x ||_2^2 = 2\mathbf x \) </li>
+    <li>Let \(g(x) = f(Ax + b) \), then \( \nabla g(x) = A^\top \nabla f(Ax + b) \) </li>
+</ul>
 
 <h2>Rows and Columns</h2>
 
@@ -35,19 +71,6 @@ a_{ij} \) the \( (i,j) \)-th component of \( \mathbf{A} \), by \( \mathbf{a}^{(j
         \mathbf{b}^\top\mathbf{a}^{(n)}
     \end{pmatrix} \) or \( [\mathbf{A}^\top\mathbf{b}]_{(j)} = \mathbf{b}^\top\mathbf{a}^{(j)} \) </li>
     <li> \( \mathbf a^\top\mathbf a = \textrm{Tr}(\mathbf a\mathbf a^\top) \) </li>
-</ul>
-
-<h2>Derivatives</h2>
-
-<ul>
-    <li> \( \frac \partial{\partial\mathbf x} \mathbf a = \mathbf 0 \) </li>
-    <li> \( \frac \partial{\partial\mathbf x} \mathbf a^\top\mathbf x = \mathbf a \) </li>
-    <li> \( \frac \partial{\partial\mathbf X} \mathbf a^\top\mathbf X\mathbf b = \mathbf a\mathbf b^\top \) </li>
-    <li> \( \frac \partial{\partial\mathbf X} \mathbf a^\top\mathbf X^\top\mathbf b = \mathbf b\mathbf a^\top \) </li>
-    <li> \( \frac \partial{\partial\mathbf x} (\mathbf x^\top\mathbf A\mathbf x + \mathbf b^\top\mathbf x) = (\mathbf A + \mathbf A^\top)\mathbf x + \mathbf b \) </li>
-    <li> \( \frac \partial{\partial\mathbf x} || \mathbf x - \mathbf a ||_2 = \frac{ \mathbf x - \mathbf a }{ || \mathbf x - \mathbf a ||_2 } \) </li>
-    <li> \( \frac \partial{\partial\mathbf x} ||\mathbf x ||_2^2 = 2\mathbf x \) </li>
-    <li>Let \(g(x) = f(Ax + b) \), then \( \nabla g(x) = A^\top \nabla f(Ax + b) \) </li>
 </ul>
 
 <!-- 

@@ -302,11 +302,31 @@ border-radius: 5px;
     top: 0;
 }
 
-.theorem {
+.theorem, .definition, .proposition, .notation {
     padding: 20px;
     margin-top: 10px;
     border:1px solid rgb(190, 190, 190);
     border-radius: 3px;
+}
+
+.theorem::before {
+    content:"Theorem.";
+    font-weight: bold;
+}
+
+.definition::before {
+    content:"Definition.";
+    font-weight: bold;
+}
+
+.proposition::before {
+    content:"Proposition.";
+    font-weight: bold;
+}
+
+.notation::before {
+    content:"Notation.";
+    font-weight: bold;
 }
 
 .unproved {

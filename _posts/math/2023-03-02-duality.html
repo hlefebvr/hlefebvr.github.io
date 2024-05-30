@@ -1,24 +1,24 @@
 ---
 layout: post
-title: "A Cheatsheet on Duality Theorems"
+title: "A Cheatsheet on Primal-Dual Problems"
 category: math
-short: Some usefull formulas regarding duals of optimization problems
+short: Some useful formulas regarding duals of optimization problems
 preview: dual.png
 ---
 
 <h2>Explicit Duals</h2>
 
 <div class="theorem">
-    <b>Proposition</b> (Convex Duality)
-    Consider the following optimization problem.
+    (Fenchel Duality)
+    Consider the optimization problem
     $$
         \begin{array}{ll} 
             \displaystyle \min_x \ & f(x) \\
             \text{s.t.} \ & g(x) \le 0, \\
-            & h(x) = 0,
+            & h(x) = 0.
         \end{array}
     $$
-    Then, its dual problem is given by
+    Its dual problem is
     $$
         \begin{array}{ll} 
             \displaystyle \max_{\lambda, \mu} \ & - ( f + \lambda^\top g + \mu^\top h )^*(0) \\
@@ -30,22 +30,48 @@ preview: dual.png
         \begin{array}{ll} 
             \displaystyle \max_{\lambda,\mu,u} \ & \displaystyle -f^*(u^0) - \sum_{i=1}^m \lambda_i g_i^*\left( \frac{u^i}{\lambda_i} \right) + b^\top \mu \\
             \text{s.t.} \ & \displaystyle  \sum_{i=0}^m u^i + A^\top\mu = 0, \\
-            & \lambda\ge 0
+            & \lambda\ge 0.
         \end{array} 
     $$
 </div>
 
 <div class="theorem">
-    <b>Proposition</b> (Conic Duality)
-    Consider the following conic program.
+    (QP Duality)
+    Consider the QP 
+    $$
+        \begin{align} 
+            \min_x \ & \frac 12 x^\top Q x + c^\top x \\
+            \text{s.t.} \ & Ax = b, \\
+            & x\ge 0.
+        \end{align}
+    $$
+    Its dual problem is 
+    $$
+        \begin{align} 
+            \max_{x,\lambda,\mu} \ & b^\top \lambda - \frac 12 x^\top Q x \\
+            \text{s.t.} \ & A^\top \lambda + \mu = c + Qx, \\
+            & \mu\ge 0.
+        \end{align}
+    $$
+    If, moreover, \( Q \) is invertible, the dual can be re-written as 
+    $$
+        \begin{align} 
+            \max_{\lambda, \mu} \ & b^\top \lambda - (A^\top\lambda + \mu - c)^\top Q (A^\top\lambda + \mu - c) \\
+            & \mu \ge 0.
+        \end{align}
+    $$
+</div>
+
+<div class="theorem">
+    (Conic Duality)
+    Consider the conic program
     $$
         \begin{array}[t]{ll}
             \displaystyle \min_x \ & c^Tx \\
-            \textrm{s.t. } & Ax - b \in K \\
-            & x\in \mathbb R^n
+            \textrm{s.t. } & Ax - b \in K.
         \end{array}
     $$
-    Then, its dual problem is 
+    Its dual problem is 
     $$
         \begin{array}[t]{ll}
             \displaystyle \max_\lambda \ & b^T\lambda \\
