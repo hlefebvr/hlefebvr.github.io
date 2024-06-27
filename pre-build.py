@@ -56,7 +56,7 @@ output:
 def process_directory(directory):
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith("render.Rmd"):
+            if file.endswith(".render.Rmd"):
                 process_rmd_file(os.path.join(root, file), directory)
 
 directory_path = "open-science"
