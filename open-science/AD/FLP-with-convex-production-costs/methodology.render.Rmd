@@ -1,5 +1,5 @@
 ---
-title: Open methodology for "Exact approach for convex adjustable robust optimization" > Resource Allocation Problem (RAP)
+title: Open methodology for "Exact approach for convex adjustable robust optimization" > Facility Location Problem (FLP)
 output: 
   html_document:
     theme: null
@@ -23,9 +23,10 @@ output:
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE}
 library(rmarkdown)
 library(kableExtra)
+library(tidyr)
 library(ggplot2)
 suppressPackageStartupMessages(library(dplyr))
 ```
@@ -36,8 +37,8 @@ The raw results can be found in the file `results.csv` with the following column
 
 - tag: a tag which should always equal "result" used to `grep` the result line in the execution log file.
 - instance: the name or path of the instance.
-- n_servers: the number of servers in the instance.
-- n_clients: the number of clients in the instance.
+- n_facilities: the number of facilities in the instance.
+- n_customers: the number of customers in the instance.
 - Gamma: the value of $\Gamma$ which was used.
 - deviation: the maximum deviation, in percentage, from the nominal demand.
 - time_limit: the time limit which was used when solving the instance.
@@ -52,34 +53,9 @@ The raw results can be found in the file `results.csv` with the following column
 We start by reading the file and by removing the "tag" column.
 
 ```{r}
-results = read.table("./new-results.csv", header = FALSE, sep = ',')
-colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
+results = read.table("./results.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "instance", "n_facilities", "n_customers", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
 results$tag = NULL
-```
-
-
-Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
-
-```{r}
-results$p = results$Gamma / results$n_clients
-results$p = ceiling(results$p / .05) * .05
-```
-
-
-```{r}
-results$size = paste0("(", results$n_servers, ",", results$n_clients, "), ", results$p)
-```
-
-
-```{r}
-results$method_extended = paste0(results$method, ", ", results$use_heuristic)
-```
-
-We also get rid of instances which were too large to be solved by both approaches.
-
-```{r}
-#results = results[!(results$n_clients == 40),]
-#results = results[!(results$n_servers == 25 & results$n_clients == 25),]
 ```
 
 We then check that all instances were solved without issue by checking the "fail" column.
@@ -88,14 +64,30 @@ We then check that all instances were solved without issue by checking the "fail
 sum(results$fail)
 ```
 
+Then, we compute the percentage which $\Gamma$ represents for the total number of customers
+
+```{r}
+results$p = results$Gamma / results$n_customers
+results$p = ceiling(results$p / .05) * .05
+```
+
+```{r}
+results = results %>%
+  mutate(
+    ratio_demand_capacity = as.integer(sub('.*instance_F\\d+_C\\d+_R(\\d+)__\\d+\\.txt', '\\1', instance))
+  )
+
+results$size = paste0("(", results$n_facilities, ",", results$n_customers, "), ", results$p)
+```
+
+```{r}
+results$method_extended = paste0(results$method, ", ", results$use_heuristic)
+```
+
 We add a tag for unsolved instances.
 
 ```{r}
 time_limit = 7200
-
-if (sum(results$fail) > 0) {
-  results[results$fail == TRUE,]$total_time = time_limit
-}
 
 results$unsolved = results$total_time >= time_limit | results$fail
 ```
@@ -118,9 +110,8 @@ for (method in unique(results$method_extended)) {
   p = ggplot(sum_unsolved, aes(x = size, y = total_unsolved)) +
     geom_bar(stat = "identity") +
     labs(x = "Size", y = "Total Unsolved Cases", title = method) +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
+    theme_minimal()
+
   ggsave(paste0("unsolved_", method, ".pdf"), plot = p, width = 10, height = 6)
   
   print(p)
@@ -208,6 +199,18 @@ ggsave("performance_profile.pdf", plot = performance_profile)
 ```
 
 
+```{r}
+for (ratio in unique(results$ratio_demand_capacity)) {
+  
+  p = plot_performance_profile(results[results$ratio_demand_capacity == ratio,], criterion_column = "total_time", solver_column = "method_extended") +
+    labs(x = "Performance ratio", y = "% of instances", title = paste0("R = ", ratio / 1000)) +
+    scale_y_continuous(limits = c(0, 1)) +
+    theme_minimal()
+  
+  print(p)
+}
+```
+
 As a complement, we also draw the ECDF.
 
 ```{r}
@@ -220,7 +223,8 @@ ggplot(results, aes(x = total_time, color = method_extended)) +
   theme_minimal()
 ```
 
-## Summary table
+
+### Summary table
 
 In this section, we create a table summarizing the outcome of our experiments.
 
@@ -228,8 +232,8 @@ We start by computing average computation times over the solved instances.
 
 ```{r}
 results_solved = results %>%
-  filter(total_time < time_limit) %>%
-  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  filter(total_time < 7200) %>%
+  group_by(method_extended, n_facilities, n_customers, p, deviation) %>%
   summarize(
     solved = n(),
     total_time = mean(total_time),
@@ -245,43 +249,39 @@ Then, we also consider unsolved instances: we count the number of such instances
 
 ```{r}
 results_unsolved <- results %>%
-  filter(total_time >= time_limit) %>%
-  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  filter(total_time >= 7200) %>%
+  group_by(method_extended, n_facilities, n_customers, p, deviation) %>%
   summarize(
     unsolved = n(),
     unsolved_iteration_count = mean(iteration_count),
     .groups = "drop"
   ) %>%
   ungroup()
-
-results_fail <- results %>%
-  filter(fail == TRUE) %>%
-  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
-  summarize(
-    fail = n(),
-    .groups = "drop"
-  ) %>%
-  ungroup()
-
 ```
+
 
 We then merge the two tables.
 
 ```{r}
-final_result <- merge(results_solved, results_unsolved, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
-final_result <- merge(final_result, results_fail, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
+final_result <- merge(results_solved, results_unsolved, by = c("method_extended", "n_facilities", "n_customers", "p", "deviation"), all = TRUE)
+```
+
+Finally, we replace all `NA` entries by 0.
+
+```{r}
+final_result[is.na(final_result)] = 0
 ```
 
 Here is our table.
 
 ```{r, echo = FALSE}
 knitr::kable(final_result, 
-               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 0), 
-               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter", "# Errors"),
+               digits = c(0, 0, 0, 2, 2, 0, 2, 2, 2, 2, 0, 2), 
+               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter"),
                caption = "Summary table"
              ) %>%
       kable_classic() %>%
-      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 3)
+      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 2)
 )
 ```
 
@@ -290,7 +290,51 @@ knitr::kable(final_result,
 ```{r}
 for (method in unique(results$method_extended)) {
   
-  p = ggplot(results[results$method_extended == method & results$unsolved == FALSE,], aes(x = iteration_count)) +
+  p = ggplot(results[results$method_extended == method & results$total_time < time_limit,], aes(x = iteration_count)) +
+    geom_bar() +
+    labs(
+      title = method,
+      x = "Number of iterations",
+      y = "Number of instances"
+    ) +
+    theme_minimal()
+    
+  print(p) 
+}
+```
+
+## Understanding unsolved instances
+
+We first consider those instances with 15 facilities and p = 0.3 since these are the instances which both approaches cannot solve at all.
+
+```{r}
+subset = results[results$n_facilities == 15 & results$p > .25,]
+```
+
+Then, observe how, for the subset of instances such that iteration_count is 1 for at least one of the methods, the computation times are the same (which makes sense because, actually, the same routines are executed - intial master and first separation).
+
+```{r}
+filtered_subset = subset %>%
+  group_by(instance) %>%
+  filter(any(iteration_count < 1))
+
+ggplot(filtered_subset, aes(x = method, y = master_time)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "Master time") +
+  theme_minimal()
+
+ggplot(filtered_subset, aes(x = method, y = separation_time)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "Separation time") +
+  theme_minimal()
+```
+
+However, for some instances, GBD can do more iterations because the master problem is nicer whereas CCG has a convex MINLP problem which he cannot solve within the time limit. 
+
+```{r}
+for (method in unique(subset$method_extended)) {
+  
+  p = ggplot(subset[subset$method_extended == method,], aes(x = iteration_count)) +
     geom_bar() +
     labs(
       title = method,
