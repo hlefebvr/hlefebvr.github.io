@@ -1,27 +1,4 @@
----
-title: Statistics on Berlin Marathon Running Times (2018)
-output: 
-  html_document:
-    theme: null
-    css: /assets/css/design.css
-    self_contained: false
-    highlight: null
-    include:
-      in_header: ../../_includes/head.html
-      before_body:
-        - ../../_includes/header.html
-        - ../../_includes/begin_content.html
-        - ../../_includes/toc.html
-        - ../../_includes/begin_post_content.html
-      after_body: 
-        - ../../_includes/handle_page_title.html
-        - ../../_includes/end_post_content.html
-        - ../../_includes/end_content.html
-        - ../../_includes/footer.html
----
-
-
-
+# Statistics on Berlin Marathon Running Times (2018)
 
 ```{r echo=FALSE}
 library(rmarkdown)

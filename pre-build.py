@@ -3,7 +3,7 @@ import re
 
 def get_relative_prefix(filepath, base_directory):
     relative_path = os.path.relpath(filepath, base_directory)
-    depth = len(os.path.dirname(relative_path).split(os.sep)) + 1
+    depth = len(os.path.dirname(relative_path).split(os.sep))
     return '../' * depth
 
 def process_rmd_file(filepath, base_directory):
@@ -56,10 +56,12 @@ output:
     print(f"Processed {destination}")
 
 def process_directory(directory):
-    for root, _, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory):
+        if "_site" in dirs:
+            dirs.remove("_site")
         for file in files:
             if file.endswith(".render.Rmd"):
                 process_rmd_file(os.path.join(root, file), directory)
 
-directory_path = "open-science"
+directory_path = "."
 process_directory(directory_path)
