@@ -58,8 +58,8 @@ results$method_extended = paste0(results$method, ", ", results$use_heuristic)
 We also get rid of instances which were too large to be solved by both approaches.
 
 ```{r}
-#results = results[!(results$n_clients == 40),]
-#results = results[!(results$n_servers == 25 & results$n_clients == 25),]
+results = results[!(results$n_clients == 40),]
+results = results[!(results$n_servers == 25 & results$n_clients == 25),]
 ```
 
 We then check that all instances were solved without issue by checking the "fail" column.
