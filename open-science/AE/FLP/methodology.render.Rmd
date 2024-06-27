@@ -1,6 +1,6 @@
 # Using column generation in constraint-and-column generation for adjustable robust optimization > FLP
 
-<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
 
 ```{r echo=FALSE}
 library(rmarkdown)

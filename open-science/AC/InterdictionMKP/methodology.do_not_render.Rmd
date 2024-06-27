@@ -1,6 +1,6 @@
 # Adjustable robust optimization with discrete uncertainty > InterdictionMKP
 
-<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
+
 
 In this document we evaluate the computational properties of the approach from AC (Adjustable robust optimization with discrete uncertainty). The introduced approach is referred to as "benders" in the following. 
 

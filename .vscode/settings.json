@@ -1,0 +1,4 @@
+{
+    "latex-workshop.linting.run": "onType",
+    "php.validate.run": "onType"
+}

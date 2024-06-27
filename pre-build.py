@@ -44,6 +44,8 @@ output:
 """
     
     lines = lines[1:]
+
+    lines += [f"""\n\n<br /><div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures the reproducibility of our data manipulation. The last compilation was performed on the `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>"""]
     
     destination = re.sub(r'\.Rmd$', 'ed.Rmd', filepath)
 

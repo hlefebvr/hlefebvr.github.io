@@ -1,7 +1,5 @@
 # A two-stage robust approach for the weighted number of tardy jobs with objective uncertainty
 
-<div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
-
 ## Reading instances
 
 ### The CSV file
