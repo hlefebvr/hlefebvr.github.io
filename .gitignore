@@ -10,3 +10,6 @@ uml
 .Rhistory
 *.generated.zip
 *.generated.csv
+*.rendered.Rmd
+*rendered.html
+*.rendered_files

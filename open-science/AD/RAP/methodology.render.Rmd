@@ -1,24 +1,4 @@
----
-title: Open methodology for "Exact approach for convex adjustable robust optimization" > Resource Allocation Problem (RAP)
-output: 
-  html_document:
-    theme: null
-    css: /assets/css/design.css
-    self_contained: false
-    highlight: null
-    include:
-      in_header: ../../../_includes/head.html
-      before_body: 
-        - ../../../_includes/header.html
-        - ../../../_includes/begin_content.html
-        - ../../../_includes/toc.html
-        - ../../../_includes/begin_post_content.html
-      after_body: 
-        - ../../../_includes/handle_page_title.html
-        - ../../../_includes/end_post_content.html
-        - ../../../_includes/end_content.html
-        - ../../../_includes/footer.html
----
+# Open methodology for "Exact approach for convex adjustable robust optimization > Resource Allocation Problem (RAP)
 
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 

@@ -1,24 +1,4 @@
----
-title: Open methodology for "Using column generation in constraint-and-column generation for adjustable robust optimization" > JSP
-output: 
-  html_document:
-    theme: null
-    css: /assets/css/design.css
-    self_contained: false
-    highlight: null
-    include:
-      in_header: ../../../_includes/head.html
-      before_body: 
-        - ../../../_includes/header.html
-        - ../../../_includes/begin_content.html
-        - ../../../_includes/toc.html
-        - ../../../_includes/begin_post_content.html
-      after_body: 
-        - ../../../_includes/handle_page_title.html
-        - ../../../_includes/end_post_content.html
-        - ../../../_includes/end_content.html
-        - ../../../_includes/footer.html
----
+# Using column generation in constraint-and-column generation for adjustable robust optimization > JSP
 
 <div class="warning">This document is automatically generated after every `git push` action on the public repository `hlefebvr/hlefebvr.github.io` using rmarkdown and Github Actions. This ensures total reproducibility of our data manipulation. Last compilation: `r format(Sys.time(), '%d/%m/%y %H:%M:%S')`.</div>
 
