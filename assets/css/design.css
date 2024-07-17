@@ -147,7 +147,11 @@ margin-bottom: 30px;
 
 .home-vignette a {
 padding: 5px;
+margin-left: 20px;
 color: rgba(0, 0, 0, 0.55);
+:hover {
+    color:black;
+}
 }
 
 .home-bio {
