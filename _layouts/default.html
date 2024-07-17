@@ -3,7 +3,11 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
-    <title>{{ page.title }} - {{ site.title }}</title>
+    {% if page.title == "Home" %}
+      <title>{{ site.title }}</title>
+    {% else %}
+      <title>{{ page.title }} - {{ site.title }}</title>
+    {% endif %}
     
     <link rel="stylesheet" href="{{ "/assets/css/design.css" | relative_url }}">
     
