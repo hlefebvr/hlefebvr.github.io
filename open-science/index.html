@@ -6,34 +6,65 @@ layout: page
 <!--
 Cross: &#x2718;
 Check: &#x2714;
+Dash: &mdash;
 -->
 
 <p>
     As scientists, we should aim for the highest standards of transparency and accessibility. 
 
-    Here, I make available - as much as I can - all the material related to my papers, in particular: 
-
+    As much as I can, I make available all the material related to my papers. In particular:
     <ul>
-        <li><b>Method.</b> How is data transformed to reach the conclusions which are claimed in my contributions.</li>
-        <li><b>Code.</b> How was everything implemented (when relevant) so that one can reproduce it.</li>
-        <li><b>Data.</b> What data was used to perform the experiments (when releveant).</li>
-        <li><b>Access.</b> Where can an open-access or preprint be found online.</li>
-        <li><b>Resources.</b> Any additional resource making it easier to understand/criticize the work done.</li>
+        <li><i>Method.</i> How is data transformed to reach the conclusions which are claimed in my contributions.</li>
+        <li><i>Code.</i> How was everything implemented (when relevant) so that one can reproduce it.</li>
+        <li><i>Data.</i> What data was used to perform the experiments (when relevant).</li>
+        <li><i>Access.</i> Where can an open-access or preprint be found online.</li>
+        <li><i>Resources.</i> Any additional resource making it easier to understand/criticize the work done.</li>
     </ul>
+</p>
+
+<p>
+    <br />
+    <center>
+        Legend: <span class="check"></span> Available &#183; <span class="na"></span> Not Applicable &#183; <span class="cross"></span> Not Available.
+    </center>
 </p>
 
 <table class="open-science-list">
     <tr>
-        <th>Code</th>
+        <th>ID</th>
         <th>Year</th>
-        <th style="width: 500px;">Title</th>
-        <th style="width: 300px;">Authors</th>
+        <th style="width:400px">Title</th>
+        <th style="width:300px;">Authors</th>
         <th>Method</th>
         <th>Code</th>
         <th>Data</th>
         <th>Access</th>
         <th>Resources</th>
         <th>Status</th>
+    </tr>
+    <tr>
+        <td>AG</td>
+        <td>2024</td>
+        <td><a href="AG-exact-augmented-lagrangian-duality-for-nonconvex-mixed-integer-nonlinear-optimization">Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization</a></td>
+        <td>Lefebvre, H., Schmidt, M.</td>
+        <td class="na"></td>
+        <td class="na"></td>
+        <td class="na"></td>
+        <td class="check"></td>
+        <td class="check"></td>
+        <td>Preprint</td>
+    </tr>
+    <tr>
+        <td>AF</td>
+        <td>2024</td>
+        <td><a href="AF-on-coupling-constraints-in-linear-bilevel-optimization">On Coupling Constraints in Linear Bilevel Optimization</a></td>
+        <td>Henke, D., Lefebvre, H., Schmidt, M., Thürauf, J.</td>
+        <td class="na"></td>
+        <td class="na"></td>
+        <td class="na"></td>
+        <td class="check"></td>
+        <td class="cross"></td>
+        <td>Accepted</td>
     </tr>
     <tr>
         <td>AE</td>
@@ -69,7 +100,7 @@ Check: &#x2714;
         <td class="check"></td>
         <td class="check"></td>
         <td class="check"></td>
-        <td>Article</td>
+        <td>Published</td>
     </tr>
     <tr>
         <td>AB</td>
@@ -81,7 +112,7 @@ Check: &#x2714;
         <td class="check"></td>
         <td class="check"></td>
         <td class="cross"></td>
-        <td>Article</td>
+        <td>Published</td>
     </tr>
     <tr>
         <td>AA</td>
@@ -93,11 +124,12 @@ Check: &#x2714;
         <td class="check"></td>
         <td class="check"></td>
         <td class="cross"></td>
-        <td>Article</td>
+        <td>Published</td>
     </tr>
 </table>
 
 <script>
-  $(".check").html("<center style=\"color:green;text-align:center;\" >&#x2714;</center>");
-  $(".cross").html("<center style=\"color:#bfbfbf;text-align:center;\" >&#x2717;</center>");
+  $(".check").css("text-align", "center").html("<span style=\"color:green;\" >&#x2714;</span>");
+  $(".cross").css("text-align", "center").html("<span style=\"color:red;\" >&#x2717;</span>");
+  $(".na").css("text-align", "center").html("<span style=\"color:gray;\" >&#9737;</span>");
 </script>
