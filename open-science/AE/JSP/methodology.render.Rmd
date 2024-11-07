@@ -1,7 +1,5 @@
 # Using column generation in constraint-and-column generation for adjustable robust optimization > JSP
 
-
-
 ```{r echo=FALSE}
 library(rmarkdown)
 library(kableExtra)
@@ -37,8 +35,8 @@ Our results can be found in the `results.jsp.csv` file with the following column
 - "blank": this column is left blank.
 
 ```{r}
-data = read.csv("results.jsp.csv", header = FALSE)
-colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
+data = read.csv("results-final.csv", header = FALSE)
+colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status",  "with_heuristic", "n_jobs", "Gamma", "blank")
 ```
 
 
@@ -51,8 +49,8 @@ data = data[, !(names(data) %in% c("tag", "blank"))]
 For homogeneity, we fix the total_time of unsolved instances to the time limit. 
 
 ```{r}
-if (sum(data$total_time > 7200) > 0 ) {
-  data[data$total_time > 7200,]$total_time = 7200 
+if (sum(data$total_time > 18000) > 0 ) {
+  data[data$total_time > 18000,]$total_time = 18000 
 }
 ```
 
@@ -62,7 +60,6 @@ the time limit of the standard phase and a flag indicating if the CG-based heuri
 ```{r}
 data$method = paste0(data$master_solver, "_TL", data$standard_phase_time_limit, "_H", data$with_heuristic)
 unique(data$method)
-data = data[data$method != "STD_TLInf_H1" & data$method != "CG_TL120_H0" & data$method != "CG_TL120_H1",]
 ```
 
 Our final data reads.
@@ -71,13 +68,43 @@ Our final data reads.
 paged_table(data)
 ```
 
+## Sanity Check
+
+```{r}
+# Define the relative tolerance
+tolerance <- 10^-2
+
+# Filter the data where time < 18000 and group by 'instance'
+validation <- data %>%
+  filter(total_time < 18000) %>%
+  group_by(instance) %>%
+  summarise(min_best_obj = min(best_obj), max_best_obj = max(best_obj)) %>%
+  mutate(valid = (max_best_obj - min_best_obj) / min_best_obj <= tolerance)
+
+# Check if all instances are valid
+if (all(validation$valid)) {
+  print("All methods find the same best_obj value within the relative tolerance for all instances.")
+} else {
+  print("Methods do not find the same best_obj value within the relative tolerance for some instances.")
+  print(validation %>% filter(!valid))  # Show the instances that failed validation
+}
+```
+
 ## Empirical Cumulative Distribution Function (ECDF)
 
 We plot the ECDF of computation time over our set of instances for all approaches.
 
 ```{r}
 ggplot(data, aes(x = total_time, col = method)) + stat_ecdf(pad = FALSE) +
-  coord_cartesian(xlim = c(0,7200)) +
+  #coord_cartesian(xlim = c(0,18000)) +
+  scale_x_log10() +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(data, aes(x = master_time / n_iterations, col = method)) + stat_ecdf(pad = FALSE) +
+  # coord_cartesian(xlim = c(0,18000)) +
   theme_minimal()
 ```
 
@@ -94,7 +121,7 @@ for (method in unique(data_with_ecdf$method)) {
   output = data_with_ecdf[data_with_ecdf$method == method,]
   output = output[,c("total_time", "ecdf_value")]
   output$log_total_time = log10(output$total_time)
-  output = output[output$total_time < 7200,]
+  output = output[output$total_time < 18000,]
   write.csv(output, file = paste0(method, ".csv"), row.names = FALSE)
 }
 ```
@@ -106,8 +133,8 @@ In this section, we create a table summarizing the main outcome of our computati
 We first focus on the solved instances.
 
 ```{r}
-summary_data_lt_7200 <- data %>%
-  filter(total_time < 7200) %>%
+summary_data_lt_18000 <- data %>%
+  filter(total_time < 18000) %>%
   group_by(n_jobs, Gamma, method) %>%
   summarize(
     avg_total_time = mean(total_time, na.rm = TRUE),
@@ -125,8 +152,8 @@ summary_data_lt_7200 <- data %>%
 Then, we compute averages over the unsolved instances.
 
 ```{r}
-summary_data_ge_7200 <- data %>%
-  filter(total_time >= 7200) %>%
+summary_data_ge_18000 <- data %>%
+  filter(total_time >= 18000) %>%
   group_by(n_jobs, Gamma, method) %>%
   summarize(
     avg_n_iterations_unsolved = mean(n_iterations, na.rm = TRUE),
@@ -140,17 +167,53 @@ summary_data_ge_7200 <- data %>%
 Finally, we merge our results.
 
 ```{r}
-transposed_data_lt_7200 <- summary_data_lt_7200 %>%
+transposed_data_lt_18000 <- summary_data_lt_18000 %>%
   pivot_wider(names_from = method, values_from = avg_total_time:num_lines)
 
-transposed_data_ge_7200 <- summary_data_ge_7200 %>%
+transposed_data_ge_18000 <- summary_data_ge_18000 %>%
   pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved) %>%
   select(-n_jobs, -Gamma)
 
-cbind(
-  transposed_data_lt_7200,
-  transposed_data_ge_7200
-) %>%
-  kable() %>%
-  kable_styling(full_width = FALSE, position = "center")
+#cbind(
+#  transposed_data_lt_18000,
+#  transposed_data_ge_18000
+#) %>%
+#  kable() %>%
+#  kable_styling(full_width = FALSE, position = "center")
 ```
+
+## Iterations
+
+```{r}
+solved = data %>%
+    filter(total_time < 18000)
+
+ggplot(solved, aes(x = method, y = n_iterations)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of n_iterations per Method",
+       x = "Method",
+       y = "Number of Iterations") +
+  theme_minimal()
+```
+
+```{r}
+unsolved = data %>%
+    filter(total_time >= 18000)
+
+ggplot(unsolved, aes(x = method, y = n_iterations)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of n_iterations per Method",
+       x = "Method",
+       y = "Number of Iterations") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data, aes(x = method, y = second_stage.std_dev / abs(second_stage.mean))) +
+  geom_boxplot() +
+  labs(title = "Boxplot of n_iterations per Method",
+       x = "Method",
+       y = "Number of Iterations") +
+  theme_minimal()
+```
+
