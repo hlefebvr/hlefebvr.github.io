@@ -37,8 +37,10 @@ Our results can be found in the `results.gap.csv` file with the following column
 - "blank": this column is left blank.
 
 ```{r}
-data = read.csv("results.csv", header = FALSE)
-colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "n_facilities", "n_customers", "Gamma", "blank")
+data = read.csv("results-final.csv", header = FALSE)
+colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status",  "with_heuristic", "n_facilities", "n_customers", "Gamma", "blank")
+
+data = data %>% filter(n_customers <= 30)
 ```
 
 We start by removing the "tag" and the "blank" columns.
@@ -184,30 +186,13 @@ transposed_data_ge_10800 <- summary_data_ge_10800 %>%
 
 ```
 
-## Iterations
+## Second-stage Deviations
 
 ```{r}
-solved = data %>%
-    filter(total_time < 10800)
-
-ggplot(solved, aes(x = method, y = n_iterations)) +
+ggplot(data, aes(x = method, y = second_stage.std_dev / abs(second_stage.mean))) +
   geom_boxplot() +
-  labs(title = "Boxplot of n_iterations per Method",
+  labs(title = "Boxplot of std.dev",
        x = "Method",
        y = "Number of Iterations") +
   theme_minimal()
 ```
-
-```{r}
-unsolved = data %>%
-    filter(total_time >= 10800)
-
-ggplot(unsolved, aes(x = method, y = n_iterations)) +
-  geom_boxplot() +
-  labs(title = "Boxplot of n_iterations per Method",
-       x = "Method",
-       y = "Number of Iterations") +
-  theme_minimal()
-``` 
-
-
