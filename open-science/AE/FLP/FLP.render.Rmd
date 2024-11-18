@@ -1,6 +1,4 @@
-# Using column generation in constraint-and-column generation for adjustable robust optimization > GAP
-
-
+# Using column generation in constraint-and-column generation for adjustable robust optimization > FLP
 
 ```{r echo=FALSE}
 library(rmarkdown)
@@ -12,7 +10,7 @@ suppressPackageStartupMessages(library(dplyr))
 
 ## Loading the data
 
-Our results can be found in the `results.gap.csv` file with the following columns:
+Our results can be found in the `results.flp.csv` file with the following columns:
 
 - "tag": a tag always equal to "result" used grep the result line in our execution log file.
 - "instance": the path to the instance.
@@ -37,8 +35,28 @@ Our results can be found in the `results.gap.csv` file with the following column
 - "blank": this column is left blank.
 
 ```{r}
-data = read.csv("results.csv", header = FALSE)
-colnames(data) = c("slurm_file", "tag", "instance", "with_heuristic", "n_facilities", "n_customers", "Gamma", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status", "memory_used", "memory_limit")
+data = rbind(
+  read.csv("results.csv", header = FALSE) 
+)
+colnames(data) = c("slurm_file", "tag", "instance", "standard_phase_time_limit_raw", "Gamma", "with_heuristic", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status", "memory_used", "memory_limit")
+data = data %>% mutate(instance = basename(instance),
+                n_facilities = as.numeric(sub(".*F(\\d+)_C.*", "\\1", instance)),
+                n_customers = as.numeric(sub(".*C(\\d+)_.*", "\\1", instance))
+                )
+```
+
+We start by removing the "tag" and the "blank" columns.
+
+```{r}
+data = data[, !(names(data) %in% c("tag", "blank"))]
+```
+
+We then remove instances which were not considered in our experimental results because
+none of the approaches could solve sufficiently many instances.
+
+```{r}
+#data = data[data$n_customers != 40,]
+#data = data[data$n_facilities == 10,]
 ```
 
 For homogeneity, we fix the total_time of unsolved instances to the time limit. 
@@ -53,25 +71,19 @@ if (sum(data$total_time > 10800) > 0 ) {
 }
 ```
 
-We start by removing the "tag" and the "blank" columns.
-
-```{r}
-#data$tag = NULL 
-data$slurm_file = NULL
-```
-
 Then, we create a column named "method" which gives a specific name to each method, comprising the approach for solving the CCG master problem,
 the time limit of the standard phase and a flag indicating if the CG-based heuristic was used.
 
 ```{r}
 data$method = paste0(data$master_solver, "_TL", data$standard_phase_time_limit, "_H", data$with_heuristic)
 unique(data$method)
+data = data[data$method != "STD_TLInf_H1" & data$method != "CG_TL120_H0" & data$method != "CG_TL120_H1",]
 ```
 
 Our final data reads.
 
 ```{r, echo = FALSE}
-paged_table(data %>% filter(tag == "iteration"))
+paged_table(data)
 ```
 
 ## Sanity Check
@@ -85,7 +97,7 @@ validation <- data %>%
   filter(total_time < 10800) %>%
   group_by(paste0(instance, "_", Gamma)) %>%
   summarise(min_best_obj = min(best_obj), max_best_obj = max(best_obj)) %>%
-  mutate(valid = (max_best_obj - min_best_obj) / min_best_obj <= tolerance)
+  mutate(valid = abs(max_best_obj - min_best_obj) / max(abs(min_best_obj), 1) <= tolerance)
 
 # Check if all instances are valid
 if (all(validation$valid)) {
@@ -103,20 +115,20 @@ We plot the ECDF of computation time over our set of instances for all approache
 ```{r}
 ggplot(data, aes(x = total_time, col = method)) + stat_ecdf(pad = FALSE) +
   coord_cartesian(xlim = c(0,10800)) +
+  # scale_x_log10() +
   theme_minimal()
+
 
 ggplot(data, aes(x = memory_used, col = method)) +
   stat_ecdf(pad = FALSE) +
   theme_minimal()
 ```
 
-
 ```{r}
-ggplot(data, aes(x = master_time / n_iterations, col = method)) + stat_ecdf(pad = FALSE) +
-  #coord_cartesian(xlim = c(0,10800)) +
+ggplot(data, aes(x = total_time / n_iterations, col = method)) + stat_ecdf(pad = FALSE) +
+  # scale_x_log10() +
   theme_minimal()
 ```
-
 We export these results in csv to print them in tikz.
 
 ```{r}
@@ -181,7 +193,10 @@ transposed_data_lt_10800 <- summary_data_lt_10800 %>%
 
 transposed_data_ge_10800 <- summary_data_ge_10800 %>%
   pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved) %>%
-  select(-n_facilities, -n_customers, -Gamma)
+  select(-n_facilities, -n_customers, -Gamma) 
+
+transposed_data_lt_10800 %>% kable()
+transposed_data_ge_10800 %>%  kable()
 
 #cbind(
 #  transposed_data_lt_10800,
@@ -191,6 +206,7 @@ transposed_data_ge_10800 <- summary_data_ge_10800 %>%
 #  kable_styling(full_width = FALSE, position = "center")
 
 ```
+
 
 ## Second-stage Deviations
 
@@ -202,3 +218,4 @@ ggplot(data, aes(x = method, y = second_stage.std_dev / abs(second_stage.mean)))
        y = "Number of Iterations") +
   theme_minimal()
 ```
+

@@ -35,8 +35,11 @@ Our results can be found in the `results.jsp.csv` file with the following column
 - "blank": this column is left blank.
 
 ```{r}
-data = read.csv("results-final.csv", header = FALSE)
-colnames(data) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status",  "with_heuristic", "n_jobs", "Gamma", "blank")
+data = read.csv("results.csv", header = FALSE)
+colnames(data) = c("slurm_file", "tag", "instance", "standard_phase_time_limit_raw", "Gamma", "with_heuristic", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "second_stage.mean", "second_stage.std_dev", "adversarial_unexpected_status", "memory_used", "memory_limit")
+data = data %>% mutate(instance = basename(instance),
+                n_jobs = as.numeric(sub(".*N(\\d+)_R.*", "\\1", instance))
+                )
 ```
 
 
@@ -49,8 +52,12 @@ data = data[, !(names(data) %in% c("tag", "blank"))]
 For homogeneity, we fix the total_time of unsolved instances to the time limit. 
 
 ```{r}
-if (sum(data$total_time > 18000) > 0 ) {
-  data[data$total_time > 18000,]$total_time = 18000 
+if (sum(data$tag == "iteration") > 0 ) {
+  data[data$tag == "iteration",]$total_time = 10800 
+}
+
+if (sum(data$total_time > 10800) > 0 ) {
+  data[data$total_time > 10800,]$total_time = 10800 
 }
 ```
 
@@ -96,8 +103,12 @@ We plot the ECDF of computation time over our set of instances for all approache
 
 ```{r}
 ggplot(data, aes(x = total_time, col = method)) + stat_ecdf(pad = FALSE) +
-  #coord_cartesian(xlim = c(0,18000)) +
-  scale_x_log10() +
+  coord_cartesian(xlim = c(0,10800)) +
+  #scale_x_log10() +
+  theme_minimal()
+
+ggplot(data, aes(x = memory_used, col = method)) +
+  stat_ecdf(pad = FALSE) +
   theme_minimal()
 ```
 
@@ -174,6 +185,9 @@ transposed_data_ge_18000 <- summary_data_ge_18000 %>%
   pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved) %>%
   select(-n_jobs, -Gamma)
 
+transposed_data_lt_18000 %>% kable()
+transposed_data_ge_18000 %>% kable()
+
 #cbind(
 #  transposed_data_lt_18000,
 #  transposed_data_ge_18000
@@ -182,38 +196,13 @@ transposed_data_ge_18000 <- summary_data_ge_18000 %>%
 #  kable_styling(full_width = FALSE, position = "center")
 ```
 
-## Iterations
-
-```{r}
-solved = data %>%
-    filter(total_time < 18000)
-
-ggplot(solved, aes(x = method, y = n_iterations)) +
-  geom_boxplot() +
-  labs(title = "Boxplot of n_iterations per Method",
-       x = "Method",
-       y = "Number of Iterations") +
-  theme_minimal()
-```
-
-```{r}
-unsolved = data %>%
-    filter(total_time >= 18000)
-
-ggplot(unsolved, aes(x = method, y = n_iterations)) +
-  geom_boxplot() +
-  labs(title = "Boxplot of n_iterations per Method",
-       x = "Method",
-       y = "Number of Iterations") +
-  theme_minimal()
-```
+## Second-stage Deviations
 
 ```{r}
 ggplot(data, aes(x = method, y = second_stage.std_dev / abs(second_stage.mean))) +
   geom_boxplot() +
-  labs(title = "Boxplot of n_iterations per Method",
+  labs(title = "Boxplot of std.dev",
        x = "Method",
        y = "Number of Iterations") +
   theme_minimal()
 ```
-
