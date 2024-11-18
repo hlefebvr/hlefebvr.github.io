@@ -71,7 +71,7 @@ unique(data$method)
 Our final data reads.
 
 ```{r, echo = FALSE}
-paged_table(data %>% filter(tag == "iteration"))
+paged_table(data)
 ```
 
 ## Sanity Check
