@@ -1,11 +1,11 @@
 # PADM for CE
 
-```{r}
+```{r, echo = FALSE}
 library(ggplot2)
 library(rmarkdown)
-suppressWarnings(library(dplyr))
-library(knitr)
-library(kableExtra)
+suppressMessages(library(dplyr))
+suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
 ```
 
 ## Loading Results
@@ -90,23 +90,13 @@ data = merge(data, instances[, c("instance", "var_cat", "ctr_cat")],
 paged_table(data)
 ```
 
-## Sanity Check
+## Performance Analysis
 
-```{r, results="asis"}
-n_instances = length(data$instance)
-filter = data$solved & !is.na(data$gap) & data$gap >= 1e-2
-n_fail = sum(filter)
+### Summary à la Kurtz 
 
-cat(paste0("\nThere are ", n_instances, " instances.\n"))
-if (n_fail > 0) {
-  cat(paste0("\n**WARNING**: There were ", n_fail, " failed instances.\n")) 
-  
-  paged_table(data[filter,])
-}
-```
+This is the same table as Table 6 in "Counterfactual Explanations for Linear Optimization", J. Kurtz (2024). 
 
-
-## Instances Summary à la Kurtz 
+We focus on l1-norm with warm-start.
 
 ```{r}
 sub_data = data %>%
@@ -139,6 +129,8 @@ summary_table %>%
   group_rows("large", 16, 24)
 ```
 
+### Solved Instances by Number of Mutable Columns
+
 ```{r, fig.height = 30, fig.width = 10}
 bar_data = sub_data %>%
   filter(solved == TRUE) %>%  # Only consider solved instances
@@ -160,7 +152,7 @@ ggplot(bar_data, aes(x = instance, y = solved_count, fill = factor(n_mutable_col
 
 ```
 
-## Computational Time Analysis
+### Computational Times
 
 ```{r, fig.width=10, fig.height=8, results="asis"}
 for (norm in unique(data$norm)) {
@@ -203,27 +195,7 @@ for (norm in unique(data$norm)) {
 }
 ```
 
-```{r, echo = FALSE}
-#for (norm in unique(data$norm)) {
-  
-#  sub_data = data[data$norm == norm & data$warm_start == 0, ]
-  
-  # Create the bar chart of counts of status
-#  plot = ggplot(sub_data, aes(x = reason, fill = reason)) + 
-#    geom_bar() +  # Create a bar chart to count each status
-#    labs(title = paste0("Count of Status for ", norm, " norm"),
-#         x = "Status",
-#         y = "Count",
-#         fill = "Status") +
-#    theme_minimal() +
-#    theme(legend.position = "none") +  # Remove the legend as fill will match x-axis categories
-#    facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
-  
-#  print(plot)
-#}
-```
-
-## What Can We Solve?
+### Scatter Plot of Solved and Unsolved Instances
 
 ```{r}
 sub_data = data[data$update_rule == "adapt" & data$norm == "l1" & data$initial_penalty == 5e2,]
