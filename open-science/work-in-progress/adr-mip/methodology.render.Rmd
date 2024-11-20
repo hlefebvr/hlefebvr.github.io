@@ -1,0 +1,46 @@
+# ?adr?
+
+
+
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+results_adr = read.csv("adr-results.csv", header = FALSE)
+colnames(results_adr) = c("tag", "instance", "Gamma", "total_time", "status", "reason", "best_bound", "best_obj")
+
+results_adr$tag = NULL
+```
+
+```{r}
+results_ccg = read.csv("ccg-results.csv", header = FALSE)
+colnames(results_ccg) = c("tag", "instance", "standard_phase_time_limit", "master_solver", "status", "reason", "has_large_scaled", "n_iterations", "total_time", "master_time", "adversarial_time", "best_bound", "best_obj", "relative_gap", "absolute_gap", "adversarial_unexpected_status",  "with_heuristic", "with_non_optimal_pricing", "n_jobs", "Gamma", "blank")
+
+results_ccg = results_ccg[,colnames(results_adr)]
+```
+
+```{r}
+results_ccg$method = "ccg"
+results_adr$method = "adr"
+results = rbind(results_ccg, results_adr)
+```
+
+```{r, echo = FALSE}
+paged_table(results)
+```
+
+```{r}
+ggplot(results, aes(x = total_time, col = method)) +
+  stat_ecdf(pad = FALSE) +
+  coord_cartesian(xlim = c(0,7200)) +
+  theme_minimal()
+```
+
+```{r}
+
+```

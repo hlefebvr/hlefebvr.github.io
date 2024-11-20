@@ -1,0 +1,262 @@
+
+```{r}
+library(ggplot2)
+library(rmarkdown)
+suppressWarnings(library(dplyr))
+library(knitr)
+library(kableExtra)
+```
+
+## Loading Results
+
+### Instance Statistics
+
+```{r}
+instances = read.csv("instances.csv", header = FALSE)
+colnames(instances) = c("tag", "instance", "mps", "n_vars", "n_ctrs")
+
+# Remove tag
+instances$tag = NULL
+
+# Clean instance name
+instances$instance = sub("_.*", "", basename(instances$instance))
+instances$mps = basename(instances$mps)
+
+# Add 'var_cat' based on the # Variables intervals
+instances$var_cat = cut(instances$n_vars, 
+                   breaks = c(-Inf, 534, 2167, 22275), 
+                   labels = c("small", "medium", "large"),
+                   right = TRUE)
+
+# Add 'ctr_cat' based on the # Constraints intervals
+instances$ctr_cat = cut(instances$n_ctrs, 
+                   breaks = c(-Inf, 351, 906, 16675), 
+                   labels = c("small", "medium", "large"),
+                   right = TRUE)
+
+instances = instances[!duplicated(instances$instance), ]
+
+paged_table(instances)
+```
+
+### Results
+
+```{r}
+
+time_limit = 1800
+
+data = read.csv("results.csv", header = FALSE)
+stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inner_iterations","l1_norm", "l2_norm")
+colnames(data) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
+
+# Remove tag
+data$tag = NULL
+
+# Add a one-word solver description
+data$solver = paste0(data$method, " - ", data$update_rule, " ", data$update_rule_parameter, " - ", data$norm, " - init ", data$initial_penalty, " - warm start ", data$warm_start)
+
+# Add 'n_mutable_columns' based on instance name
+data$n_mutable_columns = gsub(".*_(\\d+)$", "\\1", data$instance)
+
+# Clean instance name
+data$full_instance = basename(data$instance)
+
+data$instance = sub("_.*", "", data$full_instance)
+
+data$total_time = ifelse(is.na(data$warm_start_time), 0, data$warm_start_time) + data$time
+
+data$solved = data$status == "Feasible" & data$total_time < time_limit
+
+n_unsolved = sum(!data$solved)
+if (n_unsolved > 0) {
+  data[!data$solved,]$total_time = time_limit
+}
+
+data$n_mutable_columns <- as.numeric(as.character(data$n_mutable_columns))  # Convert to numeric
+
+
+```
+
+### Merge Instances and Results
+
+```{r}
+data = merge(data, instances[, c("instance", "var_cat", "ctr_cat")], 
+                     by = "instance",
+                     all.x = TRUE)
+```
+
+```{r, echo = FALSE}
+paged_table(data)
+```
+
+## Sanity Check
+
+```{r, results="asis"}
+n_instances = length(data$instance)
+filter = data$solved & !is.na(data$gap) & data$gap >= 1e-2
+n_fail = sum(filter)
+
+cat(paste0("\nThere are ", n_instances, " instances.\n"))
+if (n_fail > 0) {
+  cat(paste0("\n**WARNING**: There were ", n_fail, " failed instances.\n")) 
+  
+  paged_table(data[filter,])
+}
+```
+
+
+## Instances Summary à la Kurtz 
+
+```{r}
+sub_data = data %>%
+  filter(method == "PADM",
+         update_rule == "adapt",
+         norm == "l1",
+         initial_penalty == 5e2,
+         warm_start == 1)
+
+# Group, summarize, and sort by n_mutable_columns
+summary_table <- sub_data %>%
+  group_by(var_cat, ctr_cat, n_mutable_columns) %>%
+  summarise(
+    `# inst.` = n_distinct(instance),  # Count number of instances
+    `feasible (in %)` = mean(solved) * 100,  # Percentage of feasible instances
+    `# mutable objective param.` = mean(n_mutable_costs, na.rm = TRUE),  # Avg mutable objective parameters
+    `# mutable constraint param.` = mean(n_mutable_coefficients, na.rm = TRUE)  # Avg mutable constraint parameters
+  ) %>%
+  arrange(var_cat, ctr_cat, n_mutable_columns) %>%  # Sort by var_cat, ctr_cat, and n_mutable_columns
+  ungroup()
+
+# Create the HTML table using kableExtra
+summary_table %>%
+  kable("html", align = "c", col.names = c()) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
+  add_header_above(c("n" = 1, "m" = 1, "# mut. columns" = 1, "# inst." = 1, "feasible (in %)" = 1, 
+                     "# mutable objective param." = 1, "# mutable constraint param." = 1)) %>%
+  group_rows("small", 1, 6) %>%
+  group_rows("medium", 7, 15) %>%
+  group_rows("large", 16, 24)
+```
+
+```{r, fig.height = 30, fig.width = 10}
+bar_data = sub_data %>%
+  filter(solved == TRUE) %>%  # Only consider solved instances
+  group_by(instance, n_mutable_columns) %>%
+  summarise(solved_count = n(), .groups = "drop")  # Count solved instances
+
+# Create bar plot
+ggplot(bar_data, aes(x = instance, y = solved_count, fill = factor(n_mutable_columns))) +
+  geom_bar(stat = "identity", position = "dodge") +  # Bar plot with bars side-by-side
+  coord_flip() +
+  labs(
+    title = "Number of Solved Instances by n_mutable_columns for Each Instance",
+    x = "Instance",
+    y = "Number of Solved Instances",
+    fill = "n_mutable_columns"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "top")  # Rotate x-axis labels for better readability
+
+```
+
+## Computational Time Analysis
+
+```{r, fig.width=10, fig.height=8, results="asis"}
+for (norm in unique(data$norm)) {
+  
+  sub_data = data[data$norm == norm, ]
+  
+  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
+         x = "Time",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 60), limits = c(0, time_limit)) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+
+  print(plot)
+}
+```
+
+```{r, fig.width=10, fig.height=5, results="asis"}
+for (norm in unique(data$norm)) {
+  
+  sub_data = data[data$norm == norm, ]
+  
+  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
+         x = "Time",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 180), limits = c(0, time_limit)) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
+    facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
+  
+  print(plot)
+}
+```
+
+```{r, echo = FALSE}
+#for (norm in unique(data$norm)) {
+  
+#  sub_data = data[data$norm == norm & data$warm_start == 0, ]
+  
+  # Create the bar chart of counts of status
+#  plot = ggplot(sub_data, aes(x = reason, fill = reason)) + 
+#    geom_bar() +  # Create a bar chart to count each status
+#    labs(title = paste0("Count of Status for ", norm, " norm"),
+#         x = "Status",
+#         y = "Count",
+#         fill = "Status") +
+#    theme_minimal() +
+#    theme(legend.position = "none") +  # Remove the legend as fill will match x-axis categories
+#    facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
+  
+#  print(plot)
+#}
+```
+
+## What Can We Solve?
+
+```{r}
+sub_data = data[data$update_rule == "adapt" & data$norm == "l1" & data$initial_penalty == 5e2,]
+
+# Create a scatter plot with colors based on the normalized time
+ggplot(sub_data, aes(x = n_vars, y = n_ctrs, color = as.numeric(solved))) +
+  geom_point(alpha = .5, size = 1) +  # Transparency and point size
+  scale_x_log10() +  # Logarithmic scale for n_vars
+  scale_y_log10() +  # Logarithmic scale for n_ctrs
+  scale_color_gradient(low = "red", high = "green") +  # Color gradient
+  labs(title = "Scatter Plot of (n_vars, n_ctrs) with Log Scale and Transparency",
+       x = "Number of Variables (n_vars)",
+       y = "Number of Constraints (n_ctrs)",
+       color = "Solved") +
+  theme_minimal()  # Minimal theme for clean look
+```
+
+
+## Solution Analysis 
+
+
+```{r}
+for (norm in unique(data$norm)) {
+  sub_data = data[ data$norm == norm & data$time < time_limit,]
+  
+  plot = ggplot(sub_data, aes(x = l1_norm, group = warm_start, color = as.character(warm_start))) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of l1-norm of CE when using the objective function: ", norm),
+         x = "l1-norm of CE",
+         y = "ECDF") +
+    scale_x_log10() +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
+  print(plot)
+}
+```

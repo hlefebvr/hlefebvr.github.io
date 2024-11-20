@@ -1,0 +1,572 @@
+# A Two-stage Robust Approach for Minimizing the Weighted Number of Tardy Jobs with Objective Uncertainty
+
+## Reading instances
+
+### The CSV file
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(stringr)
+```
+
+All our results can be found in the CSV file `results.csv` which contains the following rows and columns.
+
+```{r}
+all_results = read.csv("results.csv", na.strings = "")
+```
+
+```{r echo=FALSE}
+paged_table(all_results)
+```
+
+
+Here, columns have the following inerpretation:
+
+- *instance*: instance file name ;
+- *problem*: 1 if the row relates to problem $(\mathcal P)$, 2 if it relates to problem $(\widetilde{\mathcal P})$ ;
+- *approach*: the approach used for solving the instance,
+  - For problem $(\mathcal P)$, possible values are "colgen, kadapt-a, kadapt-b" (in the paper: ColGen1, KAdapt1-a, KAdapt1-b) ;
+  - For problem $(\widetilde{\mathcal P})$, possible values are "colgen, colgen-ext, kadapt-a" (in the paper: ColGen2, ColGen3, KAdapt2)
+- *n_jobs*: the number of jobs ;
+- *gamma*: the value for $\Gamma$ ;
+- *k*: when using a $K$-adaptability approach, the value for $K$ ;
+- *cpu*: the CPU time needed to sovle the instance (3600 if the time-limit is reached) ;
+- *objective*: the best objective value found (i.e., optimal if *cpu* < 3600) ;
+- *n_active_col*: when the column generation approach is used, the number of active columns ;
+- *quality*: the solution quality,
+  - When column generation is used, possible values are "Optimal, TimeLimitFeasible, TimeLimitInfeasible" ;
+  - When $K$-adaptability is used, possible values are "Optimal, Time Lim, Mem Lim".
+- *gap*: the remaining optimality gap after 1 hour of computation ;
+- *rule_for_branching*: when the column generation approach is used, the variable selection rule which were used (possible values: "default, strong_branching", i.e., most infeasible).
+
+```{r}
+all_results[all_results$cpu > 3600, ] = 3600
+```
+
+```{r}
+problem1 = all_results[all_results$problem == 1,]
+problem2 = all_results[all_results$problem == 2,]
+```
+
+```{r}
+create_approach = function(problem, approach) {
+  result = problem[problem$approach == approach & problem$rule_for_branching == 'default',]
+  result = result[,!names(result) %in% c("approach", "problem", "rule_for_branching", "quality", "n_active_col")]
+  rownames(result) = NULL
+  return (result)
+}
+```
+
+```{r}
+colgen1 = create_approach(problem1, 'colgen')
+kadapt1_a = create_approach(problem1, 'kadapt-a')
+kadapt1_b = create_approach(problem1, 'kadapt-b')
+```
+
+```{r}
+colgen2 = create_approach(problem2, 'colgen')
+colgen3 = create_approach(problem2, 'colgen-ext')
+kadapt2_a = create_approach(problem2, 'kadapt-a')
+kadapt2_b = create_approach(problem2, 'kadapt-b')
+```
+
+### Estimating $K^*$ (finding $\widehat{K}^*$)
+
+```{r}
+estimate_k_star = function(exact_method, k_adaptability) {
+  
+  # We first merge the exact method with the K-adaptability approach
+  k_stars = merge(exact_method, k_adaptability, by = c("instance", "gamma"), all.y = TRUE)
+  
+  # We only keep those values of K which trigger the stopping condition
+  k_stars = k_stars[
+      # - (P_K)^* <= (P)^*, t(P) <= T, t(P_K) <= T
+        (k_stars$objective.y <= k_stars$objective.x + 1e-3 & k_stars$time.x < 3600 & k_stars$time.y < 3600)
+      |
+      # - (P_K)^* <= (P)^*, t(P) > T, t(P_K) <= T
+        (k_stars$objective.y <= k_stars$objective.x + 1e-3 & k_stars$time.x >= 3600 & k_stars$time.y < 3600)
+      |
+      # - t(P) <= P, t(P_K) > T
+        (k_stars$time.x < 3600 & k_stars$time.y >= 3600)
+      |
+      # - t(P) > T, t(P_K) > T
+        (k_stars$time.x >= 3600 & k_stars$time.y >= 3600)
+    , 
+      c("instance", "gamma", "k.y")
+  ]
+  
+  # We rename k.y as k
+  colnames(k_stars)[3] = "k"
+  
+  # Keep only the first (instance, gamma, k) which triggered the stopping criteria
+  k_stars = k_stars[order(k_stars$instance, k_stars$gamma, k_stars$k),]
+  k_stars = k_stars[!duplicated(( k_stars[,c("instance", "gamma")] )),]
+  
+  return (k_stars)
+}
+```
+
+```{r}
+k_star1_a = estimate_k_star(colgen1, kadapt1_a)
+k_star1_b = estimate_k_star(colgen1, kadapt1_b)
+k_star2_a = estimate_k_star(colgen2, kadapt2_a)
+k_star2_b = estimate_k_star(colgen2, kadapt2_b)
+```
+
+### The $\widehat{K}^*$-adaptability
+
+```{r}
+create_optimal_kadapt = function(k_adaptability, k_star) {
+  opt_kadapt = merge(k_adaptability, k_star, by = c("instance", "gamma", "k"))
+  return(opt_kadapt)
+}
+```
+
+```{r}
+opt_kadapt1_a = create_optimal_kadapt(kadapt1_a, k_star1_a)
+opt_kadapt1_b = create_optimal_kadapt(kadapt1_b, k_star1_b)
+opt_kadapt2_a = create_optimal_kadapt(kadapt2_a, k_star2_a)
+opt_kadapt2_b = create_optimal_kadapt(kadapt2_b, k_star2_b)
+```
+
+## Analysis
+
+### Computational times
+
+```{r}
+compute_mean_times_by_group = function(data) {
+  
+  data = data[data$time < 3600,]
+  
+  mean_times = aggregate(data$time, list(data$n_jobs, data$gamma), mean)
+  colnames(mean_times) = c("n_jobs", "gamma", "time")
+  
+  mean_times = mean_times[order(mean_times$n_jobs, mean_times$gamma),]
+  rownames(mean_times) = NULL
+  
+  return(mean_times)
+}
+```
+
+```{r}
+mean_times_colgen1 = compute_mean_times_by_group(colgen1)
+mean_times_kadapt1_a = compute_mean_times_by_group(opt_kadapt1_a)
+mean_times_kadapt1_b = compute_mean_times_by_group(opt_kadapt1_b)
+
+mean_times_colgen2 = compute_mean_times_by_group(colgen2)
+mean_times_colgen3 = compute_mean_times_by_group(colgen3)
+mean_times_kadapt2_a = compute_mean_times_by_group(opt_kadapt2_a)
+mean_times_kadapt2_b = compute_mean_times_by_group(opt_kadapt2_b)
+```
+
+```{r}
+compute_number_unsolved_by_group = function(data) {
+  unsolved = aggregate(data$time >= 3600, list(data$n_jobs, data$gamma), sum)
+  colnames(unsolved) = c("n_jobs", "gamma", "unsolved")
+  
+  total = aggregate(data$instance, list(data$n_jobs, data$gamma), length)
+  colnames(total) = c("n_jobs", "gamma", "total")
+  
+  unsolved$unsolved = unsolved$unsolved / total$total * 100
+  
+  unsolved = unsolved[order(unsolved$n_jobs, unsolved$gamma),]
+  rownames(unsolved) = NULL
+  
+  return(unsolved)
+}
+```
+
+```{r}
+unsolved_colgen1 = compute_number_unsolved_by_group(colgen1)
+unsolved_kadapt1_a = compute_number_unsolved_by_group(opt_kadapt1_a)
+unsolved_kadapt1_b = compute_number_unsolved_by_group(opt_kadapt1_b)
+
+unsolved_colgen2 = compute_number_unsolved_by_group(colgen2)
+unsolved_colgen3 = compute_number_unsolved_by_group(colgen3)
+unsolved_kadapt2_a = compute_number_unsolved_by_group(opt_kadapt2_a)
+unsolved_kadapt2_b = compute_number_unsolved_by_group(opt_kadapt2_b)
+```
+
+```{r}
+compute_fastest_approach = function(t_colgen, t_kadapta, t_kadaptb) {
+  
+  fastest = merge(t_colgen, t_kadapta, by = c("instance", "gamma"))
+  fastest = fastest[,c("instance", "gamma", "n_jobs.x", "time.x", "time.y")]
+  colnames(fastest) = c("instance", "gamma", "n_jobs", "time_colgen", "time_kadapt_a")
+  
+  fastest = merge(fastest, t_kadaptb, by = c("instance", "gamma"))
+  fastest = fastest[,c("instance", "gamma", "n_jobs.x", "time_colgen", "time_kadapt_a", "time")]
+  colnames(fastest)[3] = "n_jobs"
+  colnames(fastest)[6] = "time_kadapt_b"
+  
+  fastest$best_time = apply(fastest[,c("time_colgen", "time_kadapt_a", "time_kadapt_b")], 1, FUN = min)
+  
+  fastest$best_is_colgen = fastest$time_colgen == fastest$best_time
+  fastest$best_is_kadapt_a = fastest$time_kadapt_a == fastest$best_time
+  fastest$best_is_kadapt_b = fastest$time_kadapt_b == fastest$best_time
+  
+  return(fastest)
+}
+
+fastest1 = compute_fastest_approach(colgen1, opt_kadapt1_a, opt_kadapt1_b)
+fastest2 = compute_fastest_approach(colgen2, opt_kadapt2_a, opt_kadapt2_b)
+```
+
+```{r}
+compute_fastest_approach_by_group = function(fastest) {
+  
+  fastest = aggregate(fastest[,c("best_is_colgen", "best_is_kadapt_a", "best_is_kadapt_b")], by = list(fastest$n_jobs, fastest$gamma), sum)
+  
+  fastest[,3:5] = fastest[,3:5] / rowSums(fastest[,3:5]) * 100
+  
+  colnames(fastest) = c("n_jobs", "gamma", "best_is_colgen", "best_is_kadapt_a", "best_is_kadapt_b")
+  
+  fastest = fastest[order(fastest$n_jobs, fastest$gamma),]
+  rownames(fastest) = NULL
+  
+  return (fastest);
+}
+```
+
+```{r}
+fastest_by_group1 = compute_fastest_approach_by_group(fastest1)
+fastest_by_group2 = compute_fastest_approach_by_group(fastest2)
+```
+
+#### For problem $({\mathcal P})$
+
+```{r}
+Table41 = cbind(unsolved_kadapt1_a,
+      unsolved_kadapt1_b$unsolved,
+      unsolved_colgen1$unsolved,
+      mean_times_kadapt1_a$time,
+      mean_times_kadapt1_b$time,
+      mean_times_colgen1$time,
+      fastest_by_group1$best_is_kadapt_a,
+      fastest_by_group1$best_is_kadapt_b,
+      fastest_by_group1$best_is_colgen
+    )
+```
+
+```{r echo = FALSE}
+knitr::kable(Table41, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.1"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+```{r}
+Table41_mean_unsolved_by_group = aggregate(Table41[,c(3:5)], by = list(Table41$n_jobs), mean)
+colnames(Table41_mean_unsolved_by_group ) = c("n_jobs", "unsolved_k1_a", "unsolved_k1_b", "unsolved_c1")
+
+Table41_mean_times_by_group = aggregate(Table41[,c(6:8)], by = list(Table41$n_jobs), mean)
+colnames(Table41_mean_times_by_group) = c("n_jobs", "time_k1_a", "time_k1_b", "time_c1")
+
+Table41_fastest_by_group = aggregate(Table41[,c(9:11)], by = list(Table41$n_jobs), mean)
+colnames(Table41_fastest_by_group) = c("n_jobs", "fastest_k1_a", "fastest_k1_b", "fastest_c1")
+
+Table41_summary = merge(Table41_mean_unsolved_by_group , Table41_mean_times_by_group, by = c("n_jobs"))
+Table41_summary = merge(Table41_summary, Table41_fastest_by_group, by = c("n_jobs"))
+```
+
+```{r echo = FALSE}
+knitr::kable(Table41_summary, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.1 summary"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r}
+Table44 = cbind(unsolved_kadapt2_a,
+      unsolved_kadapt2_b$unsolved,
+      unsolved_colgen2$unsolved,
+      mean_times_kadapt2_a$time,
+      mean_times_kadapt2_b$time,
+      mean_times_colgen2$time,
+      fastest_by_group2$best_is_kadapt_a,
+      fastest_by_group2$best_is_kadapt_b,
+      fastest_by_group2$best_is_colgen
+    )
+```
+
+```{r echo = FALSE}
+knitr::kable(Table44, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.4"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+```{r}
+Table44_mean_unsolved_by_group = aggregate(Table44[,c(3:5)], by = list(Table44$n_jobs), mean)
+colnames(Table44_mean_unsolved_by_group) = c("n_jobs", "unsolved_k2_a", "unsolved_k2_b", "unsolved_c2")
+
+Table44_mean_times_by_group = aggregate(Table44[,c(6:8)], by = list(Table44$n_jobs), mean)
+colnames(Table44_mean_times_by_group) = c("n_jobs", "time_k2_a", "time_k2_b", "time_c2")
+
+Table44_fastest_by_group = aggregate(Table44[,c(9:11)], by = list(Table44$n_jobs), mean)
+colnames(Table44_fastest_by_group) = c("n_jobs", "fastest_k2_a", "fastest_k2_b", "fastest_c2")
+
+Table44_summary = merge(Table44_mean_unsolved_by_group, Table44_mean_times_by_group, by = c("n_jobs"))
+Table44_summary = merge(Table44_summary, Table44_fastest_by_group, by = c("n_jobs"))
+```
+
+```{r echo = FALSE}
+knitr::kable(Table44_summary, 
+               digits = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
+               col.names = c("$|\\mathcal J|$", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1", "KAdapt1-a", "KAdapt1-b", "ColGen1"),
+               caption = "Table 4.4 summary"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Unsolved" = 3, "Time" = 3, "Fastest" = 3))
+```
+
+### Performance profiles
+
+```{r}
+plot_performance_profile = function(fastest, title = "Performance profile", prefix.output.file = "") {
+  
+  perf_colgen = fastest$time_colgen / fastest$best_time
+  perf_kadapt_a = fastest$time_kadapt_a / fastest$best_time
+  perf_kadapt_b = fastest$time_kadapt_b / fastest$best_time
+  
+  max_perf = max( max(perf_colgen), max(perf_kadapt_a), max(perf_kadapt_b) ) + 1
+
+  perf_colgen[fastest$time_colgen >= 3600] = max_perf
+  perf_kadapt_a[fastest$time_kadapt_a >= 3600] = max_perf
+  perf_kadapt_b[fastest$time_kadapt_b >= 3600] = max_perf
+  
+  perf_profile_colgen = ecdf(perf_colgen)
+  perf_profile_kadapt_a = ecdf(perf_kadapt_a)
+  perf_profile_kadapt_b = ecdf(perf_kadapt_b)
+  
+  if (prefix.output.file != "") {
+    
+    x.axis = seq(from = 1, to = 10, by = .05)
+    
+    save.to.file = function (ecdf_function, method) {
+      y.axis = ecdf_function(x.axis)
+      write.csv(data.frame(x = x.axis, y = y.axis), paste0(prefix.output.file, ".", method, ".", "generated.csv"), row.names = FALSE)
+    }
+    
+    save.to.file(perf_profile_colgen, "colgen")
+    save.to.file(perf_profile_kadapt_a, "kadapt_a")
+    save.to.file(perf_profile_kadapt_b, "kadapt_b")
+    
+    all_files = dir()
+    files = all_files[str_detect(all_files, prefix.output.file)]
+    zip(zipfile = paste0(prefix.output.file, ".generated.zip"), files = files)
+    
+  }
+  
+  xlim = c(1, 10)
+  ylim = c(0, 1)
+  
+  plot(perf_profile_colgen, col = "blue", xlim = xlim, ylim = ylim, lty = "solid", cex = 0, main = title)
+  lines(perf_profile_kadapt_a, col = "green", xlim = xlim, ylim = ylim, lty = "dotted", cex = 0)
+  lines(perf_profile_kadapt_b, col = "red", xlim = xlim, ylim = ylim, lty = "dashed", cex = 0)
+  
+  legend(
+    6, .5, legend = c("ColGen", "KAdapt-a", "KAdapt-b"), col = c("blue", "green", "red"), lty = c("solid", "dotted", "dashed")
+  )
+}
+```
+
+#### For problem $(\mathcal P)$
+
+```{r, fig.show="hold", out.width="100%"}
+plot_performance_profile(fastest1, title = "Over all instances", prefix.output.file = "problem1.all")
+plot_performance_profile(fastest1[fastest1$n_jobs == 25,], title = "Over instances with n_jobs = 25", prefix.output.file = "problem1.25jobs")
+plot_performance_profile(fastest1[fastest1$gamma <= fastest1$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4", prefix.output.file = "problem1.hard")
+```
+
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r, fig.show="hold", out.width="100%"}
+plot_performance_profile(fastest2, title = "Over all instances")
+plot_performance_profile(fastest2[fastest2$n_jobs == 15,], title = "Over instances with n_jobs = 15")
+plot_performance_profile(fastest2[fastest2$gamma <= fastest2$n_jobs / 4,], title = "Over instances with Gamma <= n_jobs / 4")
+```
+
+### Feasible solutions found
+
+```{r}
+compute_feasible_found_by_group = function(data, n_jobs) {
+  
+  data = data[data$time >= 3600 & data$n_jobs == n_jobs,]
+  
+  feasible_found = aggregate(is.finite(data$gap) & data$gap > 1e-4, by = list(data$gamma), sum)
+  colnames(feasible_found) = c("gamma", "feasible_found")
+  
+  total = aggregate(data$instance, by = list(data$gamma), length)
+  colnames(total) = c("gamma", "total")
+  
+  feasible_found$feasible_found = feasible_found$feasible_found / total$total * 100
+  
+  return (feasible_found)
+  
+}
+```
+
+```{r}
+feasible_found_colgen1 = compute_feasible_found_by_group(colgen1, 25)
+feasible_found_kadapt1_a = compute_feasible_found_by_group(kadapt1_a, 25)
+feasible_found_kadapt1_b = compute_feasible_found_by_group(kadapt1_b, 25)
+```
+
+```{r}
+Table42 = cbind(
+  feasible_found_kadapt1_a,
+  feasible_found_kadapt1_b$feasible_found,
+  feasible_found_colgen1$feasible_found
+)
+```
+
+```{r echo = FALSE}
+knitr::kable(Table42, 
+               digits = c(0, 0, 0, 0), 
+               col.names = c("$\\Gamma$", "KAdapt1-a", "KAdapt1-b", "ColGen1") ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 1, "Feasible solutions found (%)" = 3))
+```
+
+### Approximation cost
+
+```{r}
+compute_approximation_cost = function(colgen, k_adaptability, k_star) {
+  
+  # Merge results from colgen with those obtained by K-adaptability
+  data = merge(colgen, k_adaptability, by = c("instance", "gamma"), all.y = TRUE)
+  data = data[,c("instance", "gamma", "time.x", "time.y", "objective.x", "objective.y", "k.y")]
+  colnames(data) = c("instance", "gamma", "time_colgen", "time_kadapt", "obj_colgen", "obj_kadapt", "k")
+  
+  # Only consider those instances where both methods have converged
+  data = data[data$time_colgen < 3600 & data$time_kadapt < 3600,]
+  
+  # Merge the resulting with the estimates of K^*
+  data = merge(data, k_star, by = c("instance", "gamma"), all.x = TRUE)
+  colnames(data)[7] = "k"
+  colnames(data)[8] = "k_star"
+  
+  # Only consider those rows with K <= K^*
+  data = data[data$k <= data$k_star,]
+  
+  # Compute approximation gap
+  data$approximation_cost = (data$obj_kadapt - data$obj_colgen) / data$obj_colgen * 100
+  
+  # Compute time ratio
+  data$time_ratio = data$time_kadapt / data$time_colgen
+
+  return (data)  
+}
+```
+
+```{r}
+approximation_costs1a = compute_approximation_cost(colgen1, kadapt1_a, k_star1_a)
+approximation_costs2a = compute_approximation_cost(colgen2, kadapt2_a, k_star2_a)
+```
+
+```{r}
+compute_approximation_cost_by_group = function(approximation_cost) {
+  
+  # Compute mean of approximation_cost and time_ratio
+  result = aggregate(approximation_cost[,c("approximation_cost", "time_ratio")], by = list(approximation_cost$k_star, approximation_cost$k), mean)
+  colnames(result)[1:2] = c("k_star", "k")
+  
+  # Count instances in each category
+  total = aggregate(approximation_cost$instance, by = list(approximation_cost$k_star, approximation_cost$k), length)
+  result$total = total[[3]]
+  
+  result = result[order(result$k_star, result$k),]
+  rownames(result) = NULL
+  
+  return (result)
+  
+}
+```
+
+```{r}
+Table43 = compute_approximation_cost_by_group(approximation_costs1a)
+Table45 = compute_approximation_cost_by_group(approximation_costs2a)
+```
+
+#### For problem $({\mathcal P})$
+
+```{r echo = FALSE}
+knitr::kable(Table43, 
+               digits = c(0, 0, 2, 2, 0), 
+               col.names = c("$K^*$", "$K$", "Approximation gap (%)", "Time ratio", "# Instances") ) %>%
+      kable_classic()
+```
+
+#### For problem $(\widetilde{\mathcal P})$
+
+```{r echo = FALSE}
+knitr::kable(Table45, 
+               digits = c(0, 0, 2, 2, 0), 
+               col.names = c("$K^*$", "$K$", "Approximation gap (%)", "Time ratio", "# Instances") ) %>%
+      kable_classic()
+```
+
+### Fixed-order costs analysis
+
+```{r}
+compute_fixed_order_costs = function(t_colgen1, t_colgen2) {
+  
+  result = merge(t_colgen1, t_colgen2, by = c("instance", "gamma"))
+  result = result[,c("instance", "gamma", "n_jobs.x", "objective.x", "objective.y", "time.x", "time.y")]
+  colnames(result)[3:7] = c("n_jobs", "obj_colgen1", "obj_colgen2", "time_colgen1", "time_colgen2")
+  
+  result = result[result$time_colgen1 < 3600 & result$time_colgen2 < 3600,]
+  
+  result$gap = (result$obj_colgen2 - result$obj_colgen1) / result$obj_colgen1 * 100
+  
+  return (result)
+}
+```
+
+```{r}
+fixed_order_costs = compute_fixed_order_costs(colgen1, colgen2)
+```
+
+```{r}
+compute_fixed_order_costs_by_group = function(t_fixed_order_costs) {
+  
+  result = aggregate(t_fixed_order_costs[,c("obj_colgen1", "obj_colgen2", "gap")], by = list(t_fixed_order_costs$n_jobs, t_fixed_order_costs$gamma), mean)
+  colnames(result)[1:2] = c("n_jobs", "gamma")
+  
+  total = aggregate(t_fixed_order_costs$instance, by = list(t_fixed_order_costs$n_jobs, t_fixed_order_costs$gamma), length)
+  result$total = total[[3]]
+  
+  result = result[order(result$n_jobs, result$gamma),]
+  rownames(result) = NULL
+  
+  return (result)
+}
+```
+
+```{r}
+Table46 = compute_fixed_order_costs_by_group(fixed_order_costs)
+```
+
+```{r echo = FALSE}
+knitr::kable(Table46, 
+               digits = c(0, 0, 2, 2, 2, 0), 
+               col.names = c("$|\\mathcal J|$", "$\\Gamma$", "Free (ColGen1)", "Fixed order (ColGen2)", "Gap (%)", "# Instances"),
+               caption = "Table 4.6"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 2, "Objective cost" = 2, " " = 2))
+```

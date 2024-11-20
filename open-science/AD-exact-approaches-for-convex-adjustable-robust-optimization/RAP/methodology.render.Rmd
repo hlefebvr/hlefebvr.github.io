@@ -1,0 +1,285 @@
+# Open methodology for "Exact approach for convex adjustable robust optimization > Resource Allocation Problem (RAP)
+
+
+
+
+```{r echo=FALSE, warning=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(ggplot2)
+suppressPackageStartupMessages(library(dplyr))
+```
+
+## Loading the data
+
+The raw results can be found in the file `results.csv` with the following columns:
+
+- tag: a tag which should always equal "result" used to `grep` the result line in the execution log file.
+- instance: the name or path of the instance.
+- n_servers: the number of servers in the instance.
+- n_clients: the number of clients in the instance.
+- Gamma: the value of $\Gamma$ which was used.
+- deviation: the maximum deviation, in percentage, from the nominal demand.
+- time_limit: the time limit which was used when solving the instance.
+- method: the name of the method which was used to solve the instance.
+- total_time: the total time used to solve the instance.
+- master_time: the time spent solving the master problem.
+- separation_time: the time spent solving the separation problem.
+- best_bound: the best bound found.
+- iteration_count: the number of iterations.
+- fail: should be empty if the execution of the algorithm went well.
+
+We start by reading the file and by removing the "tag" column.
+
+```{r}
+results = read.table("./new-results.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
+results$tag = NULL
+```
+
+
+Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
+
+```{r}
+results$p = results$Gamma / results$n_clients
+results$p = ceiling(results$p / .05) * .05
+```
+
+
+```{r}
+results$size = paste0("(", results$n_servers, ",", results$n_clients, "), ", results$p)
+```
+
+
+```{r}
+results$method_extended = paste0(results$method, ", ", results$use_heuristic)
+```
+
+We also get rid of instances which were too large to be solved by both approaches.
+
+```{r}
+results = results[!(results$n_clients == 40),]
+results = results[!(results$n_servers == 25 & results$n_clients == 25),]
+```
+
+We then check that all instances were solved without issue by checking the "fail" column.
+
+```{r}
+sum(results$fail)
+```
+
+We add a tag for unsolved instances.
+
+```{r}
+time_limit = 7200
+
+if (sum(results$fail) > 0) {
+  results[results$fail == TRUE,]$total_time = time_limit
+}
+
+results$unsolved = results$total_time >= time_limit | results$fail
+```
+
+All in all, our result data reads.
+
+```{r, echo = FALSE}
+paged_table(results)
+```
+
+## Unsolved instances
+
+```{r}
+for (method in unique(results$method_extended)) {
+  
+  # Sum of unsolved cases for each size
+  sum_unsolved = results[results$method_extended == method,] %>% group_by(size) %>% summarise(total_unsolved = sum(unsolved))
+  
+  # Create a bar plot
+  p = ggplot(sum_unsolved, aes(x = size, y = total_unsolved)) +
+    geom_bar(stat = "identity") +
+    labs(x = "Size", y = "Total Unsolved Cases", title = method) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  ggsave(paste0("unsolved_", method, ".pdf"), plot = p, width = 10, height = 6)
+  
+  print(p)
+}
+```
+
+## Performance profiles and ECDF
+
+We now introduce a function which plots the performance profile of our solvers over a given test set.
+
+```{r}
+add_performance_ratio = function(dataset, 
+                                 criterion_column = "total_time",
+                                 unsolved_column = "unsolved",
+                                 instance_column = "instance",
+                                 solver_column = "solver",
+                                 output_column = "performance_ratio") {
+  
+  # Compute best score for each instance
+  best = dataset %>%
+    group_by(!!sym(instance_column)) %>%
+    mutate(best_solver = min(!!sym(criterion_column)))
+  
+  # Compute performance ratio for each instance and solver
+  result = best %>%
+    group_by(!!sym(instance_column), !!sym(solver_column)) %>%
+    mutate(!!sym(output_column) := !!sym(criterion_column) / best_solver) %>%
+    ungroup()
+  
+  if (sum(result[,unsolved_column]) > 0) {
+    result[result[,unsolved_column] == TRUE,output_column] = max(result[,output_column])
+  }
+
+  return (result)
+}
+
+plot_performance_profile = function(dataset,
+                                    criterion_column,
+                                    unsolved_column = "unsolved",
+                                    instance_column = "instance",
+                                    solver_column = "solver"
+                                    ) {
+  
+  dataset_with_performance_ratios = add_performance_ratio(dataset,
+                                                          criterion_column = criterion_column,
+                                                          instance_column = instance_column,
+                                                          solver_column = solver_column,
+                                                          unsolved_column = unsolved_column)
+  
+  solved_dataset_with_performance_ratios = dataset_with_performance_ratios[!dataset_with_performance_ratios[,unsolved_column],]
+  
+  compute_performance_profile_point = function(method, data) {
+    
+    performance_ratios = solved_dataset_with_performance_ratios[solved_dataset_with_performance_ratios[,solver_column] == method,]$performance_ratio
+    
+    unscaled_performance_profile_point = ecdf(performance_ratios)(data)
+    
+    n_instances = sum(dataset[,solver_column] == method)
+    n_solved_instances = sum(dataset[,solver_column] == method & !dataset[,unsolved_column])
+    
+    return( unscaled_performance_profile_point * n_solved_instances / n_instances )
+  }
+  
+  perf = solved_dataset_with_performance_ratios %>%
+    group_by(!!sym(solver_column)) %>%
+    mutate(performance_profile_point = compute_performance_profile_point(unique(!!sym(solver_column)), performance_ratio))
+  
+  result = ggplot(data = perf, aes(x = performance_ratio, y = performance_profile_point, color = !!sym(solver_column))) +
+              geom_line()
+  
+  return (result)
+}
+
+```
+
+
+
+```{r}
+performance_profile = plot_performance_profile(results, criterion_column = "total_time", solver_column = "method_extended") +
+  labs(x = "Performance ratio", y = "% of instances") +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+print(performance_profile)
+ggsave("performance_profile.pdf", plot = performance_profile)
+```
+
+
+As a complement, we also draw the ECDF.
+
+```{r}
+ggplot(results, aes(x = total_time, color = method_extended)) +
+  stat_ecdf(geom = "step") +
+  xlab("Total Time") +
+  ylab("ECDF") +
+  labs(title = "ECDF of Total Time by Method")  +
+  scale_x_continuous(breaks = seq(0, max(results$total_time), by = 500), labels = seq(0, max(results$total_time), by = 500)) +
+  theme_minimal()
+```
+
+## Summary table
+
+In this section, we create a table summarizing the outcome of our experiments.
+
+We start by computing average computation times over the solved instances.
+
+```{r}
+results_solved = results %>%
+  filter(total_time < time_limit) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    solved = n(),
+    total_time = mean(total_time),
+    master_time = mean(master_time),
+    separation_time = mean(separation_time),
+    solved_iteration_count = mean(iteration_count),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+```
+
+Then, we also consider unsolved instances: we count the number of such instances and compute the average iteration count.
+
+```{r}
+results_unsolved <- results %>%
+  filter(total_time >= time_limit) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    unsolved = n(),
+    unsolved_iteration_count = mean(iteration_count),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+results_fail <- results %>%
+  filter(fail == TRUE) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    fail = n(),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+```
+
+We then merge the two tables.
+
+```{r}
+final_result <- merge(results_solved, results_unsolved, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
+final_result <- merge(final_result, results_fail, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
+```
+
+Here is our table.
+
+```{r, echo = FALSE}
+knitr::kable(final_result, 
+               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 0), 
+               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter", "# Errors"),
+               caption = "Summary table"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 3)
+)
+```
+
+## Number of iterations
+
+```{r}
+for (method in unique(results$method_extended)) {
+  
+  p = ggplot(results[results$method_extended == method & results$unsolved == FALSE,], aes(x = iteration_count)) +
+    geom_bar() +
+    labs(
+      title = method,
+      x = "Number of iterations",
+      y = "Number of instances"
+    ) +
+    theme_minimal()
+    
+  print(p) 
+}
+```
+
