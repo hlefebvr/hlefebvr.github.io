@@ -1,31 +1,5 @@
 </div>
 
-
-<script src="/assets/js/jquery.toc.min.js" ></script>
-
-<script lan="javascript">
-
-    // Get the navbar
-    const container = document.getElementById("toc");
-    const navbar = document.getElementById("sticky-toc");
-
-    // Get the offset position of the navbar
-    const sticky = navbar.offsetTop;
-
-    window.onscroll = function() {
-
-        if (window.pageYOffset >= sticky) {
-            navbar.style.left = container.getBoundingClientRect().left + "px"
-            navbar.classList.add("sticky")
-        } else {
-            navbar.classList.remove("sticky");
-        }
-
-    };
-
-</script>
-
-
 <div id="disqus_thread"></div>
 <script>
 
