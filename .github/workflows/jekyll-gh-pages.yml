@@ -72,6 +72,9 @@ jobs:
       - name: Install ggplot2
         run: R -e "install.packages(\"ggplot2\")"
         
+      - name: Install tikzDevice
+        run: R -e "install.packages(\"tikzDevice\")"
+        
       - name: Render reports
         run: ./build.sh
       
