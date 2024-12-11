@@ -3,6 +3,7 @@
 ```{r, echo = FALSE}
 library(ggplot2)
 library(rmarkdown)
+library(tikzDevice)
 suppressMessages(library(dplyr))
 suppressMessages(library(knitr))
 suppressMessages(library(kableExtra))
@@ -23,18 +24,6 @@ instances$tag = NULL
 instances$instance = sub("_.*", "", basename(instances$instance))
 instances$mps = basename(instances$mps)
 
-# Add 'var_cat' based on the # Variables intervals
-instances$var_cat = cut(instances$n_vars, 
-                   breaks = c(-Inf, 534, 2167, 22275), 
-                   labels = c("small", "medium", "large"),
-                   right = TRUE)
-
-# Add 'ctr_cat' based on the # Constraints intervals
-instances$ctr_cat = cut(instances$n_ctrs, 
-                   breaks = c(-Inf, 351, 906, 16675), 
-                   labels = c("small", "medium", "large"),
-                   right = TRUE)
-
 instances = instances[!duplicated(instances$instance), ]
 
 paged_table(instances)
@@ -51,7 +40,7 @@ stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inne
 colnames(data) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
 
 # Remove tag
-data$tag = NULL
+data$tag = data$n_vars = data$n_ctrs = NULL
 
 # Add a one-word solver description
 data$solver = paste0(data$method, " - ", data$update_rule, " ", data$update_rule_parameter, " - ", data$norm, " - init ", data$initial_penalty, " - warm start ", data$warm_start)
@@ -81,7 +70,7 @@ data$n_mutable_columns <- as.numeric(as.character(data$n_mutable_columns))  # Co
 ### Merge Instances and Results
 
 ```{r}
-data = merge(data, instances[, c("instance", "var_cat", "ctr_cat")], 
+data = merge(data, instances[, c("instance", "n_vars", "n_ctrs")], 
                      by = "instance",
                      all.x = TRUE)
 ```
@@ -106,19 +95,40 @@ sub_data = data %>%
          initial_penalty == 5e2,
          warm_start == 1)
 
-# Group, summarize, and sort by n_mutable_columns
-summary_table <- sub_data %>%
-  group_by(var_cat, ctr_cat, n_mutable_columns) %>%
-  summarise(
-    `# inst.` = n_distinct(instance),  # Count number of instances
-    `feasible (in %)` = mean(solved) * 100,  # Percentage of feasible instances
-    `# mutable objective param.` = mean(n_mutable_costs, na.rm = TRUE),  # Avg mutable objective parameters
-    `# mutable constraint param.` = mean(n_mutable_coefficients, na.rm = TRUE)  # Avg mutable constraint parameters
-  ) %>%
-  arrange(var_cat, ctr_cat, n_mutable_columns) %>%  # Sort by var_cat, ctr_cat, and n_mutable_columns
-  ungroup()
+var_bounds <- list(c(0, 534), c(534, 2167), c(2167, 22275))
+ctr_bounds <- list(c(0, 351), c(351, 906), c(906, 16675))
+labels <- c("small", "medium", "large")
 
-# Create the HTML table using kableExtra
+summary_table = NULL
+
+for (i in seq_along(labels)) {
+  for (j in seq_along(labels)) {
+    
+    sub_summary_table <- sub_data %>%
+      filter(
+        n_vars >= var_bounds[[i]][1] & n_vars <= var_bounds[[i]][2],
+        n_ctrs >= ctr_bounds[[j]][1] & n_ctrs <= ctr_bounds[[j]][2]
+      ) %>%
+      mutate(
+        var_cat = labels[i],
+        ctr_cat = labels[j]
+      ) %>%
+      group_by(var_cat, ctr_cat, n_mutable_columns) %>%
+      summarise(
+        `# inst.` = n_distinct(instance),  # Count number of instances
+        `feasible (in %)` = mean(solved) * 100,  # Percentage of feasible instances
+        `# mutable objective param.` = mean(n_mutable_costs, na.rm = TRUE),  # Avg mutable objective parameters
+        `# mutable constraint param.` = mean(n_mutable_coefficients, na.rm = TRUE),  # Avg mutable constraint parameters
+        .groups = "drop"
+      ) %>%
+      arrange(var_cat, ctr_cat, n_mutable_columns) %>%  # Sort by var_cat, ctr_cat, and n_mutable_columns
+      ungroup()
+    
+    summary_table = rbind(summary_table, sub_summary_table)    
+    
+  }
+}
+
 summary_table %>%
   kable("html", align = "c", col.names = c()) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
@@ -127,6 +137,7 @@ summary_table %>%
   group_rows("small", 1, 6) %>%
   group_rows("medium", 7, 15) %>%
   group_rows("large", 16, 24)
+
 ```
 
 ### Solved Instances by Number of Mutable Columns
@@ -174,11 +185,16 @@ for (norm in unique(data$norm)) {
 }
 ```
 
-```{r, fig.width=10, fig.height=5, results="asis"}
+```{r, fig.width=12, fig.height=5, results="asis"}
 for (norm in unique(data$norm)) {
   
-  sub_data = data[data$norm == norm, ]
+  sub_data = data[data$norm == norm,]
   
+  sub_data = sub_data %>%
+    group_by( sub("^(.+_[0-9]+)_.*", "\\1", full_instance)) %>%
+    filter(any(solved == TRUE)) %>%
+    ungroup()
+
   plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
     stat_ecdf(geom = "step") + 
     labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
@@ -187,11 +203,40 @@ for (norm in unique(data$norm)) {
          color = "Solver") +
     theme_minimal() +
     theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 180), limits = c(0, time_limit)) +
+    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 300), limits = c(0, time_limit)) +
     scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
     facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
   
+  ########## SAVING DATA TO FILE FOR TIKZ ##########
+  ecdf_data = data.frame(time = sub_data$total_time)
+  
+  for (n_mutable_columns_val in unique(sub_data$n_mutable_columns)) {
+    
+    for (warm_start_val in unique(sub_data$warm_start)) {
+      
+      facet_data = sub_data %>% filter(n_mutable_columns == n_mutable_columns_val & warm_start == warm_start_val)
+      
+      ecdf_values = ecdf(facet_data$total_time)(sub_data$total_time)
+      
+      ecdf_data = cbind(ecdf_data, y = ecdf_values)
+      colnames(ecdf_data)[ncol(ecdf_data)] = paste0(n_mutable_columns_val, "_w", warm_start_val)
+      
+    }
+  }
+  
+  ecdf_data <- as.data.frame(ecdf_data)
+  ecdf_data <- ecdf_data[order(ecdf_data$time), ]
+  ecdf_data = ecdf_data %>% filter(time < 1800)
+  
+  indices <- seq(1, length(ecdf_data$time), length.out = 100)
+  ecdf_data <- ecdf_data[indices, ]
+  
+  file_name <- paste0("ecdf_", norm, ".csv")
+  write.csv(ecdf_data, file_name, row.names = FALSE)
+  ###################################################
+  
   print(plot)
+   
 }
 ```
 
@@ -217,19 +262,31 @@ ggplot(sub_data, aes(x = n_vars, y = n_ctrs, color = as.numeric(solved))) +
 ## Solution Analysis 
 
 
-```{r}
+```{r, fig.width=10}
 for (norm in unique(data$norm)) {
-  sub_data = data[ data$norm == norm & data$time < time_limit,]
+  sub_data = data[ data$norm == norm,]
   
-  plot = ggplot(sub_data, aes(x = l1_norm, group = warm_start, color = as.character(warm_start))) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of l1-norm of CE when using the objective function: ", norm),
-         x = "l1-norm of CE",
-         y = "ECDF") +
-    scale_x_log10() +
+  sub_data = sub_data %>%
+    group_by(full_instance, warm_start) %>%
+    filter(all(solved == TRUE)) %>%
+    ungroup()
+  
+  summarize(sub_data)
+  
+  plot = ggplot(sub_data, aes(x = l1_norm, y = as.factor(warm_start), fill = as.factor(warm_start))) + 
+    geom_boxplot() + 
+    labs(title = "", #paste0("Boxplot of l1-norm of CE when using the objective function: ", norm),
+         x = "",
+         y = "") +
+    scale_y_discrete(labels = c("No Warm Start", "Warm Start")) + 
+    scale_x_log10(breaks = scales::log_breaks(base = 10, n = 8)) +
     theme_minimal() +
-    theme(legend.position = "bottom")
+    theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = .5))
   
   print(plot)
+  
+  tikz(file = paste0("boxplot_", norm, ".tex"), width = 4, height = 3)
+  print(plot)
+  dev.off()
 }
 ```

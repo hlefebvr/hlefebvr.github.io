@@ -1,0 +1,88 @@
+# PADM for Relu Networks
+
+```{r, echo = FALSE}
+library(ggplot2)
+library(rmarkdown)
+library(tikzDevice)
+suppressMessages(library(dplyr))
+suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
+```
+
+## Loading Results
+
+```{r}
+data = read.csv("results.csv", header = FALSE)
+colnames(data) = c("tag", "method", "instance", "network", "status", "best_obj", "time", "n_vars", "n_ctrs")
+
+data = data %>% select(-tag)
+data = data %>% mutate(instance = sub("^.*//", "", instance))
+data = data %>% mutate(network = sub("^.*pre_trained_models/", "", network))
+data = data %>% mutate(time = ifelse(time >= 600, 600, time))
+data = data %>% mutate(best_obj = ifelse(best_obj >= 1e15, NA, best_obj))
+data = data %>% mutate(warm_start = ifelse(grepl("warm-start", method, ignore.case = TRUE), "Warm-Start", "No Warm-Start"))
+
+data = data %>%
+  mutate(
+    architecture_name = sub("/.*", "", instance),
+    num_layers = as.integer(sub(".*_(\\d+)layer.*", "\\1", architecture_name)),
+    hidden_units = as.integer(sub(".*_(\\d+)hidden.*", "\\1", architecture_name)),
+    delta = as.integer(sub(".*delta_(\\d+).*", "\\1", architecture_name)),
+    architecture = purrr::map2_chr(
+          num_layers, hidden_units,
+          ~ paste(
+            c("784", rep(.y, .x), "10"),
+            collapse = ","
+          )
+        )
+    )
+
+data = data %>% filter(delta == 10)
+
+paged_table(data)
+```
+
+```{r}
+summary_table <- data %>%
+  group_by(method, architecture) %>%
+  summarize(
+    Avg_Time_All = mean(time),
+    Avg_Time_Opt = mean(time[status == "Feasible"], na.rm = TRUE),
+    Avg_Obj = mean(best_obj, na.rm = TRUE),
+    Num_Opt = sum(status %in% c("Optimal")),
+    Num_Feas = sum(status %in% c("Optimal", "Feasible")),
+    num_layers = mean(num_layers),
+    hidden_units = mean(hidden_units)
+  ) %>%
+  ungroup() %>%
+  arrange(method, num_layers, hidden_units) %>%
+  select(-num_layers, -hidden_units)
+
+kable(
+  summary_table,
+  col.names = c("Method", "Architecture", "Avg. Time (All)", "Avg. Time (Feas)", "Avg. Obj.", "Num. Opt.", "Num. Feas."),
+  booktabs = TRUE
+)
+```
+
+```{r, fig.width=10}
+ggplot(data, aes(x = time, color = method, linetype = warm_start)) +
+  stat_ecdf(linewidth = 1) +
+  facet_wrap(~ architecture) +
+  #scale_x_log10() +
+  labs(
+    title = "ECDF of Time by Architecture and Method",
+    color = "Method"
+  ) +
+  theme_minimal()
+
+ggplot(data %>% mutate(best_obj = ifelse(is.na(best_obj), max(best_obj, na.rm = TRUE), best_obj)), aes(x = best_obj, color = method, linetype = warm_start)) +
+  stat_ecdf(linewidth = 1) +
+  facet_wrap(~ architecture) +
+  #scale_x_log10() +
+  labs(
+    title = "ECDF of Objective by Architecture and Method",
+    color = "Method"
+  ) +
+  theme_minimal()
+```
