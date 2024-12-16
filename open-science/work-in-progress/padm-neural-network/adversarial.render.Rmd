@@ -3,7 +3,6 @@
 ```{r, echo = FALSE}
 library(ggplot2)
 library(rmarkdown)
-library(tikzDevice)
 suppressMessages(library(dplyr))
 suppressMessages(library(knitr))
 suppressMessages(library(kableExtra))
