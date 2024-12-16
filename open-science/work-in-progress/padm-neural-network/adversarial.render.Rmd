@@ -13,19 +13,16 @@ suppressMessages(library(kableExtra))
 
 ```{r}
 data = read.csv("results.csv", header = FALSE)
-colnames(data) = c("tag", "method", "instance", "network", "status", "best_obj", "time", "n_vars", "n_ctrs")
+colnames(data) = c("tag", "method", "instance", "network", "n_vars", "n_ctrs", "status", "best_obj", "time", "blank")
 
-data = data %>% select(-tag)
+data = data %>% select(-tag, -blank)
 data = data %>% mutate(instance = sub("^.*//", "", instance))
 data = data %>% mutate(network = sub("^.*pre_trained_models/", "", network))
-data = data %>% mutate(time = ifelse(time >= 60, 60, time))
+data = data %>% mutate(time = ifelse(time >= 3600, 3600, time))
 data = data %>% mutate(best_obj = ifelse(best_obj >= 1e15, NA, best_obj))
 data = data %>% mutate(warm_start = ifelse(grepl("warm-start", method, ignore.case = TRUE), "Warm-Start", "Default"))
 
-data = data %>% mutate(method = ifelse(method == "padm", "PADM", method))
-data = data %>% mutate(method = ifelse(method == "padm-warm-start", "PADM", method))
-data = data %>% mutate(method = ifelse(method == "gurobi-10s", "Gurobi (10s)", method))
-data = data %>% mutate(method = ifelse(method == "gurobi-first-found", "Gurobi (First Found)", method))
+data = data %>% filter(method %in% c("padm", "padm-warm-start", "gurobi-nlp", "gurobi-nlp-first-found"))
 
 data = data %>%
   mutate(
@@ -42,7 +39,7 @@ data = data %>%
         )
     )
 
-data = data %>% filter(delta == 10)
+data = data %>% filter(delta == 5)
 
 paged_table(data)
 ```
