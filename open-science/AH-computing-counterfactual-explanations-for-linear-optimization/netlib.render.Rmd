@@ -1,4 +1,4 @@
-# Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method > NETLIB
+# "Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method > NETLIB"
 
 ```{r, echo = FALSE}
 library(ggplot2)
