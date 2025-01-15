@@ -129,21 +129,57 @@ ggplot(data, aes(x = total_time / n_iterations, col = method)) + stat_ecdf(pad =
   # scale_x_log10() +
   theme_minimal()
 ```
+
 We export these results in csv to print them in tikz.
 
 ```{r}
-data_with_ecdf = data %>%
+#data_with_ecdf = data %>%
+#  group_by(method) %>%
+#  arrange(total_time) %>%
+#  mutate(ecdf_value = ecdf(total_time)(total_time)) %>%
+#  ungroup()
+
+n_points <- 1000
+x_points <- seq(1, 10800, length.out = n_points)
+
+data_with_ecdf <- data %>%
   group_by(method) %>%
   arrange(total_time) %>%
-  mutate(ecdf_value = ecdf(total_time)(total_time)) %>%
+  group_modify(~ {
+    # Create ECDF function for the current method
+    ecdf_func <- ecdf(.x$total_time)
+    # Compute ECDF values for the specified points
+    tibble(total_time = x_points, ecdf_value = 100 * ecdf_func(x_points))
+  }) %>%
   ungroup()
 
 for (method in unique(data_with_ecdf$method)) {
   output = data_with_ecdf[data_with_ecdf$method == method,]
   output = output[,c("total_time", "ecdf_value")]
-  output$log_total_time = log10(output$total_time)
   output = output[output$total_time < 10800,]
-  write.csv(output, file = paste0(method, ".csv"), row.names = FALSE)
+  write.csv(output, file = paste0("TIME_", method, ".csv"), row.names = FALSE)
+}
+```
+
+```{r}
+n_points <- 1000
+x_points <- seq(1, 100, length.out = n_points)
+
+data_with_ecdf <- data %>%
+  group_by(method) %>%
+  arrange(memory_used) %>%
+  group_modify(~ {
+    # Create ECDF function for the current method
+    ecdf_func <- ecdf(.x$memory_used)
+    # Compute ECDF values for the specified points
+    tibble(memory_used = x_points, ecdf_value = 100 * ecdf_func(x_points))
+  }) %>%
+  ungroup()
+
+for (method in unique(data_with_ecdf$method)) {
+  output = data_with_ecdf[data_with_ecdf$method == method,]
+  output = output[,c("memory_used", "ecdf_value")]
+  write.csv(output, file = paste0("MEMORY_", method, ".csv"), row.names = FALSE)
 }
 ```
 
@@ -192,8 +228,7 @@ transposed_data_lt_10800 <- summary_data_lt_10800 %>%
   pivot_wider(names_from = method, values_from = avg_total_time:num_lines)
 
 transposed_data_ge_10800 <- summary_data_ge_10800 %>%
-  pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved) %>%
-  select(-n_facilities, -n_customers, -Gamma) 
+  pivot_wider(names_from = method, values_from = avg_n_iterations_unsolved:num_lines_unsolved)
 
 transposed_data_lt_10800 %>% kable()
 transposed_data_ge_10800 %>%  kable()
