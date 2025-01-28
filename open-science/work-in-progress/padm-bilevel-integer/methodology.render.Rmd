@@ -1,0 +1,144 @@
+```{r}
+library(ggplot2)
+library(rmarkdown)
+suppressWarnings(library(dplyr))
+library(knitr)
+library(kableExtra)
+library(stringr)
+```
+
+## Loading Results
+
+```{r}
+time_limit = 180
+```
+
+```{r}
+mibs = read.csv("mibs.csv", header = FALSE)
+colnames(mibs) = c("tag", "solver", "instance", "time", "status", "reason", "best_obj", "best_bound")
+mibs$tag = mibs$blank = NULL
+```
+
+```{r}
+padm = read.csv("padm.csv", header = FALSE)
+colnames(padm) = c("tag", "solver", "instance", "update_rule", "update_parameter", "initial_penalty", "time", "status", "reason", "best_obj", "n_outer_iterations", "n_inner_iterations")
+padm$tag = padm$blank = padm$update_parameter = padm$update_rule = padm$initial_penalty = padm$n_outer_iterations = padm$n_inner_iterations = NULL
+padm$best_bound = NA
+
+padm_ws = read.csv("padm-ws.csv", header = FALSE)
+colnames(padm_ws) = c("tag", "solver", "instance", "update_rule", "update_parameter", "initial_penalty", "time", "status", "reason", "best_obj", "n_outer_iterations", "n_inner_iterations")
+padm_ws$tag = padm_ws$blank = padm_ws$update_parameter = padm_ws$update_rule = padm_ws$initial_penalty = padm_ws$n_outer_iterations = padm_ws$n_inner_iterations = NULL
+padm_ws$best_bound = NA
+padm_ws$solver = "padm_ws"
+```
+
+```{r}
+mibs_f = read.csv("mibs_f.csv", header = FALSE)
+colnames(mibs_f) =  c("solver", "instance", "time", "status", "reason", "best_obj", "best_bound")
+```
+
+```{r}
+data = rbind(mibs, mibs_f, padm, padm_ws)
+data$instance = basename(data$instance)
+
+timeout_filter = data$time > time_limit
+if (sum(timeout_filter) > 0) {
+  data[timeout_filter,]$time = time_limit
+}
+```
+
+```{r}
+mibs_reference <- data[data$solver == "mibs", c("instance", "best_bound")]
+colnames(mibs_reference) <- c("instance", "mibs_best_bound")
+data = merge(data, mibs_reference, by = "instance", all.x = TRUE)
+data$gap = ((data$best_obj - data$mibs_best_bound) / (abs(data$mibs_best_bound) + 1e-8)) * 100
+data$mibs_best_bound = NULL
+```
+
+```{r}
+# Define the instance values for "pure-integer" cases
+pure_integer_instances <- c("miblp_20_20_50_0110_15_5", "miblp_20_20_50_0110_15_6", 
+                            "miblp_20_20_50_0110_15_10", "T1-9-2", "T1-8-3", "T1-10-3")
+
+# Add 'class' and 'type' columns based on the parsing rules
+data = data %>%
+  mutate(
+    # Class column logic
+    class = case_when(
+      str_detect(instance, "general|inter|\\.KNP|tree|rndgraph") ~ "interdiction",
+      TRUE ~ "general-bilevel"
+    ),
+    
+    # Type column logic
+    type = case_when(
+      # When class is 'interdiction'
+      class == "interdiction" & str_detect(instance, "general") ~ "generalized",
+      class == "interdiction" & str_detect(instance, "inter|\\.KNP") ~ "knapsack",
+      class == "interdiction" & str_detect(instance, "tree|rndgraph") ~ "network",
+      
+      # When class is 'general-bilevel'
+      class == "general-bilevel" & instance %in% pure_integer_instances ~ "pure-integer",
+      class == "general-bilevel" ~ "mixed-integer",
+      
+      # Default case (if needed)
+      TRUE ~ NA
+    )
+  )
+
+paged_table(data)
+```
+
+```{r}
+ggplot(data, aes(x = time, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Time"),
+         x = "Time",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_x_continuous(breaks = seq(0, max(data$time), by = 60), limits = c(0, time_limit)) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+```
+
+```{r}
+ggplot(data, aes(x = gap, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Gap"),
+         x = "Gap (%)",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
+    coord_cartesian(xlim = c(0, 100))
+```
+```{r, fig.width=10, fig.height=7, results="asis"}
+plot_edf_by_cat = function(sub_data, criteria, xlim = NULL) {
+  # Step 1: Filter the data
+  filtered_data <- sub_data
+  
+  # Step 2: Create an EDF plot using stat_ecdf
+  plot = ggplot(filtered_data, aes(x = !!sym(criteria), color = paste(class, type, sep = "+"), linetype = solver)) +
+    stat_ecdf(geom = "step", alpha = 0.7) +  # Use stat_ecdf to create EDF
+    labs(title = paste("Empirical Distribution Function of", criteria, "per Class + Type"),
+         x = criteria,
+         y = "Cumulative Proportion",
+         color = "Class + Type",
+         linetype = "Solver") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  if (!is.null(xlim)) {
+    plot = plot + coord_cartesian(xlim = xlim)
+  }
+  
+  # Print the plot
+  print(plot)
+}
+
+# Example usage
+# Ensure to filter the data appropriately before calling the function
+plot_edf_by_cat(data %>% filter(solver == "padm", status == "Feasible"), "gap", xlim = c(0, 100))
+plot_edf_by_cat(data, "time")
+```

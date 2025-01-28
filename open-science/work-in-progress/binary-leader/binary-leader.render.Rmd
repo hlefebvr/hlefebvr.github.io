@@ -1,0 +1,20 @@
+# Bilevel Optimization with Binary Leader
+
+```{r echo=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(tidyr)
+library(ggplot2)
+suppressPackageStartupMessages(library(dplyr))
+```
+
+```{r}
+data = read.csv("results.csv", header = FALSE)
+colnames(data) = c("tag", "method", "method_n", "instance", "time", "status", "reason", "best_obj", "best_bound")
+paged_table(data)
+```
+
+```{r}
+ggplot(data, aes(x = time, col = method)) + stat_ecdf(pad = FALSE) + scale_x_log10()
+ggplot(data, aes(x = best_obj, col = method)) + stat_ecdf(pad = FALSE) + scale_x_log10()
+```

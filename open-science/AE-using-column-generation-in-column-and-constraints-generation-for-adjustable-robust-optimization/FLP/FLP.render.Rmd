@@ -48,7 +48,7 @@ data = data %>% mutate(instance = basename(instance),
 We start by removing the "tag" and the "blank" columns.
 
 ```{r}
-data = data[, !(names(data) %in% c("tag", "blank"))]
+#data = data[, !(names(data) %in% c("tag", "blank"))]
 ```
 
 We then remove instances which were not considered in our experimental results because
@@ -199,6 +199,7 @@ summary_data_lt_10800 <- data %>%
     avg_adversarial_time = mean(adversarial_time, na.rm = TRUE),
     avg_n_iterations = mean(n_iterations, na.rm = TRUE),
     sum_has_large_scaled = sum(has_large_scaled),
+    sum_oom = sum(tag == "iteration"),
     num_lines = n(),
     .groups = "drop"
   ) %>%
