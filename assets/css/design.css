@@ -127,9 +127,12 @@ font-weight: 300;
 font-size:1.2em;
 }
 
-.paper-list {
-    border-bottom: 1px solid #efefef;
-    padding-bottom: 10px;
+.paper-list, #home-short {
+    list-style: none; /* Removes bullets */
+    padding: 10px; /* Adds padding */
+    background-color: #f0f0f0; /* Light gray background */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    border-radius: 8px; /* Slightly rounded corners */
 }
 
 .content-home {
@@ -419,4 +422,26 @@ summary {
 
 img {
     max-width: 100% !important;
+}
+
+#vignettes {
+
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    h2 {
+        height: 2em;
+    }
+
+    div {
+        width: 200px;
+
+        img {
+            max-height: 100px;
+        }
+    }
+
 }
