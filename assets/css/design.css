@@ -445,3 +445,22 @@ img {
     }
 
 }
+
+.supervised {
+    min-height: 170px;
+
+    div:first-child {
+
+        padding-left: 30px;
+        padding-right: 30px;
+        float: left;
+        width: 150px;
+        text-align: center;
+        
+        img {
+            max-height: 150px;
+        }
+
+    }
+
+}
