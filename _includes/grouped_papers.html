@@ -1,0 +1,72 @@
+{% assign years = include.articles | map: "year" | uniq | sort | reverse %}
+
+{% for year in years %}
+  <h3>{{ year }}</h3>
+  <ul>
+    {% for paper in include.articles %}
+      {% if paper.year == year %}
+        <li>
+          <p>
+            <div class="paper-list">
+              <span style="color:black;font-weight: 400;">{{ paper.title }}.</span><br />
+              {% if paper.authors %}
+                Jointly with {{ paper.authors }}.
+              {% else %}
+                Single author.
+              {% endif %}
+              <br />
+              {% if paper.published %}
+                In 
+                {% for location in paper.published %}
+                  {% if location.link %}
+                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>,
+                  {% else %}
+                    {{ location.title }},
+                  {% endif %}
+                  {% if location.details %}
+                    {{ location.details }}.
+                  {% endif %}
+                  {% unless forloop.last %} - {% endunless %}
+                {% endfor %}
+                <br />
+              {% endif %}
+
+              {% if paper.locations %}
+                At 
+                {% for location in paper.locations %}
+                  {% if location.link %}
+                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>.
+                  {% else %}
+                    {{ location.title }}.
+                  {% endif %}
+                {% endfor %}
+                <br />
+              {% endif %}
+
+              {% if paper.comment %}
+                {{ paper.comment }}<br />
+              {% endif %}
+              {% if paper.doi %}
+                DOI: <a href="http://doi.org/{{ paper.doi }}">{{ paper.doi }}</a><br />
+              {% endif %}
+              {% if paper.link %}
+                <a href="{{ paper.link }}">External link</a><br />
+              {% endif %}
+              {% if paper.preprints %}
+                Preprint: 
+                {% for location in paper.preprints %}
+                  {% if location.link %}
+                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>
+                  {% else %}
+                    {{ location.title }}
+                  {% endif %}
+                  {% unless forloop.last %} - {% endunless %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          </p>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endfor %}

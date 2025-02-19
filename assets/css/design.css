@@ -124,7 +124,12 @@ font-family: -apple-system, BlinkMacSystemFont,
 "Ubuntu", "Cantarell", "Fira Sans",
 "Droid Sans", "Helvetica Neue", sans-serif;
 font-weight: 300;
-font-size:1.05em;
+font-size:1.2em;
+}
+
+.paper-list {
+    border-bottom: 1px solid #efefef;
+    padding-bottom: 10px;
 }
 
 .content-home {

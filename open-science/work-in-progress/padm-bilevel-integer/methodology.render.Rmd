@@ -1,3 +1,5 @@
+# PADM Integer Bilevel
+
 ```{r}
 library(ggplot2)
 library(rmarkdown)
@@ -5,140 +7,255 @@ suppressWarnings(library(dplyr))
 library(knitr)
 library(kableExtra)
 library(stringr)
+library(RColorBrewer)
+```
+
+## Loading BOBILib
+
+```{r}
+bobilib_columns = c("instance", "class", "type", "n_upper_vars", "n_upper_integer_vars", "n_upper_binary_vars", "n_lower_vars", "n_lower_integer_vars", "n_lower_binary_vars", "n_linking_vars", "n_linking_integer_vars", "n_linking_binary_vars", "n_linking_continuous_vars", "n_upper_ctrs", "n_lower_ctrs", "n_coupling_ctrs", "best_known_obj", "bobilib_status", "difficulty")
+bobilib = read.csv("bobilib.csv", header = FALSE, col.names = bobilib_columns)
+
+instances = bobilib %>% filter(n_linking_integer_vars == 0 & n_linking_continuous_vars == 0)
+
+paged_table(bobilib)
 ```
 
 ## Loading Results
 
 ```{r}
-time_limit = 180
+time_limit = 3600
 ```
 
+### Reading Result Files
+
 ```{r}
-mibs = read.csv("mibs.csv", header = FALSE)
-colnames(mibs) = c("tag", "solver", "instance", "time", "status", "reason", "best_obj", "best_bound")
-mibs$tag = mibs$blank = NULL
+padm_columns = c("tag", "instance", "method", "update_rule", "update_parameter", "initial_penalty", "time", "status", "reason", "best_obj", "n_outer", "n_inner")
+external_columns = c("tag", "instance", "method", "time", "status", "reason", "best_obj", "best_bound")
+external_columns_cb = c("tag", "instance", "method", "time", "best_obj", "best_bound")
+
+format_columns = function(t_dataframe) {
+  result = t_dataframe
+  
+  if (nrow(t_dataframe) == 0) {
+    return (result)
+  }
+
+  result = result %>% mutate(instance = sub("\\.aux$", "", basename(instance)))
+  
+  return(result)
+}
+
+padm              = format_columns(read.csv("results-PADM.csv", header = FALSE, col.names = padm_columns))
+padm_interdiction = format_columns(read.csv("results-PADM-interdiction.csv", header = FALSE, col.names = padm_columns))
+nlp               = format_columns(read.csv("results-NLP.csv", header = FALSE, col.names = external_columns))
+nlp_first         = format_columns(read.csv("results-NLP-first.csv", header = FALSE, col.names = external_columns_cb))
+mibs              = format_columns(read.csv("results-MibS.csv", header = FALSE, col.names = external_columns))
+mibs_first        = format_columns(read.csv("results-MibS-first.csv", header = FALSE, col.names = external_columns))
 ```
 
-```{r}
-padm = read.csv("padm.csv", header = FALSE)
-colnames(padm) = c("tag", "solver", "instance", "update_rule", "update_parameter", "initial_penalty", "time", "status", "reason", "best_obj", "n_outer_iterations", "n_inner_iterations")
-padm$tag = padm$blank = padm$update_parameter = padm$update_rule = padm$initial_penalty = padm$n_outer_iterations = padm$n_inner_iterations = NULL
-padm$best_bound = NA
-
-padm_ws = read.csv("padm-ws.csv", header = FALSE)
-colnames(padm_ws) = c("tag", "solver", "instance", "update_rule", "update_parameter", "initial_penalty", "time", "status", "reason", "best_obj", "n_outer_iterations", "n_inner_iterations")
-padm_ws$tag = padm_ws$blank = padm_ws$update_parameter = padm_ws$update_rule = padm_ws$initial_penalty = padm_ws$n_outer_iterations = padm_ws$n_inner_iterations = NULL
-padm_ws$best_bound = NA
-padm_ws$solver = "padm_ws"
-```
+### Fixing NLP-first
 
 ```{r}
-mibs_f = read.csv("mibs_f.csv", header = FALSE)
-colnames(mibs_f) =  c("solver", "instance", "time", "status", "reason", "best_obj", "best_bound")
-```
+# Find instances in nlp that are not in nlp_first
+missing_instances = setdiff(nlp$instance, nlp_first$instance)
 
-```{r}
-data = rbind(mibs, mibs_f, padm, padm_ws)
-data$instance = basename(data$instance)
+if (length(missing_instances) > 0) {
+  
+  # Create new rows for nlp_first
+  new_rows = data.frame(tag = "result", 
+                        instance = missing_instances,
+                         method = "NLP-first",
+                         time = time_limit,
+                         best_obj = 1e100,
+                         best_bound = -1e100
+                        )
+  
+  # Bind the new rows to the existing nlp_first data frame
+  nlp_first = rbind(nlp_first, new_rows)
 
-timeout_filter = data$time > time_limit
-if (sum(timeout_filter) > 0) {
-  data[timeout_filter,]$time = time_limit
 }
 ```
 
+### Fixing PADM and PADM-interdiction
+
 ```{r}
-mibs_reference <- data[data$solver == "mibs", c("instance", "best_bound")]
-colnames(mibs_reference) <- c("instance", "mibs_best_bound")
-data = merge(data, mibs_reference, by = "instance", all.x = TRUE)
-data$gap = ((data$best_obj - data$mibs_best_bound) / (abs(data$mibs_best_bound) + 1e-8)) * 100
-data$mibs_best_bound = NULL
+if (sum(padm$status != "Feasible") > 0) {
+  padm[padm$status != "Feasible",]$time = time_limit 
+}
+if (sum(padm_interdiction$status != "Feasible") > 0) {
+  padm_interdiction[padm_interdiction$status != "Feasible",]$time = time_limit  
+}
+```
+
+### Merging Results
+
+```{r}
+add_bobilib = function(sub_data) {
+  if (nrow(sub_data) == 0) {
+    return(sub_data)
+  }
+  result = sub_data %>% left_join(instances, by = "instance")  
+  if (nrow(result) != nrow(sub_data)) {
+    print("Warning: rows were created.")
+  }
+  return(result)
+}
+
+padm = add_bobilib(padm)
+padm_interdiction = add_bobilib(padm_interdiction)
+nlp = add_bobilib(nlp)
+nlp_first = add_bobilib(nlp_first)
+mibs = add_bobilib(mibs)
+mibs_first = add_bobilib(mibs_first)
 ```
 
 ```{r}
-# Define the instance values for "pure-integer" cases
-pure_integer_instances <- c("miblp_20_20_50_0110_15_5", "miblp_20_20_50_0110_15_6", 
-                            "miblp_20_20_50_0110_15_10", "T1-9-2", "T1-8-3", "T1-10-3")
+selected_columns = c("tag", "instance", "method", "time", "best_obj", "class", "type", "difficulty", "bobilib_status", "best_known_obj")
+all = list(padm, padm_interdiction, nlp, nlp_first, mibs, mibs_first)
 
-# Add 'class' and 'type' columns based on the parsing rules
-data = data %>%
-  mutate(
-    # Class column logic
-    class = case_when(
-      str_detect(instance, "general|inter|\\.KNP|tree|rndgraph") ~ "interdiction",
-      TRUE ~ "general-bilevel"
-    ),
-    
-    # Type column logic
-    type = case_when(
-      # When class is 'interdiction'
-      class == "interdiction" & str_detect(instance, "general") ~ "generalized",
-      class == "interdiction" & str_detect(instance, "inter|\\.KNP") ~ "knapsack",
-      class == "interdiction" & str_detect(instance, "tree|rndgraph") ~ "network",
-      
-      # When class is 'general-bilevel'
-      class == "general-bilevel" & instance %in% pure_integer_instances ~ "pure-integer",
-      class == "general-bilevel" ~ "mixed-integer",
-      
-      # Default case (if needed)
-      TRUE ~ NA
-    )
-  )
+data = NULL
+for (method in all) { 
+  if (nrow(method) > 1) {
+    data = rbind(data, method %>% select(selected_columns))
+  }
+}
 
-paged_table(data)
 ```
 
 ```{r}
-ggplot(data, aes(x = time, group = solver, color = solver)) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of Time"),
-         x = "Time",
-         y = "ECDF",
-         color = "Solver") +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(data$time), by = 60), limits = c(0, time_limit)) +
-    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+filter_timeout = data$time >= time_limit
+if (sum(filter_timeout) > 0) {
+  data[filter_timeout,]$time = time_limit
+}
 ```
 
+
+### Identifying Missing Instances
+
 ```{r}
-ggplot(data, aes(x = gap, group = solver, color = solver)) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of Gap"),
-         x = "Gap (%)",
-         y = "ECDF",
-         color = "Solver") +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
-    coord_cartesian(xlim = c(0, 100))
-```
-```{r, fig.width=10, fig.height=7, results="asis"}
-plot_edf_by_cat = function(sub_data, criteria, xlim = NULL) {
-  # Step 1: Filter the data
-  filtered_data <- sub_data
+for (method_val in unique(data$method)) {
   
-  # Step 2: Create an EDF plot using stat_ecdf
-  plot = ggplot(filtered_data, aes(x = !!sym(criteria), color = paste(class, type, sep = "+"), linetype = solver)) +
-    stat_ecdf(geom = "step", alpha = 0.7) +  # Use stat_ecdf to create EDF
-    labs(title = paste("Empirical Distribution Function of", criteria, "per Class + Type"),
-         x = criteria,
-         y = "Cumulative Proportion",
-         color = "Class + Type",
-         linetype = "Solver") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  if (!is.null(xlim)) {
-    plot = plot + coord_cartesian(xlim = xlim)
+  sub_instances = instances
+  if (method_val == "PADM" | method_val == "PADM-interdiction") {
+    sub_instances = sub_instances %>% filter(class == "interdiction")
   }
   
-  # Print the plot
-  print(plot)
+  sub_data = data %>% filter(method == method_val)
+  missing = setdiff(sub_instances$instance, sub_data$instance)  
+  n_missing = length(missing)
+  
+  if (n_missing > 0) {
+  
+    print(paste0("Missing ", n_missing, " instances for ", method_val, "."))
+    
+    #print(missing)
+    
+  }
+  
+}
+```
+
+### Some Conversions
+
+```{r}
+data = data %>% mutate(
+    best_obj = as.numeric(best_obj),
+    best_known_obj = as.numeric(na_if(best_known_obj, "None")),
+)
+```
+
+## Computational Times
+
+```{r}
+palette_colors = brewer.pal(length(unique(data$method)), "Set1")
+method_colors = setNames(palette_colors, unique(data$method))
+
+make_ecdf = function(sub_data, title_val = "ECDF of Computational Time by Method") {
+    plot = ggplot(sub_data, aes(x = time, color = method)) +
+          stat_ecdf(geom = "step", linewidth = 1) +
+          labs(title = title_val, x = "Time", y = "ECDF") +
+          theme_minimal() +
+          scale_x_log10() +
+          scale_color_manual(values = method_colors)
+    return(plot)
 }
 
-# Example usage
-# Ensure to filter the data appropriately before calling the function
-plot_edf_by_cat(data %>% filter(solver == "padm", status == "Feasible"), "gap", xlim = c(0, 100))
-plot_edf_by_cat(data, "time")
+for (class_val in unique(data$class)) {
+
+  plot = make_ecdf(
+            data %>% filter(class == class_val),
+            paste0("ECDF of Computational Time by Method for ", class_val, " Instances")
+            )
+  print(plot)
+  
+  plot2 = plot + facet_grid(type ~ difficulty)
+  print(plot2)
+  
+  plot3 = plot + facet_grid(type ~ bobilib_status)
+  print(plot3)
+  
+}
 ```
+
+## Solution Quality
+
+```{r}
+data_with_feasible_solution = data %>%
+  group_by(method) %>%
+  filter(any(time < 3600)) %>%
+  ungroup() %>%
+  filter(bobilib_status != "open" & bobilib_status != "infeasible")
+
+data_with_feasible_solution = data_with_feasible_solution %>% 
+  mutate(
+    gap = (best_obj - best_known_obj) / (1e-10 + abs(best_obj)) * 100
+  )
+
+make_boxplot = function(sub_data, title_val = "Boxplot of Optimality Gap (%) by Method") {
+    plot = ggplot(sub_data, aes(x = gap, y = method, color = method)) +
+          geom_boxplot(linewidth = 1) +
+          theme_minimal() +
+          #scale_x_log10() +
+          labs(title = title_val, y = "Method", x = "Gap (%)") +
+          scale_color_manual(values = method_colors) +
+          coord_flip()
+    return(plot)
+}
+
+for (class_val in unique(data$class)) {
+  
+  sub_data = data_with_feasible_solution %>% filter(class == class_val)
+  
+  plot = make_boxplot(
+            sub_data,
+            paste0("Boxplot of Optimality Gap by Method for ", class_val, " Instances")
+            )
+  print(plot)
+  
+  #plot2 = plot + facet_grid(type ~ difficulty)
+  #print(plot2)
+  
+  #plot3 = plot + facet_grid(type ~ bobilib_status)
+  #print(plot3)
+}
+
+```
+
+### New "Best Known Feasible Point"
+
+```{r}
+improving = data_with_feasible_solution %>% filter(gap < 0 & abs(gap) > 1e-2) %>% select("tag", "instance", "method", "class", "type", "bobilib_status", "best_obj", "best_known_obj", "gap")
+
+paged_table(improving %>% filter(bobilib_status == "open with feasible point"))
+paged_table(improving %>% filter(bobilib_status == "optimal"))
+```
+
+### New "Open with Feasible Point"
+
+```{r}
+data_with_open_status = data %>% filter(bobilib_status == "open")
+
+paged_table(data_with_open_status %>% filter(time < time_limit))
+```
+
