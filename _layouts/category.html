@@ -10,7 +10,7 @@ layout: page
                 <img src="/assets/images/previews/{{ node.preview }}" />
             </div>
             <div class="category-item-text">
-                <h2><a href="{{ node.url }}">{{ node.title }}</a></h2>
+                <a href="{{ node.url }}">{{ node.title }}</a>
                 <div class="category-item-date">Last updated: {{ node.date | date_to_string }}</div>
                 {{ node.short }}
             </div>

@@ -2,13 +2,15 @@
 layout: post
 category: blog
 title: The right way to link with Gurobi using Modern CMake
-short: Let's get this done once and for all. (Included, a ready-to-use FindGUROBI.cmake file)
+short: Let's get this done once and for all.
 date: 2022-08-12
 preview: cmake.png
 ---
 
+<h2>Introduction</h2>
+
 <p>
-Stop insulting your PC, you are in the right place. I know... Not being able to link with a given library is among the most awful feelings in computer programming. Fortunately, we are here to discuss this and to show how to link, in a proper way, with a C++ "library" called <a href="https://www.gurobi.com/">Gurobi</a>.
+Stop insulting your PC, you are in the right place. I know... Not being able to link with a given library is among the most awful feelings in coding. Fortunately, we are here to discuss this and to show how to link, in a proper way, with a C++ "library" called <a href="https://www.gurobi.com/">Gurobi</a>.
 </p>
 
 <p>
@@ -261,7 +263,7 @@ endif()
     That's it! We are now done with writting our <code>FindGUROBI.cmake</code> file.
 </p>
 
-<h2>FAQ: How do I resolve "undefined reference" errors while linking Gurobi in C++?</h2>
+<h2>FAQ: How to resolve "undefined reference" errors while linking Gurobi in C++?</h2>
 
 <p>
     This is a common issue. All you need to do is to re-compile the Gurobi library. Please, refer to this <a href="https://support.gurobi.com/hc/en-us/articles/360039093112">Official post from Gurobi</a>.

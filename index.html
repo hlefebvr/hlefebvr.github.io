@@ -36,10 +36,10 @@ title: "Home"
             
             <div class="home-bio">
                 <h2>
-                  Henri Lefebvre 
-                  <span style="float:right">
+                    Henri Lefebvre 
+                    <span style="float:right">
                     <iframe src="https://github.com/sponsors/hlefebvr/button" title="Sponsor hlefebvr" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
-                  </span>
+                    </span>
                 </h2>
                 <p>
                     <span>
@@ -62,16 +62,33 @@ title: "Home"
 
             </div>
 
-          <div id="home-short">
-            <div class="home-vignette">
-                <h3>Research Interests</h3>
+            <div id="home-short" style="border-left: 5px solid #42b983">
+                <h3 style="margin:0px;">Discover idol, a C++ framework for optimization!</h3>
+
                 <p>
-                    <ul>
-                        <li>Robust Optimization</li>
-                        <li>Bilevel Optimization</li>
-                        <li>MINLP</li>
-                    </ul>
+                    idol is a framework designed to help you build complex optimization algorithms with ease.
                 </p>
+
+                <pre><code class="cpp">const auto branch_and_price = branch_and_bound + column_generation;
+model.use(branch_and_price);
+model.optimize();</code></pre>
+
+                <center>
+                    <a href="/idol" class="my-button" id="get-started" target="_blank">Discover idol</a>
+                    <a href="/idol/tutorials/index.html" class="my-button" target="_blank">See tutorials</a>
+                </center>
+
+            </div>
+
+            <div class="home-vignette">
+            <h3>Research Interests</h3>
+            <p>
+                <ul>
+                    <li>Robust Optimization</li>
+                    <li>Bilevel Optimization</li>
+                    <li>MINLP</li>
+                </ul>
+            </p>
             </div>
             <div class="home-bio">
                 <h3>Education</h3>
@@ -107,26 +124,28 @@ title: "Home"
                     </details>
                 </p>
             </div>
-          </div>
-      
-      <div id="vignettes">
-        <div>
-          <h2>Mixed-Integer Optimization</h2>
-          <img src="assets/images/mip.png" />
-        </div>
-        <div>
-          <h2>Implicit Enumeration</h2>
-          <img src="assets/images/branch-and-bound.jpg" />
-        </div>
-        <div>
-          <h2>Reformulation</h2>
-          <img src="assets/images/reformulation.png" />
-        </div>
-        <div>
-          <h2>Decomposition</h2>
-          <img src="assets/images/dantzig-wolfe.jpg" />
-        </div>
-      </div>
+        
+            <!--
+            <h3>Tools I like to use</h3>
+            <div id="vignettes">
+                <div>
+                <h2>Mixed-Integer Optimization</h2>
+                <img src="assets/images/mip.png" />
+                </div>
+                <div>
+                <h2>Implicit Enumeration</h2>
+                <img src="assets/images/branch-and-bound.jpg" />
+                </div>
+                <div>
+                <h2>Reformulation</h2>
+                <img src="assets/images/reformulation.png" />
+                </div>
+                <div>
+                <h2>Decomposition</h2>
+                <img src="assets/images/dantzig-wolfe.jpg" />
+                </div>
+            </div>
+            -->
 </div>
 
 
