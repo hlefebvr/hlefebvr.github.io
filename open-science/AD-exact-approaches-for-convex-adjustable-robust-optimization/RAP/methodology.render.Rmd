@@ -283,3 +283,141 @@ for (method in unique(results$method_extended)) {
 }
 ```
 
+
+## Revision 
+
+### Reading Additional Results for the Revision
+
+We start by reading the file and by removing the "tag" column.
+
+```{r}
+results_rev = read.table("./results-rev.csv", header = FALSE, sep = ',')
+colnames(results_rev) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail", "use_bilevel_separation", "use_budgeted_unc")
+```
+
+```{r}
+results = read.table("./new-results.csv", header = FALSE, sep = ',')
+colnames(results) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail")
+results$use_bilevel_separation = 0
+results$use_budgeted_unc = 1
+```
+
+```{r}
+all_results = rbind(results, results_rev)
+```
+
+Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
+
+```{r}
+all_results$p = all_results$Gamma / all_results$n_clients
+all_results$p = ceiling(all_results$p / .05) * .05
+```
+
+
+```{r}
+all_results$size = paste0("(", all_results$n_servers, ",", all_results$n_clients, "), ", all_results$p)
+```
+
+
+```{r}
+all_results$method_extended = paste0(all_results$method, ", ", ifelse(all_results$use_heuristic, "heuristic, ", ""), ifelse(all_results$use_bilevel_separation, "KKT", "0-1 mapping"))
+
+
+if (sum(all_results$fail) > 0) {
+  all_results[all_results$fail == TRUE,]$total_time = time_limit
+}
+
+all_results$unsolved = all_results$total_time >= time_limit | all_results$fail
+
+```
+
+```{r}
+budgeted_unc_results = all_results %>% filter(use_budgeted_unc == 1 & method == "CCG")
+
+ggplot(budgeted_unc_results, aes(x = total_time, color = method_extended)) +
+  stat_ecdf(geom = "step", size = 1) +
+  labs(title = "ECDF Plot", x = "Values", y = "ECDF") +
+  theme_minimal()
+
+performance_profile = plot_performance_profile(budgeted_unc_results, criterion_column = "total_time", solver_column = "method_extended") +
+  labs(x = "Performance ratio", y = "% of instances") +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+print(performance_profile)
+```
+
+```{r}
+knapsack_unc_results = all_results %>% filter(use_budgeted_unc == 0 & method == "CCG" & p == 0.2 & n_clients <= 20)
+
+ggplot(knapsack_unc_results, aes(x = total_time, color = method_extended)) +
+  stat_ecdf(geom = "step", size = 1) +
+  scale_x_log10() +
+  labs(title = "ECDF Plot", x = "Values", y = "ECDF") +
+  theme_minimal()
+```
+
+
+## Summary table
+
+In this section, we create a table summarizing the outcome of our experiments.
+
+We start by computing average computation times over the solved instances.
+
+```{r}
+results_solved = knapsack_unc_results %>%
+  filter(total_time < time_limit) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    solved = n(),
+    total_time = mean(total_time),
+    master_time = mean(master_time),
+    separation_time = mean(separation_time),
+    solved_iteration_count = mean(iteration_count),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+```
+
+Then, we also consider unsolved instances: we count the number of such instances and compute the average iteration count.
+
+```{r}
+results_unsolved <- knapsack_unc_results %>%
+  filter(total_time >= time_limit) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    unsolved = n(),
+    unsolved_iteration_count = mean(iteration_count),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+results_fail <- knapsack_unc_results %>%
+  filter(fail == TRUE) %>%
+  group_by(method_extended, n_servers, n_clients, p, deviation) %>%
+  summarize(
+    fail = n(),
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+```
+
+We then merge the two tables.
+
+```{r}
+final_result <- merge(results_solved, results_unsolved, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
+final_result <- merge(final_result, results_fail, by = c("method_extended", "n_servers", "n_clients", "p", "deviation"), all = TRUE)
+```
+
+Here is our table.
+
+```{r, echo = FALSE}
+knitr::kable(final_result, 
+               digits = c(0, 0, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 0), 
+               col.names = c("Method", "|V_1|", "|V_2|", "p", "dev", "Count", "Total", "Master", "Sepatation", "# Iter", "Count", "# Iter", "# Errors"),
+               caption = "Summary table"
+             ) %>%
+      kable_classic() %>%
+      add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 3)
+)
+```
