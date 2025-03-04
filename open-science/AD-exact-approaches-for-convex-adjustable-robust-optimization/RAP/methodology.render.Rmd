@@ -347,7 +347,7 @@ print(performance_profile)
 ```
 
 ```{r}
-knapsack_unc_results = all_results %>% filter(use_budgeted_unc == 0 & method == "CCG" & p == 0.2 & n_clients <= 20)
+knapsack_unc_results = all_results %>% filter(use_budgeted_unc == 0 & method == "CCG")
 
 ggplot(knapsack_unc_results, aes(x = total_time, color = method_extended)) +
   stat_ecdf(geom = "step", size = 1) +
