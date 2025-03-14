@@ -280,14 +280,6 @@ border-radius: 5px;
     color: gray;
 }
 
-#post-content {
-    display: inline-block;
-    width: 70%;
-    padding-left: 20px;
-    border-left: 1px solid #efefef;
-}
-
-
 .theorem, .definition, .proposition, .notation {
     padding: 20px;
     margin-top: 10px;

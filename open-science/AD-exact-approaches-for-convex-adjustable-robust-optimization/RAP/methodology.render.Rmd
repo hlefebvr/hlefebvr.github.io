@@ -1,8 +1,5 @@
 # Open methodology for "Exact approach for convex adjustable robust optimization > Resource Allocation Problem (RAP)
 
-
-
-
 ```{r echo=FALSE, warning=FALSE}
 library(rmarkdown)
 library(kableExtra)
@@ -86,27 +83,6 @@ All in all, our result data reads.
 paged_table(results)
 ```
 
-## Unsolved instances
-
-```{r}
-for (method in unique(results$method_extended)) {
-  
-  # Sum of unsolved cases for each size
-  sum_unsolved = results[results$method_extended == method,] %>% group_by(size) %>% summarise(total_unsolved = sum(unsolved))
-  
-  # Create a bar plot
-  p = ggplot(sum_unsolved, aes(x = size, y = total_unsolved)) +
-    geom_bar(stat = "identity") +
-    labs(x = "Size", y = "Total Unsolved Cases", title = method) +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  ggsave(paste0("unsolved_", method, ".pdf"), plot = p, width = 10, height = 6)
-  
-  print(p)
-}
-```
-
 ## Performance profiles and ECDF
 
 We now introduce a function which plots the performance profile of our solvers over a given test set.
@@ -186,8 +162,6 @@ performance_profile = plot_performance_profile(results, criterion_column = "tota
 print(performance_profile)
 ggsave("performance_profile.pdf", plot = performance_profile)
 ```
-
-
 As a complement, we also draw the ECDF.
 
 ```{r}
@@ -265,25 +239,6 @@ knitr::kable(final_result,
 )
 ```
 
-## Number of iterations
-
-```{r}
-for (method in unique(results$method_extended)) {
-  
-  p = ggplot(results[results$method_extended == method & results$unsolved == FALSE,], aes(x = iteration_count)) +
-    geom_bar() +
-    labs(
-      title = method,
-      x = "Number of iterations",
-      y = "Number of instances"
-    ) +
-    theme_minimal()
-    
-  print(p) 
-}
-```
-
-
 ## Revision 
 
 ### Reading Additional Results for the Revision
@@ -304,6 +259,8 @@ results$use_budgeted_unc = 1
 
 ```{r}
 all_results = rbind(results, results_rev)
+
+all_results = all_results %>% filter(deviation == .25 & method == "CCG")
 ```
 
 Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
@@ -322,6 +279,8 @@ all_results$size = paste0("(", all_results$n_servers, ",", all_results$n_clients
 ```{r}
 all_results$method_extended = paste0(all_results$method, ", ", ifelse(all_results$use_heuristic, "heuristic, ", ""), ifelse(all_results$use_bilevel_separation, "KKT", "0-1 mapping"))
 
+paged_table(results_rev %>% filter(fail == 1 & total_time < time_limit))
+paged_table(results_rev %>% filter(fail == 0 & deviation == .25))
 
 if (sum(all_results$fail) > 0) {
   all_results[all_results$fail == TRUE,]$total_time = time_limit
@@ -334,9 +293,11 @@ all_results$unsolved = all_results$total_time >= time_limit | all_results$fail
 ```{r}
 budgeted_unc_results = all_results %>% filter(use_budgeted_unc == 1 & method == "CCG")
 
+
 ggplot(budgeted_unc_results, aes(x = total_time, color = method_extended)) +
-  stat_ecdf(geom = "step", size = 1) +
+  stat_ecdf(geom = "step", linewidth = 1) +
   labs(title = "ECDF Plot", x = "Values", y = "ECDF") +
+  facet_wrap(~p) +
   theme_minimal()
 
 performance_profile = plot_performance_profile(budgeted_unc_results, criterion_column = "total_time", solver_column = "method_extended") +
@@ -347,12 +308,12 @@ print(performance_profile)
 ```
 
 ```{r}
-knapsack_unc_results = all_results %>% filter(use_budgeted_unc == 0 & method == "CCG")
+knapsack_unc_results = all_results %>% filter(method == "CCG" & use_budgeted_unc == 0)
 
 ggplot(knapsack_unc_results, aes(x = total_time, color = method_extended)) +
   stat_ecdf(geom = "step", size = 1) +
-  scale_x_log10() +
   labs(title = "ECDF Plot", x = "Values", y = "ECDF") +
+  facet_wrap(~p) +
   theme_minimal()
 ```
 

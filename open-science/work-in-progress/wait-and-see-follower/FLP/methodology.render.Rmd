@@ -1,0 +1,53 @@
+# Open methodology for "Wait-and-see follower"
+
+```{r echo=FALSE, warning=FALSE}
+library(rmarkdown)
+library(kableExtra)
+library(ggplot2)
+library(stringr)
+suppressPackageStartupMessages(library(dplyr))
+```
+
+```{r}
+results = read.csv("results.csv", header = FALSE)
+colnames(results) = c("tag", "instance", "n_customers", "n_facilities", "Gamma", "follower_type", "use_padm", "total_time", "status", "reason", "best_bound", "best_obj", "n_iterations", "n_scenarios", "master_time", "separation_time")
+#results = results %>% mutate(instance = basename(instance))
+results$tag = NULL
+results = results %>% mutate(total_time = ifelse(total_time > 7200, 7200, total_time))
+#matches = str_match(results$instance, "instance_(\\d+)_(\\d+)_(\\d+)_\\d+\\.txt")
+#results = data.frame(
+#  results,
+#  n_facilites = as.numeric(matches[,2]),
+#  n_customers = as.numeric(matches[,3]),
+#  ratio = as.numeric(matches[,4]) / 100
+#)
+results$use_padm = as.logical(results$use_padm)
+results$size = paste0(results$n_facilities, ", ", results$n_customers)
+paged_table(results)
+```
+
+```{r}
+ggplot(results, aes(x = total_time, color = use_padm)) +
+  stat_ecdf(geom = "step", linewidth = 1) +
+  labs(title = "ECDF of Total Time",
+       x = "Total Time",
+       y = "ECDF") +
+  facet_wrap(follower_type~Gamma) +
+  theme_minimal()
+
+ggplot(results, aes(x = n_scenarios, color = use_padm)) +
+  stat_ecdf(geom = "step", linewidth = 1) +
+  labs(title = "ECDF of Scenarios",
+       x = "Total Time",
+       y = "ECDF") +
+  facet_wrap(follower_type~Gamma) +
+  theme_minimal()
+
+ggplot(results, aes(x = total_time, color = size)) +
+  stat_ecdf(geom = "step", linewidth = 1) +
+  labs(title = "ECDF of Total Time",
+       x = "Total Time",
+       y = "ECDF") +
+  facet_wrap(follower_type~Gamma) +
+  theme_minimal()
+```
