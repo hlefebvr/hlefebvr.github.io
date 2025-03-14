@@ -51,3 +51,35 @@ ggplot(results, aes(x = total_time, color = size)) +
   facet_wrap(follower_type~Gamma) +
   theme_minimal()
 ```
+
+
+## Summary Table 
+
+```{r}
+summary_table = results %>%
+  filter(total_time < 7200) %>%
+  group_by(follower_type, use_padm, n_facilities, n_customers, Gamma) %>%
+  summarise(
+    n_solved = n(),
+    avg_total_time = mean(total_time, na.rm = TRUE),
+    avg_master_time = mean(master_time, na.rm = TRUE),
+    avg_separation_time = mean(separation_time, na.rm = TRUE),
+    avg_n_scenarios = mean(n_scenarios, na.rm = TRUE),
+    n_optimal = sum(status == "Optimal"),
+    statuses = toString(unique(status)),
+    .groups = "drop"
+  )
+
+knitr::kable(
+    summary_table,
+    digits = c(0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0),
+    booktabs = TRUE,
+    longtable = TRUE,
+    col.names = c("Follower", "PADM", "$\\vert V_1 \\vert$", 
+      "$\\vert V_2 \\vert$",  "$\\Gamma$", "Solved", "Total Time", 
+      "Master Time", "Separation Time", "# Scenarios", "Optimal", "Statuses"),
+    caption = "Summary table"
+  ) %>%
+  kable_classic(latex_options = "hold_position") %>%
+  add_header_above(c(" " = 5, "Solved Instances" = 5, "Status Info" = 2))
+```
