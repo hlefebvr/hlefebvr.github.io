@@ -297,13 +297,13 @@ budgeted_unc_results = all_results %>% filter(use_budgeted_unc == 1 & method == 
 ggplot(budgeted_unc_results, aes(x = total_time, color = method_extended)) +
   stat_ecdf(geom = "step", linewidth = 1) +
   labs(title = "ECDF Plot", x = "Values", y = "ECDF") +
-  facet_wrap(~p) +
   theme_minimal()
 
 performance_profile = plot_performance_profile(budgeted_unc_results, criterion_column = "total_time", solver_column = "method_extended") +
   labs(x = "Performance ratio", y = "% of instances") +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
+
 print(performance_profile)
 ```
 
