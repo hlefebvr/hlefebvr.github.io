@@ -26,13 +26,23 @@ paged_table(bobilib)
 ```{r}
 # Function to read results obtained on the HPC
 get_results_from_hpc = function(method) {
-  result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
   
-  if (method == "PADM" | method == "PADM-interdiction") {
+  if (method == "MILP") {
+    result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
+  } else {
+    result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
+  }
+  
+  if (method == "PADM") {
+    colnames(result) = c("tag", "instance", "method", "update_rule", "factor?", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops", "lambda", "pi_lb", "pi_ub")
+    result[result$status != "Feasible",]$time = 3600
+  } else if (method == "PADM-interdiction") {
     colnames(result) = c("tag", "instance", "method", "update_rule", "factor?", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops")
     result[result$status != "Feasible",]$time = 3600
+  } else if(method == "MILP-first") {
+    colnames(result) = c("tag", "instance", "method", "time", "best_bound", "best_obj") 
   } else {
-    colnames(result) = c("tag", "instance", "method", "time", "status", "reason", "best_bound", "best_obj") 
+    colnames(result) = c("tag", "instance", "method", "time", "status", "reason", "best_bound", "best_obj", "lambda", "pi_lb", "pi_ub") 
   }
   
   result = result %>% mutate(instance = basename(instance), instance = gsub("\\.aux$", "", instance))
@@ -55,8 +65,10 @@ columns = c("instance", "method", "time", "best_obj")
 mibs = get_results_from_boblib("MibS") %>% select(all_of(columns))
 filemosi = get_results_from_boblib("filemosi") %>% select(all_of(columns))
 milp = get_results_from_hpc("MILP") %>% select(all_of(columns))
+milp_first = get_results_from_hpc("MILP-first") %>% select(all_of(columns))
 #nlp = get_results_from_hpc("NLP") %>% select(all_of(columns))
 padm = get_results_from_hpc("PADM") %>% select(all_of(columns))
+padm_interdiction = get_results_from_hpc("PADM-interdiction") %>% select(all_of(columns))
 
 # Selecting only those results fulfilling our assumptions
 instances = unique(unlist(lapply(list(milp,padm), function(df) df$instance)))
@@ -86,88 +98,139 @@ filemosi = add_missing_results(filemosi)
 milp = add_missing_results(milp)
 #nlp = add_missing_results(nlp)
 padm = add_missing_results(padm)
+milp_first = add_missing_results(milp_first)
 
 # Aggregating all results
 all_results = rbind(
-  mibs, filemosi, milp, padm
+  mibs, milp, milp_first, padm, padm_interdiction
 )
+
+all_results = all_results %>%
+  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj), by = "instance") %>%
+  mutate(
+    best_known_obj = na_if(best_known_obj, "None"),
+    best_obj = na_if(best_obj, "None")
+  ) %>%
+  mutate(
+    best_known_obj = as.numeric(best_known_obj),
+    best_obj = as.numeric(best_obj)
+  )
+
 paged_table(all_results)
 ```
 
-## Computational Times
+## PADM
+
+### Computational Times
 
 ```{r}
-ggplot(all_results, aes(x = time, color = method)) +
-  stat_ecdf(geom = "step", linewidth = 1) +
-  labs(
-    title = "ECDF of Time for Different Methods",
-    subtitle = "Comparison of time distribution across different methods",
-    x = "Time (s)",
-    y = "Instances (%)"
-  ) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1")
+plot_ecdf_of_time = function(data) {
+  p = ggplot(data, aes(x = time, color = method)) +
+    stat_ecdf(geom = "step", linewidth = 1) +
+    labs(
+      title = "ECDF of Time",
+      x = "Time (s)",
+      y = "Instances (%)"
+    ) +
+    theme_minimal() +
+    scale_color_brewer(palette = "Set1")  
+  
+  return(p)
+}
+
+plot_ecdf_of_time(all_results %>% filter(method != "PADM-interdiction"))
 ```
 
-# Optimality Gap
+### Optimality Gap
 
 ```{r}
-solved_by_all = all_results %>% filter(method == "PADM" | method == "filemosi") %>%
-  group_by(instance) %>%
-  filter(all(time < 3600 & time >= 0)) %>%
-  ungroup() %>%
-  mutate(best_obj = as.numeric(best_obj))
 
-solved_by_all = solved_by_all %>%
-  group_by(instance) %>%
-  mutate(best_obj_instance = min(best_obj)) %>%
-  ungroup() %>%
-  mutate(gap = (best_obj - best_obj_instance) / (1e-10  + abs(best_obj_instance))) %>%
+plot_ecdf_of_gap_wrt_best_known = function(data) {
+  results_with_gaps = data %>%
+  filter(!is.na(best_known_obj)) %>% 
+  filter(bobilib_status == "optimal") %>%
+  filter(time < 3600) %>%
+  mutate(gap = abs(best_obj - best_known_obj) / (1e-10  + abs(best_known_obj))) %>%
   mutate(gap = ifelse(gap < 1e-4, 1e-4, gap))
 
-ggplot(solved_by_all, aes(x = gap, color = method)) +
-  stat_ecdf(geom = "step", linewidth = 1) +
-  #scale_x_log10() +
-  coord_cartesian(xlim = c(1e-4, 2e1)) +
-  labs(
-    title = "ECDF of Time for Different Methods",
-    subtitle = "Comparison of time distribution across different methods",
-    x = "Gap (s)",
-    y = "Instances (%)"
-  ) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1")
+  p = ggplot(results_with_gaps, aes(x = gap, color = method)) +
+    stat_ecdf(geom = "step", linewidth = 1) +
+    #scale_x_log10() +
+    coord_cartesian(xlim = c(1e-4, 2e1)) +
+    labs(
+      title = "ECDF of Gap",
+      x = "Gap (%)",
+      y = "Instances (%)"
+    ) +
+    theme_minimal() +
+    scale_color_brewer(palette = "Set1")
+  
+  return(p)
+}
+
+plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM"))
+
+
+solved_by_both = solved_by_both = all_results %>% filter(method == "PADM" | method == "MILP-first") %>%
+  group_by(instance) %>%
+  filter(all(time < 3600 & time >= 0)) %>%
+  ungroup()
+
+plot_ecdf_of_gap_wrt_best_known(solved_by_both)
 ```
 
-```{r}
-padm_r = solved_by_all %>% filter(method == "PADM")
-gaps = c(0.5, 1, 5, 10, 15, 20)
-ecdf_vals = ecdf(padm_r$gap)(gaps)
-
-gap_table = tibble(
-  `Gap` = gaps,
-  `Instances (%)` = round(ecdf_vals, 3) * 100
-)
-
-knitr::kable(gap_table, caption = "ECDF of Gaps")
-```
+### Status change in BOBILib
 
 ```{r}
+
 all_results_with_status = all_results %>%
-  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj), by = "instance") %>%
+  filter(method == "PADM" & time < 3600) %>%
   mutate(
-    bobilib_status = ifelse(bobilib_status == "open with feasible point" & best_obj < best_known_obj, "open and improving", bobilib_status)
+    new_bobilib_status = ifelse(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6, "was open with feasible point\n and is improving", bobilib_status),
+    new_bobilib_status = ifelse(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6, "was optimal\n and found optimal point", new_bobilib_status),
+    new_bobilib_status = ifelse(bobilib_status == "open", "was open", new_bobilib_status),
+    new_bobilib_status = ifelse(bobilib_status == "optimal", "was optimal\n and found feasible point", new_bobilib_status),
+    new_bobilib_status = ifelse(new_bobilib_status == "open with feasible point", "was open with feasible point\n and found non-improving\n feasible point", new_bobilib_status)
   )
-feasible_padm_with_bobilib_status = all_results_with_status %>% filter(method == "PADM", time < 3600)
 
-ggplot(feasible_padm_with_bobilib_status, aes(x = bobilib_status)) +
-  geom_bar(fill = "steelblue") +
+ggplot(all_results_with_status, aes(x = new_bobilib_status)) +
+  geom_bar(fill = "steelblue", width = .9) +
   geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.5) +
-  labs(title = "Count instances per status in bobilib",
+  labs(title = "Status change in BOBILib",
        x = "Status",
        y = "Count") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = .5, vjust = 1, lineheight = 1)
+  )
+```
 
-feasible_padm_with_bobilib_status %>% filter(bobilib_status == "infeasible")
+## PADM interdiction 
+
+#### Computational time 
+
+```{r}
+all_results_common_to_padm_and_padm_interdiction = 
+solved_by_both = all_results %>% filter(method == "PADM" | method == "PADM-interdiction") %>%
+  group_by(instance) %>%
+  filter(all(time >= 0)) %>%
+  ungroup()
+
+solved_by_both = solved_by_both = all_results %>% filter(method == "PADM" | method == "PADM-interdiction") %>%
+  group_by(instance) %>%
+  filter(all(time < 3600 & time >= 0)) %>%
+  ungroup()
+
+```
+
+```{r}
+plot_ecdf_of_time(all_results_common_to_padm_and_padm_interdiction)
+```
+
+#### Optimality gap 
+
+```{r}
+plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM-interdiction"))
+plot_ecdf_of_gap_wrt_best_known(solved_by_both)
 ```
 

@@ -260,7 +260,7 @@ results$use_budgeted_unc = 1
 ```{r}
 all_results = rbind(results, results_rev)
 
-all_results = all_results %>% filter(deviation == .25 & method == "CCG")
+all_results = all_results %>% filter(method == "CCG")
 ```
 
 Then, we compute the percentage which $\Gamma$ represents for the total number of clients.
