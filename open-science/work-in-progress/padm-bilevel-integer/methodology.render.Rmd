@@ -34,11 +34,13 @@ get_results_from_hpc = function(method) {
   }
   
   if (method == "PADM") {
-    colnames(result) = c("tag", "instance", "method", "update_rule", "factor?", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops", "lambda", "pi_lb", "pi_ub")
+    colnames(result) = c("tag", "instance", "method", "update_rule", "factor", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops", "lambda", "pi_lb", "pi_ub")
     result[result$status != "Feasible",]$time = 3600
+    result = result %>% mutate(method = paste0(method, "-", initial_penalty_parameter))
   } else if (method == "PADM-interdiction") {
-    colnames(result) = c("tag", "instance", "method", "update_rule", "factor?", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops")
+    colnames(result) = c("tag", "instance", "method", "update_rule", "factor", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops")
     result[result$status != "Feasible",]$time = 3600
+    result = result %>% mutate(method = paste0(method, "-", initial_penalty_parameter))
   } else if(method == "MILP-first") {
     colnames(result) = c("tag", "instance", "method", "time", "best_bound", "best_obj") 
   } else {
@@ -168,10 +170,10 @@ plot_ecdf_of_gap_wrt_best_known = function(data) {
   return(p)
 }
 
-plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM"))
+plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM-100" | method == "PADM-1000"))
 
 
-solved_by_both = solved_by_both = all_results %>% filter(method == "PADM" | method == "MILP-first") %>%
+solved_by_both = solved_by_both = all_results %>% filter(method == "PADM-100" | method == "PADM-1000" | method == "MILP-first") %>%
   group_by(instance) %>%
   filter(all(time < 3600 & time >= 0)) %>%
   ungroup()
@@ -184,7 +186,7 @@ plot_ecdf_of_gap_wrt_best_known(solved_by_both)
 ```{r}
 
 all_results_with_status = all_results %>%
-  filter(method == "PADM" & time < 3600) %>%
+  filter(method == "PADM-1000" & time < 3600) %>%
   mutate(
     new_bobilib_status = ifelse(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6, "was open with feasible point\n and is improving", bobilib_status),
     new_bobilib_status = ifelse(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6, "was optimal\n and found optimal point", new_bobilib_status),
@@ -211,12 +213,12 @@ ggplot(all_results_with_status, aes(x = new_bobilib_status)) +
 
 ```{r}
 all_results_common_to_padm_and_padm_interdiction = 
-solved_by_both = all_results %>% filter(method == "PADM" | method == "PADM-interdiction") %>%
+solved_by_both = all_results %>% filter(method == "PADM-1000" | method == "PADM-interdiction-1000") %>%
   group_by(instance) %>%
   filter(all(time >= 0)) %>%
   ungroup()
 
-solved_by_both = solved_by_both = all_results %>% filter(method == "PADM" | method == "PADM-interdiction") %>%
+solved_by_both = solved_by_both = all_results %>% filter(method == "PADM-1000" | method == "PADM-interdiction-1000") %>%
   group_by(instance) %>%
   filter(all(time < 3600 & time >= 0)) %>%
   ungroup()
@@ -230,7 +232,7 @@ plot_ecdf_of_time(all_results_common_to_padm_and_padm_interdiction)
 #### Optimality gap 
 
 ```{r}
-plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM-interdiction"))
+plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM-interdiction-1000"))
 plot_ecdf_of_gap_wrt_best_known(solved_by_both)
 ```
 
