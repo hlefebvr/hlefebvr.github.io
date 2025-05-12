@@ -1,0 +1,281 @@
+# UFLP
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(rmarkdown)
+suppressWarnings(library(dplyr))
+library(knitr)
+library(kableExtra)
+library(stringr)
+library(RColorBrewer)
+library(tidyr)
+```
+
+## Some helper functions first
+
+```{r}
+make_heatmap = function(data) {
+  
+  max_count = data %>%
+    count(n_facilities, n_customers) %>%
+    pull(n) %>%
+    max()
+  
+  # Step 1: Get all existing combinations in the original data
+  existing_combinations = data %>% distinct(n_facilities, n_customers)
+  
+  # Step 2: Get all combinations of existing values
+  full_grid = expand_grid(
+    n_facilities = unique(data$n_facilities),
+    n_customers = unique(data$n_customers)
+  )
+  
+  # Step 3: Mark whether the pair exists in the original data
+  full_grid = full_grid %>%
+    left_join(existing_combinations %>% mutate(exists = TRUE), by = c("n_facilities", "n_customers"))
+  
+  # Step 4: Count how many rows are below the time limit
+  counts = data %>%
+    filter(total_time < 10800) %>%
+    count(n_facilities, n_customers, name = "count")
+  
+  # Step 5: Join the count info into the full grid
+  summary_data = full_grid %>%
+    left_join(counts, by = c("n_facilities", "n_customers"))
+  
+  # Step 6: Set count = 0 where pair exists but no row meets time condition
+  summary_data = summary_data %>%
+    mutate(
+      count = ifelse(is.na(count) & exists == TRUE, 0, count)
+    )
+  
+  # Step 7: Plot with text
+  p = ggplot(summary_data, aes(x = factor(n_facilities), y = factor(n_customers), fill = count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = ifelse(!is.na(count), count, "")), color = "black") +
+    scale_fill_gradient(
+      low = "white", high = "darkgreen", na.value = "black",
+      limits = c(0,max_count)
+    ) +
+    labs(
+      title = "Number of solved instances within the time limit",
+      x = "Number of Facilities",
+      y = "Number of Customers",
+      fill = "Count"
+    ) +
+    theme_minimal()
+  
+  return(p)
+}
+
+```
+
+```{r}
+make_ecdf_total_time = function(data) {
+  p = ggplot(data, aes(x = total_time, color = factor(Gamma), linetype = separation_method ) ) +
+      stat_ecdf(geom = "step", linewidth = .5) +
+      scale_y_continuous(labels = scales::percent) +
+      labs(
+        title = "ECDF of total computation time with optimality separation",
+        x = "Time (s)",
+        y = "Instances (%)",
+        color = "Uncertainty budget",
+        linetype = "Separation approach"
+      ) +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1")
+  
+  return(p)
+}
+
+make_ecdf_gap = function(data) {
+  
+  p = ggplot(data,
+         aes(x = (best_obj - best_bound) / (abs(best_obj) + 1e-10), color = factor(Gamma), linetype = separation_method ) ) +
+      stat_ecdf(geom = "step", linewidth = .5) +
+      scale_x_continuous(labels = scales::percent) +
+      labs(
+        title = "ECDF of relative gap with optimality separation",
+        x = "Gap (%)",
+        y = "Instances (%)",
+        color = "Uncertainty budget",
+        linetype = "Separation approach"
+      ) +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1")
+  
+  return (p)
+}
+
+make_ecdf_master_time = function(data) {
+  
+  p = ggplot(data,
+         aes(x = master_time / total_time, color = factor(Gamma), linetype =  separation_method) ) +
+      stat_ecdf(geom = "step", linewidth = .5) +
+      scale_x_continuous(labels = scales::percent) +
+      scale_y_continuous(labels = scales::percent) +
+      labs(
+        title = "ECDF of master time / separation time",
+        x = "Master time /  Total time (%)",
+        y = "Instances (%)",
+        color = "Uncertainty budget",
+        linetype = "Separation approach"
+      ) +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1")
+    
+  return (p)
+}
+```
+
+## Two-stage robust problem
+
+```{r}
+all_results_two_stage = read.csv("results.csv", header = FALSE)
+colnames(all_results_two_stage) = c("tag",
+                          "instance",
+                          "n_facilities",
+                          "n_customers", 
+                          "d",
+                          "Gamma",
+                          "separation_method",
+                          "status",
+                          "reason",
+                          "best_bound",
+                          "best_obj",
+                          "total_time",
+                          "master_time",
+                          "separation_time",
+                          "n_iterations")
+
+all_results_two_stage = all_results_two_stage %>%
+  mutate(
+    separation_type = sub("_.*", "", separation_method),
+    separation_approach = sub("^[^_]+_", "", separation_method),
+    total_time = pmin(total_time, 10800)
+  )
+
+all_results_two_stage = all_results_two_stage %>% filter(n_facilities <= 25 & n_customers <= 40 & separation_method == "Optimality_KKT_BigM")
+
+paged_table(all_results_two_stage)
+```
+
+```{r}
+make_ecdf_total_time(all_results_two_stage)
+make_ecdf_gap(all_results_two_stage)
+make_ecdf_master_time(all_results_two_stage)
+```
+
+```{r}
+make_heatmap(all_results_two_stage)
+```
+
+## Robust bilevel problem with wait-and-see follower
+
+```{r}
+all_results_wait_and_see = read.csv("results-wait-and-see-uflp.csv", header = FALSE)
+colnames(all_results_wait_and_see) = c("tag",
+                          "instance",
+                          "lower_objective_instance",
+                          "n_facilities",
+                          "n_customers", 
+                          "d",
+                          "angle",
+                          "Gamma",
+                          "separation_method",
+                          "status",
+                          "reason",
+                          "best_bound",
+                          "best_obj",
+                          "total_time",
+                          "master_time",
+                          "separation_time",
+                          "n_iterations")
+
+all_results_wait_and_see = all_results_wait_and_see %>%
+  mutate(
+    separation_type = sub("_.*", "", separation_method),
+    separation_approach = sub("^[^_]+_", "", separation_method),
+    total_time = pmin(total_time, 10800)
+  )
+
+all_results_wait_and_see = all_results_wait_and_see %>% filter(n_facilities <= 25 & n_customers <= 40)
+
+paged_table(all_results_wait_and_see)
+```
+
+### Computation Times
+
+```{r}
+positive_angle_wait_and_see = all_results_wait_and_see %>% filter(abs(angle) > 1e-2)
+make_ecdf_total_time(positive_angle_wait_and_see)
+make_ecdf_gap(positive_angle_wait_and_see)
+make_ecdf_master_time(positive_angle_wait_and_see)
+```
+
+```{r}
+make_heatmap(positive_angle_wait_and_see)
+```
+
+### Comparing two-stage version and wait-and-see with angle=0 
+
+```{r}
+zero_angle_wait_and_see = all_results_wait_and_see %>% filter(abs(angle) < 1e-2)
+
+selected_columns = c("instance", "n_facilities", "n_customers", "d", "Gamma", "separation_method", "total_time")
+
+two_stage_and_zero_angle_wait_and_see = rbind(
+  zero_angle_wait_and_see %>% select(all_of(selected_columns)) %>% mutate(is_wait_and_see = TRUE),
+  all_results_two_stage %>% select(all_of(selected_columns)) %>% mutate(is_wait_and_see = FALSE)
+)
+
+print(nrow(zero_angle_wait_and_see))
+print(nrow(all_results_two_stage))
+```
+
+```{r}
+ggplot(two_stage_and_zero_angle_wait_and_see, aes(x = total_time, color = factor(Gamma), linetype = is_wait_and_see ) ) +
+      stat_ecdf(geom = "step", linewidth = .5) +
+      scale_y_continuous(labels = scales::percent) +
+      labs(
+        title = "ECDF of total computation time with optimality separation",
+        x = "Time (s)",
+        y = "Instances (%)",
+        color = "Uncertainty budget",
+        linetype = "Is wait-and-see version"
+      ) +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1")
+```
+
+```{r}
+# Step 1: Summarize both datasets
+avg_iter_two_stage <- all_results_two_stage %>%
+  group_by(n_facilities, n_customers) %>%
+  summarise(avg_iterations = mean(n_iterations, na.rm = TRUE), .groups = "drop") %>%
+  mutate(problem_type = "Two-stage")
+
+avg_iter_wait_and_see <- positive_angle_wait_and_see %>%
+  group_by(n_facilities, n_customers) %>%
+  summarise(avg_iterations = mean(n_iterations, na.rm = TRUE), .groups = "drop") %>%
+  mutate(problem_type = "Wait-and-see")
+
+# Step 2: Combine datasets
+avg_iterations_combined <- bind_rows(avg_iter_two_stage, avg_iter_wait_and_see)
+
+# Step 3: Create a label for each pair to use on the x-axis
+avg_iterations_combined <- avg_iterations_combined %>%
+  mutate(pair = paste0("(", n_facilities, ", ", n_customers, ")"))
+
+# Step 4: Plot side-by-side bars
+ggplot(avg_iterations_combined, aes(x = pair, y = avg_iterations, fill = problem_type)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  labs(
+    title = "Average number of iterations per instance size",
+    x = "Instance size",
+    y = "Average number of iterations",
+    fill = "Problem type"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
