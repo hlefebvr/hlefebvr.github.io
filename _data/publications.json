@@ -17,9 +17,10 @@
       ],
       "open-science-page": "open-science/AI-on-coupling-constraints-in-pessimistic-linear-bilevel-optimization",
       "abstract": "The literature on pessimistic bilevel optimization with coupling constraints is rather scarce and it has been common sense that these problems are harder to tackle than pessimistic bilevel problems without coupling constraints. In this note, we show that this is not the case. To this end, given a pessimistic problem with coupling constraints, we derive a pessimistic problem without coupling constraints that has the same set of globally optimal solutions. Moreover, our results also show that one can equivalently replace a pessimistic problem with such constraints with an optimistic problem without coupling constraints. This paves the way of both transferring theory and solution techniques from any type of these problems to any other one.",
-      "bibtex": "@article{Henke2025,\n  title = {On Coupling Constraints in Pessimistic Linear Bilevel Optimization},\n  author = {Henke, Dorothee and Lefebvre, Henri and Schmidt, Martin and Thürauf, Johannes},\n  year = {2025},\n  note = {Published: 2025/02/28},\n  url = {https://optimization-online.org/?p=29476},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+      "bibtex": "@misc{henke2025coupling,\n  title={On Coupling Constraints in Pessimistic Linear Bilevel Optimization},\n  author={Dorothee Henke and Henri Lefebvre and Martin Schmidt and Johannes Thürauf},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=29476}\n}"
     },
     {
+      "code": "AL",
       "title": "Solving Decision-Dependent Robust Problems as Bilevel Optimization Problems",
       "authors": "Martin Schmidt, Simon Stevens, Johannes Thürauf",
       "year": 2025,
@@ -32,7 +33,10 @@
           "title": "arXiv",
           "link": "https://arxiv.org/abs/2503.01559"
         }
-      ]
+      ],
+      "open-science-page": "open-science/AL-solving-decision-dependent-robust-problems-as-bilevel-optimization-problems",
+      "abstract": "Both bilevel and robust optimization are established fields of mathematical optimization and operations research. However, only until recently, the similarities in their mathematical structure has neither been studied theoretically nor exploited computationally. Based on the recent results by Goerigk et al. (2025), this paper is the first one that reformulates a given strictly robust optimization problem with a decision-dependent uncertainty set as an equivalent bilevel optimization problem and then uses solution techniques from the latter field to solve the robust problem at hand. If the uncertainty set can be dualized, the respective bilevel techniques to obtain a single-level reformulation are very similar compared to the classic dualization techniques used in robust optimization but lead to larger single-level problems to be solved. Our numerical study shows that this leads to larger computation times but may also slightly improve the dual bound. For the more challenging case of a decision-dependent uncertainty set that cannot be dualized because it is represented as a mixed-integer linear problem, we are not aware of any applicable robust optimization techniques. Fortunately, by exploiting the corresponding bilevel reformulation and recent bilevel solvers, we are able to present the first numerical results for this class of robust problems.",
+      "bibtex": "@misc{lefebvre2025decisiondependent,\n  title={Solving Decision-Dependent Robust Problems as Bilevel Optimization Problems},\n  author={Henri Lefebvre and Martin Schmidt and Simon Stevens and Johannes Thürauf},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=29420}\n}"
     },
     {
       "code": "AH",
@@ -50,6 +54,7 @@
       "bibtex": "@misc{lefebvre2024counterfactual,\n  author       = {Henri Lefebvre and Martin Schmidt},\n  title        = {Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method},\n  year         = {2024},\n  note         = {Published: 2024-12-19, Updated: 2025-01-08},\n  howpublished = {\\url{https://optimization-online.org/?p=28803}},\n  keywords     = {bilevel optimization, Counterfactual explanations, explainability, Linear Optimization, Penalty alternating direction method},\n  categories   = {Energy, Nonlinear Optimization, Optimization in Data Science}\n}"
     },
     {
+      "code": "AK",
       "title": "Correction to <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
       "authors": "Anirudh Subramanyam",
       "year": 2024,
@@ -58,9 +63,13 @@
           "title": "arXiv",
           "link": "https://arxiv.org/abs/2411.04307"
         }
-      ]
+      ],
+      "open-science-page": "open-science/AK-correction-to-a-Lagrangian-dual-method-for-two-stage-robust-optimization-with-binary-uncertainties",
+      "abstract": "We provide a correction to the sufficient conditions under which closed-form expressions for the optimal Lagrange multiplier are provided in arXiv:2112.13138 [math.OC]. We first present a simple counterexample where the original conditions are insufficient, highlight where the original proof fails, and then provide modified conditions along with a correct proof of their validity. Finally, although the original paper discusses modifications to their method for problems that may not satisfy any sufficient conditions, we substantiate that discussion along two directions. We first show that computing an optimal Lagrange multiplier can still be done in polynomial time. We then provide complete and correct versions of the corresponding Benders and column-and-constraint generation algorithms in which the original method is used. We also discuss the implications of our findings on computational performance.",
+      "bibtex": "@misc{lefebvre2025correctiontolagrangiandual,\n  title={Correction to: A Lagrangian dual method for two-stage robust optimization with binary uncertainties},\n  author={Henri Lefebvre and Anirudh Subramanyam},\n  year={2025},\n  eprint={2411.04307},\n  archivePrefix={arXiv},\n  primaryClass={math.OC},\n  url={https://arxiv.org/abs/2411.04307}\n}"
     },
     {
+      "code": "AJ",
       "title": "Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization",
       "authors": "Martin Schmidt",
       "year": 2024,
@@ -69,7 +78,10 @@
           "title": "Optimization Online",
           "link": "https://optimization-online.org/?p=27046"
         }
-      ]
+      ],
+      "open-science-page": "open-science/AJ-exact-augmented-lagrangian-duality-for-nonconvex-mixed-integer-nonlinear-optimization",
+      "abstract": "In the context of mixed-integer nonlinear problems (MINLPs), it is well-known that strong duality does not hold in general if the standard Lagrangian dual is used. Hence, we consider the augmented Lagrangian dual (ALD), which adds a nonlinear penalty function to the classic Lagrangian function. For this setup, we study conditions under which the ALD leads to a zero duality gap for general MINLPs. In particular, under mild assumptions and for a large class of penalty functions, we show that the ALD yields zero duality gaps if the penalty parameter goes to infinity. If the penalty function is a norm, we also show that the ALD leads to zero duality gaps for a finite penalty parameter. Moreover, we show that such a finite penalty parameter can be computed in polynomial time in the mixed-integer linear case. This generalizes the recent results on linearly constrained mixed-integer problems by Bhardwaj et al. (2024), Boland and Eberhard (2014), Feizollahi et al. (2016), and Gu et al. (2020).",
+      "bibtex": "@misc{lefebvre2024exact,\n  title={Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization},\n  author={Henri Lefebvre and Martin Schmidt},\n  year={2024},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=27046}\n}"
     },
     {
       "code": "AE",
@@ -84,7 +96,7 @@
       ],
       "open-science-page": "open-science/AE-using-column-generation-in-column-and-constraints-generation-for-adjustable-robust-optimization",
       "abstract": "Adjustable robust optimization (ARO) is a powerful tool to model problems that have uncertain data and that feature a two-stage decision making process. Computationally, they are often addressed using the column-and-constraint generation (CCG) algorithm introduced by Zeng and Zhao (2013). While it was empirically shown that the algorithm scales well if all second-stage decisions are continuous, the presence of integer variables in the second stage rapidly leads to challenging large-scale mixed-integer problems within CCG. These problems can no longer be solved to global optimality within reasonable time limits in general. In this work, we explicitly focus on ARO problems with mixed-integer second-stage decisions and discuss the main difficulties of successfully applying CCG to this problem class. We then introduce, for a large set of problems with specific structural properties, a stronger formulation, which can be used in place of the master problem in the classic CCG algorithm. We show how this model can be effectively solved by column generation (CG). Additionally, we introduce a new CG-based heuristic that is able to generate new feasible points to speed up the overall method. We apply this nested scheme, combining CCG and CG, to two problems in logistics and scheduling. The numerical results show that the proposed method significantly outperforms the classic CCG.",
-      "bibtex": "@article{Lefebvre2025,\n  title = {Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints},\n  author = {Lefebvre, Henri and Schmidt, Martin and Thürauf, Johannes},\n  year = {2025},\n  note = {Published: 2023/10/09, Updated: 2025/01/30},\n  url = {https://optimization-online.org/?p=24462},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+      "bibtex": "@misc{lefebvre2023column,\n  title={Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints},\n  author={Henri Lefebvre and Martin Schmidt and Johannes Thürauf},\n  year={2023},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=24462}\n}"
     },
     {
       "code": "AD",
@@ -99,7 +111,7 @@
       ],
       "open-science-page": "open-science/AD-exact-approaches-for-convex-adjustable-robust-optimization",
       "abstract": "Adjustable Robust Optimization (ARO) is a paradigm for facing uncertainty in a decision problem, in case some recourse actions are allowed after the actual value of all input parameters is revealed. While several approaches have been introduced for the linear case, little is known regarding exact methods for the convex case. In this work, we introduce a new general framework for attacking ARO problems involving convex functions in the recourse problem. We first recall a semi-infinite reformulation of the problem and, provided that one can solve a non-convex separation problem, show how to solve it either by a generalized Benders decomposition or by a column-and-constraint generation approach. For the relevant case in which the uncertainty set has an affine mapping to a 0-1 polytope, we show that the separation problem can be reformulated as a convex Mixed-Integer NonLinear Problem, thus allowing us to derive computationally sound exact methods. Finally, we apply the resulting algorithms to two different applications, namely a nonlinear facility location problem and a nonlinear resource allocation problem, to numerically assess their computational performance.",
-      "bibtex": "@article{Lefebvre2025,\n  title = {Exact Approaches for Convex Adjustable Robust Optimization},\n  author = {Lefebvre, Henri and Malaguti, Enrico and Monaci, Michele},\n  year = {2025},\n  note = {Published: 2022/11/04, Updated: 2025/04/18},\n  url = {https://optimization-online.org/?p=20869},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+      "bibtex": "@misc{lefebvre2022exact,\n  title={Exact Approaches for Convex Adjustable Robust Optimization},\n  author={Henri Lefebvre and Enrico Malaguti and Michele Monaci},\n  year={2022},\n  note={Updated: 2025/04/18},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=20869}\n}"
     }
   ],
   "journal-articles": [
