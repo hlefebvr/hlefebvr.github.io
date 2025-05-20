@@ -103,7 +103,7 @@ pre {
         padding-top: 10px;
         width:75%;
         border-top: 1px solid #eee;
-        
+
         i {
             transition: 0.2s ease-in-out;
         }
@@ -249,4 +249,55 @@ pre {
 
 .unproved {
     border-left: 1px dashed black;
+}
+
+@media (max-width: 768px) {
+
+    #container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #sidebar {
+        width: 100%;
+        height: auto;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #menu {
+        width: 100%;
+        height: auto;
+    }
+    
+    #main {
+        padding-top: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    #content {
+        width: 100%;
+        padding: 20px;
+        box-shadow: none;
+        box-sizing: border-box;
+        margin: auto;
+    }
+
+    #footer {
+        width: 100%;
+        min-width: auto;
+        box-sizing: border-box;
+    }
+
+    pre {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-size: 14px;
+    }
 }
