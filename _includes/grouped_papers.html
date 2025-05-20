@@ -74,7 +74,7 @@
             </div>
             {% for image in paper.images %}
               <center style="margin-top: 20px;">
-                <img src="{{ image.src }}" style="width:300px;" /><br />
+                <img src="{{ image.src }}" style="max-width:100%;" /><br />
                 {{ image.caption }}
               </center>
             {% endfor %}
