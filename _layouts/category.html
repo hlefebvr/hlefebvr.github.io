@@ -7,7 +7,7 @@ layout: page
     {% if node.title != null %}
         <div class="category-item">
             <div class="category-item-image">
-                <img src="/assets/images/previews/{{ node.preview }}" />
+                <a href="{{ node.url }}"><img src="/assets/images/previews/{{ node.preview }}" /></a>
             </div>
             <div class="category-item-text">
                 <a href="{{ node.url }}">{{ node.title }}</a>
