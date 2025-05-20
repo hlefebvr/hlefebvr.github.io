@@ -103,6 +103,14 @@ pre {
         padding-top: 10px;
         width:75%;
         border-top: 1px solid #eee;
+        
+        i {
+            transition: 0.2s ease-in-out;
+        }
+
+        a:hover i {
+            transform: scale(1.5);
+        }
     }
 
     #nav {
