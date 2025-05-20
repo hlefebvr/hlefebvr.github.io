@@ -1,9 +1,0 @@
-[
-    { "title": "Home", "url": "/", "icon": "fa-solid fa-house" },
-    { "title": "Publications", "url": "/publications.html", "icon": "fa-solid fa-newspaper" },
-    { "title": "Talks", "url": "/talks.html", "icon": "fa-solid fa-microphone" },
-    { "title": "Supervision", "url": "/supervision.html", "icon": "fa-solid fa-user-graduate" },
-    { "title": "Recognition", "url": "/recognition.html", "icon": "fa-solid fa-trophy" },
-    { "title": "Blog", "url": "/blog.html", "icon": "fa-solid fa-blog" },
-    { "title": "idol - C++ for optimization", "url": "/idol", "icon": "fa-solid fa-code" }
-]
