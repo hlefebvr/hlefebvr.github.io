@@ -61,7 +61,9 @@ jobs:
         run: R -e "install.packages(\"rmarkdown\")"
         
       - name: Install kableExtra
-        run: R -e "install.packages(\"kableExtra\", dependencies = TRUE)"
+        run:
+          sudo apt-get install -y libmagick++-dev libharfbuzz-dev libfribidi-dev libxml2-dev libcurl4-openssl-dev libfontconfig1-dev 
+          R -e "install.packages(\"kableExtra\", dependencies = TRUE)"
         
       - name: Install tidyr
         run: R -e "install.packages(\"tidyr\")"
