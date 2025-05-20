@@ -15,14 +15,42 @@
         <a href="https://orcid.org/0009-0004-2914-9850" target="_blank"><i class="ai ai-orcid ai-fw"></i></a>
     </div>
     <div id="nav">
-        <ul>
-            {% for item in site.data.navigation %}
+        <ul class="nav-menu">
             <li>
-                <a href="{{ item.url }}" class="{% if page.url == item.url %}active{% endif %}">
-                    <i class="{{ item.icon }}"></i>{{ item.title }}
-                </a>
+            <a href="/" class="">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
             </li>
-            {% endfor %}
+            <li>
+            <a href="/publications.html" class="">
+                <i class="fa-solid fa-newspaper"></i> Publications
+            </a>
+            </li>
+            <li>
+            <a href="/talks.html" class="">
+                <i class="fa-solid fa-microphone"></i> Talks
+            </a>
+            </li>
+            <li>
+            <a href="/supervision.html" class="">
+                <i class="fa-solid fa-user-graduate"></i> Supervision
+            </a>
+            </li>
+            <li>
+            <a href="/recognition.html" class="">
+                <i class="fa-solid fa-trophy"></i> Recognition
+            </a>
+            </li>
+            <li>
+            <a href="/blog.html" class="">
+                <i class="fa-solid fa-blog"></i> Blog
+            </a>
+            </li>
+            <li>
+            <a href="/idol" class="">
+                <i class="fa-solid fa-code"></i> idol - C++ for optimization
+            </a>
+            </li>
         </ul>
     </div>
 
@@ -30,3 +58,18 @@
         <!-- <iframe src="https://github.com/sponsors/hlefebvr/button" title="Sponsor hlefebvr" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe> -->
     </span>
 </div>
+
+<script>
+  $(document).ready(function() {
+    var currentPath = window.location.pathname;
+
+    $('.nav-menu a').each(function() {
+      var linkPath = $(this).attr('href');
+
+      // Optional: Normalize trailing slashes for comparison
+      if (linkPath === currentPath) {
+        $(this).addClass('active');
+      }
+    });
+  });
+</script>
