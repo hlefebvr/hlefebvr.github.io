@@ -5,5 +5,5 @@
     { "title": "Supervision", "url": "/supervision.html", "icon": "fa-solid fa-user-graduate" },
     { "title": "Recognition", "url": "/recognition.html", "icon": "fa-solid fa-trophy" },
     { "title": "Blog", "url": "/blog.html", "icon": "fa-solid fa-blog" },
-    { "title": "idol - A C++ framework for optimization", "url": "/idol", "icon": "fa-solid fa-code" }
+    { "title": "idol - C++ for optimization", "url": "/idol", "icon": "fa-solid fa-code" }
 ]
