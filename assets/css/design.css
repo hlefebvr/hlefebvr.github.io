@@ -115,6 +115,10 @@ pre {
 
         ul li {
             margin-bottom: .3rem;
+            width: 10px;
+            i {
+                width: 20px;
+            }
         }
     }
 }
