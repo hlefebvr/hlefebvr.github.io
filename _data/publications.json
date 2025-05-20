@@ -1,0 +1,212 @@
+{
+  "submitted-articles": [
+    {
+      "code": "AI",
+      "title": "On Coupling Constraints in Pessimistic Linear Bilevel Optimization",
+      "authors": "Dorothee Henke, Martin Schmidt and Johannes Thürauf",
+      "year": 2025,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=29476"
+        },
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2503.01563"
+        }
+      ],
+      "open-science-page": "open-science/AI-on-coupling-constraints-in-pessimistic-linear-bilevel-optimization",
+      "abstract": "The literature on pessimistic bilevel optimization with coupling constraints is rather scarce and it has been common sense that these problems are harder to tackle than pessimistic bilevel problems without coupling constraints. In this note, we show that this is not the case. To this end, given a pessimistic problem with coupling constraints, we derive a pessimistic problem without coupling constraints that has the same set of globally optimal solutions. Moreover, our results also show that one can equivalently replace a pessimistic problem with such constraints with an optimistic problem without coupling constraints. This paves the way of both transferring theory and solution techniques from any type of these problems to any other one.",
+      "bibtex": "@article{Henke2025,\n  title = {On Coupling Constraints in Pessimistic Linear Bilevel Optimization},\n  author = {Henke, Dorothee and Lefebvre, Henri and Schmidt, Martin and Thürauf, Johannes},\n  year = {2025},\n  note = {Published: 2025/02/28},\n  url = {https://optimization-online.org/?p=29476},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+    },
+    {
+      "title": "Solving Decision-Dependent Robust Problems as Bilevel Optimization Problems",
+      "authors": "Martin Schmidt, Simon Stevens, Johannes Thürauf",
+      "year": 2025,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=29420"
+        },
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2503.01559"
+        }
+      ]
+    },
+    {
+      "code": "AH",
+      "title": "Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method",
+      "authors": "Martin Schmidt",
+      "year": 2024,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=28803"
+        }
+      ],
+      "open-science-page": "open-science/AH-computing-counterfactual-explanations-for-linear-optimization",
+      "abstract": "Explainable artificial intelligence is one of the most important trends in modern machine-learning research. The idea is to explain the outcome of a model by presenting a certain change in the input of the model so that the outcome changes significantly. In this paper, we study this question for linear optimization problems as an automated decision-making tool. This leads to a new class of linear bilevel optimization problems that have more nonlinearities in their single-level reformulations compared to traditionally studied linear bilevel problems. For this class of problems, we present a tailored penalty alternating direction method and present its convergence theory that mainly ensures that we compute stationary points of the single-level reformulation. Finally, we illustrate the applicability of this method using the example of a real-world energy system model as well as by computing counterfactual explanations for a large set of linear optimization problems from the NETLIB as it has been proposed in the recent literature.",
+      "bibtex": "@misc{lefebvre2024counterfactual,\n  author       = {Henri Lefebvre and Martin Schmidt},\n  title        = {Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method},\n  year         = {2024},\n  note         = {Published: 2024-12-19, Updated: 2025-01-08},\n  howpublished = {\\url{https://optimization-online.org/?p=28803}},\n  keywords     = {bilevel optimization, Counterfactual explanations, explainability, Linear Optimization, Penalty alternating direction method},\n  categories   = {Energy, Nonlinear Optimization, Optimization in Data Science}\n}"
+    },
+    {
+      "title": "Correction to <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
+      "authors": "Anirudh Subramanyam",
+      "year": 2024,
+      "preprints": [
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2411.04307"
+        }
+      ]
+    },
+    {
+      "title": "Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization",
+      "authors": "Martin Schmidt",
+      "year": 2024,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=27046"
+        }
+      ]
+    },
+    {
+      "code": "AE",
+      "title": "Using Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization",
+      "authors": "Martin Schmidt, Johannes Thürauf",
+      "year": 2023,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=24462"
+        }
+      ],
+      "open-science-page": "open-science/AE-using-column-generation-in-column-and-constraints-generation-for-adjustable-robust-optimization",
+      "abstract": "Adjustable robust optimization (ARO) is a powerful tool to model problems that have uncertain data and that feature a two-stage decision making process. Computationally, they are often addressed using the column-and-constraint generation (CCG) algorithm introduced by Zeng and Zhao (2013). While it was empirically shown that the algorithm scales well if all second-stage decisions are continuous, the presence of integer variables in the second stage rapidly leads to challenging large-scale mixed-integer problems within CCG. These problems can no longer be solved to global optimality within reasonable time limits in general. In this work, we explicitly focus on ARO problems with mixed-integer second-stage decisions and discuss the main difficulties of successfully applying CCG to this problem class. We then introduce, for a large set of problems with specific structural properties, a stronger formulation, which can be used in place of the master problem in the classic CCG algorithm. We show how this model can be effectively solved by column generation (CG). Additionally, we introduce a new CG-based heuristic that is able to generate new feasible points to speed up the overall method. We apply this nested scheme, combining CCG and CG, to two problems in logistics and scheduling. The numerical results show that the proposed method significantly outperforms the classic CCG.",
+      "bibtex": "@article{Lefebvre2025,\n  title = {Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints},\n  author = {Lefebvre, Henri and Schmidt, Martin and Thürauf, Johannes},\n  year = {2025},\n  note = {Published: 2023/10/09, Updated: 2025/01/30},\n  url = {https://optimization-online.org/?p=24462},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+    },
+    {
+      "code": "AD",
+      "title": "Exact Approaches for Convex Adjustable Robust Optimization",
+      "authors": "Enrico Malaguti, Michele Monaci",
+      "year": 2023,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=20869"
+        }
+      ],
+      "open-science-page": "open-science/AD-exact-approaches-for-convex-adjustable-robust-optimization",
+      "abstract": "Adjustable Robust Optimization (ARO) is a paradigm for facing uncertainty in a decision problem, in case some recourse actions are allowed after the actual value of all input parameters is revealed. While several approaches have been introduced for the linear case, little is known regarding exact methods for the convex case. In this work, we introduce a new general framework for attacking ARO problems involving convex functions in the recourse problem. We first recall a semi-infinite reformulation of the problem and, provided that one can solve a non-convex separation problem, show how to solve it either by a generalized Benders decomposition or by a column-and-constraint generation approach. For the relevant case in which the uncertainty set has an affine mapping to a 0-1 polytope, we show that the separation problem can be reformulated as a convex Mixed-Integer NonLinear Problem, thus allowing us to derive computationally sound exact methods. Finally, we apply the resulting algorithms to two different applications, namely a nonlinear facility location problem and a nonlinear resource allocation problem, to numerically assess their computational performance.",
+      "bibtex": "@article{Lefebvre2025,\n  title = {Exact Approaches for Convex Adjustable Robust Optimization},\n  author = {Lefebvre, Henri and Malaguti, Enrico and Monaci, Michele},\n  year = {2025},\n  note = {Published: 2022/11/04, Updated: 2025/04/18},\n  url = {https://optimization-online.org/?p=20869},\n  journal = {Optimization Online},\n  howpublished = {Preprint}\n}"
+    }
+  ],
+  "journal-articles": [
+    {
+      "code": "AF",
+      "title": "On Coupling Constraints in Linear Bilevel Optimization",
+      "authors": "Dorothee Henke, Martin Schmidt, Johannes Thürauf",
+      "year": 2024,
+      "doi": "10.1007/s11590-024-02156-3",
+      "published": [
+        {
+          "title": "Optimization Letters",
+          "details": "Online First"
+        }
+      ],
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=25680"
+        },
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2402.12191"
+        }
+      ],
+      "open-science-page": "open-science/AF-on-coupling-constraints-in-linear-bilevel-optimization",
+      "abstract": "It is well-known that coupling constraints in linear bilevel optimization can lead to disconnected feasible sets, which is not possible without coupling constraints. However, there is no difference between linear bilevel problems with and without coupling constraints w.r.t. their complexity-theoretical hardness. In this note, we prove that, although there is a clear difference between these two classes of problems in terms of their feasible sets, the classes are equivalent on the level of optimal solutions. To this end, given a general linear bilevel problem with coupling constraints, we derive a respective problem without coupling constraints and prove that it has the same optimal solutions (when projected back to the original variable space).",
+      "bibtex": "@article{Henke2024,\n  title = {On coupling constraints in linear bilevel optimization},\n  volume = {19},\n  ISSN = {1862-4480},\n  url = {http://dx.doi.org/10.1007/s11590-024-02156-3},\n  DOI = {10.1007/s11590-024-02156-3},\n  number = {3},\n  journal = {Optimization Letters},\n  publisher = {Springer Science and Business Media LLC},\n  author = {Henke,  Dorothee and Lefebvre,  Henri and Schmidt,  Martin and Th\\\"{u}rauf,  Johannes},\n  year = {2024},\n  X_month = dec,\n  pages = {689--697}\n}"
+    },
+    {
+      "code": "AC",
+      "title": "Adjustable Robust Optimization with Discrete Uncertainty",
+      "authors": "Enrico Malaguti, Michele Monaci",
+      "year": 2023,
+      "status": "Published",
+      "doi": "10.1287/ijoc.2022.0086",
+      "published": [
+        {
+          "title": "INFORMS Journal on Computing",
+          "details": "Volume 36, Issue 1, Pages 1-304, C2"
+        }
+      ],
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=18343"
+        }
+      ],
+      "open-science-page": "open-science/AC-adjustable-robust-optimization-with-discrete-uncertainty",
+      "abstract": "In this paper, we study Adjustable Robust Optimization (ARO) problems with discrete uncertainty. Under a very general modeling framework, we show that such two-stage robust problems can be exactly reformulated as ARO problems with objective uncertainty only. This reformulation is valid with and without the fixed recourse assumption and is not limited to continuous wait-and-see decision variables, unlike most of the existing literature. Additionally, we extend an enumerative algorithm akin to a branch-and-cut scheme for which we study the asymptotic convergence. We discuss how to apply the reformulation on two variants of well known optimization problems: a Facility Location Problem in which uncertainty may affect the capacity values and a Multiple Knapsack Problem with uncertain weights, and we report extensive computational results demonstrating the effectiveness of the approach.",
+      "bibtex": "@article{Lefebvre2024,\n  title = {Adjustable Robust Optimization with Discrete Uncertainty},\n  volume = {36},\n  ISSN = {1526-5528},\n  url = {http://dx.doi.org/10.1287/ijoc.2022.0086},\n  DOI = {10.1287/ijoc.2022.0086},\n  number = {1},\n  journal = {INFORMS Journal on Computing},\n  publisher = {Institute for Operations Research and the Management Sciences (INFORMS)},\n  author = {Lefebvre,  Henri and Malaguti,  Enrico and Monaci,  Michele},\n  year = {2024},\n  month = {jan},\n  pages = {78--96}\n}"
+    },
+    {
+      "title": "Adjustable Robust Optimization with Nonlinear Recourse",
+      "year": 2023,
+      "doi": "10.1007/s10288-023-00557-1",
+      "published": [
+        {
+          "title": "4OR - A Quarterly Journal of Operations Research",
+          "details": "PhD Abstract"
+        }
+      ],
+      "open-science-page": "https://link.springer.com/article/10.1007/s10288-023-00557-1"
+    },
+    {
+      "code": "AB",
+      "title": "Adjustable Robust Optimization with Objective Uncertainty",
+      "authors": "Boris Detienne, Enirco Malaguti, Michele Monaci",
+      "year": 2023,
+      "doi": "10.1016/j.ejor.2023.06.042",
+      "published": [
+        {
+          "title": "European Journal of Operations Research",
+          "details": "Volume 312, Issue 1, Pages 373-384"
+        }
+      ],
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=17567"
+        }
+      ],
+      "open-science-page": "open-science/AB-adjustable-robust-optimization-with-objective-uncertainty",
+      "abstract": "In this work, we study optimization problems where some cost parameters are not known at decision time and the decision flow is modeled as a two-stage process within a robust optimization setting. We address general problems in which all constraints (including those linking the first and the second stages) are defined by convex functions and involve mixed-integer variables, thus extending the existing literature to a much wider class of problems. We show how these problems can be reformulated using Fenchel duality, allowing to derive an enumerative exact algorithm, for which we prove asymptotic convergence in the general case, and finite convergence for cases where the first-stage variables are all integer. </p><p> An implementation of the resulting algorithm, embedding a column generation scheme, is then computationally evaluated on a variant of the Capacitated Facility Location Problem with uncertain transportation costs, using instances that are derived from the existing literature. To the best of our knowledge, this is the first approach providing results on the practical solution of this class of problems.",
+      "bibtex": "@article{Detienne2024,\n  title = {Adjustable robust optimization with objective uncertainty},\n  volume = {312},\n  ISSN = {0377-2217},\n  url = {http://dx.doi.org/10.1016/j.ejor.2023.06.042},\n  DOI = {10.1016/j.ejor.2023.06.042},\n  number = {1},\n  journal = {European Journal of Operational Research},\n  publisher = {Elsevier BV},\n  author = {Detienne,  Boris and Lefebvre,  Henri and Malaguti,  Enrico and Monaci,  Michele},\n  year = {2024},\n  month = {jan},\n  pages = {373--384}\n}"
+    },
+    {
+      "code": "AA",
+      "title": "A Two-Stage Robust Approach for the Weighted Number of Tardy Jobs with Objective Uncertainty",
+      "authors": "François Clautiaux, Boris Detienne",
+      "year": 2022,
+      "doi": "10.1007/s10951-022-00775-1",
+      "published": [
+        {
+          "title": "Journal of Scheduling",
+          "details": "Volume 26, Pages 169-191"
+        }
+      ],
+      "preprints": [
+        {
+          "title": "HAL science ouverte",
+          "link": "https://hal.science/hal-02905849v1"
+        }
+      ],
+      "open-science-page": "open-science/AA-a-two-stage-robust-approach-for-minimizing-the-weighted-number-of-tardy-jobs-with-objective-uncertainty",
+      "abstract": "Minimizing the weighted number of tardy jobs is a classical and intensively studied scheduling problem. In this paper, we develop a two-stage robust approach, where exact weights are known after accepting to perform the jobs, and before sequencing them on the machine. This assumption allows diverse recourse decisions to be taken in order to better adapt one's tactical plan. The contribution of this paper is twofold: first, we introduce a new scheduling problem and model it as a min-max-min optimization problem with mixed-integer recourse by extending existing models proposed for the classical problem where all the costs are assumed to be known. Second, we take advantage of the special structure of the problem to propose two solution approaches based on results from the recent robust optimization literature, namely finite adaptability (Bertsimas and Caramanis, 2010) and a convexification-based approach (Arslan and Detienne, 2020). We also study the cost of finding anchored solutions, where the sequence of jobs has to be decided before the uncertainty is revealed. Computational experiments to analyze the effectiveness of our approaches are reported.",
+      "bibtex": "@article{Clautiaux2023,\n  title = {A two-stage robust approach for minimizing the weighted number of tardy jobs with objective uncertainty},\n  volume = {26},\n  ISSN = {1099-1425},\n  url = {http://dx.doi.org/10.1007/s10951-022-00775-1},\n  DOI = {10.1007/s10951-022-00775-1},\n  number = {2},\n  journal = {Journal of Scheduling},\n  publisher = {Springer Science and Business Media LLC},\n  author = {Clautiaux,  Fran\\c{c}ois and Detienne,  Boris and Lefebvre,  Henri},\n  year = {2023},\n  month = feb,\n  pages = {169--191}\n}"
+    }
+  ]
+}

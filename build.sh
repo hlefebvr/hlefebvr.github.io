@@ -1,8 +1,11 @@
 python3 pre-build.py
 
-for FILE in $(find . -type f -name '*.rendered.Rmd' | grep -v "_site")
+FILES=$(find . -type f -name '*.rendered.Rmd' | grep -v "_site")
+
+for FILE in $FILES
 do
-    R -e "rmarkdown::render(\"$FILE\")" || exit
+    echo $FILE
+    R --no-save --no-restore -e "rmarkdown::render(\"$FILE\")" || exit
 done
 
 jekyll build

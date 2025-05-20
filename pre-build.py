@@ -31,10 +31,10 @@ output:
     include:
       in_header: {prefix}_includes/head.html
       before_body: 
-        - {prefix}_includes/header.html
         - {prefix}_includes/begin_content.html
-        - {prefix}_includes/toc.html
+        - {prefix}_includes/header.html
         - {prefix}_includes/begin_post_content.html
+        - {prefix}_includes/toc.html
       after_body: 
         - {prefix}_includes/handle_page_title.html
         - {prefix}_includes/end_post_content.html

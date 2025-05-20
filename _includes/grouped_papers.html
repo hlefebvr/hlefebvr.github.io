@@ -8,7 +8,13 @@
         <li>
           <p>
             <div class="paper-list">
-              <span style="color:black;font-weight: 400;">{{ paper.title }}.</span><br />
+              <span style="color:black;font-weight: 400;">
+                {% if paper.open-science-page %}
+                  <a href="{{ paper.open-science-page }}">{{ paper.title }}</a>.
+                {% else %}
+                  {{ paper.title }}
+                {% endif %}
+              </span><br />
               {% if paper.authors %}
                 Jointly with {{ paper.authors }}.
               {% else %}
@@ -28,7 +34,6 @@
                   {% endif %}
                   {% unless forloop.last %} - {% endunless %}
                 {% endfor %}
-                <br />
               {% endif %}
 
               {% if paper.locations %}
@@ -40,20 +45,17 @@
                     {{ location.title }}.
                   {% endif %}
                 {% endfor %}
-                <br />
               {% endif %}
 
-              {% if paper.comment %}
-                {{ paper.comment }}<br />
-              {% endif %}
+              
               {% if paper.doi %}
-                DOI: <a href="http://doi.org/{{ paper.doi }}">{{ paper.doi }}</a><br />
+                <a href="http://doi.org/{{ paper.doi }}" style="text-decoration: none;">{{ paper.doi }}</a><br />
               {% endif %}
+              <!--
               {% if paper.link %}
-                <a href="{{ paper.link }}">External link</a><br />
+                <a href="{{ paper.link }}">External link</a>
               {% endif %}
               {% if paper.preprints %}
-                Preprint: 
                 {% for location in paper.preprints %}
                   {% if location.link %}
                     <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>
@@ -63,6 +65,12 @@
                   {% unless forloop.last %} - {% endunless %}
                 {% endfor %}
               {% endif %}
+              -->
+
+              {% if paper.comment %}
+                {{ paper.comment }}<br />
+              {% endif %}
+
             </div>
             {% for image in paper.images %}
               <center style="margin-top: 20px;">
