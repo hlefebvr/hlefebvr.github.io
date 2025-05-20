@@ -29,6 +29,11 @@ body {
     min-height: 100vh;
 }
 
+pre {
+    width: 580px;
+    overflow-x: auto;
+}
+
 #sidebar {
     width: 20%;
     min-width: 300px;
@@ -113,8 +118,7 @@ body {
 }
 
 #content {
-    width: 35%;
-    min-width: 700px;
+    width: 700px;
     margin-top: 1.5%;
     margin-left: 3%;
     margin-right: 3%;
