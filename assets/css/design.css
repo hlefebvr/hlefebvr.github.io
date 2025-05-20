@@ -88,8 +88,13 @@ pre {
         text-decoration: none;
         padding: 5px;
     }
+
     a:hover {
         text-decoration: underline;
+    }
+
+    .active {
+        font-weight: bold;
     }
 
     #contact {
@@ -206,7 +211,7 @@ pre {
     .category-item-image {
         width: 25%;
         text-align: center;
-        border: 1px solid gray;
+        border: 1px solid #8d8d8d;
         height: 90px;
            
         img {
@@ -214,6 +219,10 @@ pre {
             max-height: 80px;
         }
 
+    }
+
+    .category-item-date {
+        color: gray;
     }
 
     .category-item-text {

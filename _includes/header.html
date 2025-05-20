@@ -6,7 +6,7 @@
                 Henri Lefebvre, PhD
             </a>
         </h1>
-        <a href="https://martinschmidt.squarespace.com/team">Trier University (Universität Trier)</a>
+        <a href="https://martinschmidt.squarespace.com/team" target="_blank">Trier University (Universität Trier)</a>
     </div>
     <div id="contact">
         <a href="mailto:lefebvre@uni-trier.de"><i class="fa-solid fa-envelope"></i></a>
@@ -16,13 +16,14 @@
     </div>
     <div id="nav">
         <ul>
-            <li><a href="/index.html"><i class="fa-solid fa-house"></i> Home</a></li>
-            <li><a href="/publications.html"><i class="fa-solid fa-newspaper"></i> Publications</a></li>
-            <li><a href="/talks.html"><i class="fa-solid fa-microphone"></i> Talks</a></li>
-            <li><a href="/supervision.html"><i class="fa-solid fa-user-graduate"></i> Supervision</a></li>
-            <li><a href="/recognition.html"><i class="fa-solid fa-trophy"></i> Recognition</a></li>
-            <li><a href="/blog.html"><i class="fa-solid fa-blog"></i> Blog</a></li>
-            <li><a href="/idol" target="_blank"><i class="fa-solid fa-code"></i> idol</a></li>
+            {% for item in site.data.navigation %}
+            <li>
+                <a href="{{ item.url }}" class="{% if page.url == item.url %}active{% endif %}">
+                    <i class="{{ item.icon }}"></i>
+                    {{ item.title }}
+                </a>
+            </li>
+            {% endfor %}
         </ul>
     </div>
 
