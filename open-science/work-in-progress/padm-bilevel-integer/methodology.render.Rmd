@@ -8,6 +8,40 @@ library(knitr)
 library(kableExtra)
 library(stringr)
 library(RColorBrewer)
+library(tidyr)
+```
+
+```{r}
+export_data_from_ggplot_ecdf = function(plot, xmax = NULL) {
+  plot_data = ggplot_build(plot)$data[[1]]
+  
+  plot_data = plot_data %>% filter(is.finite(x))
+  
+  if (is.null(xmax)) {
+    xmax = max(plot_data$x, na.rm = TRUE)
+  }
+
+  ecdf_wide = plot_data %>%
+    select(x, y, group) %>%
+    pivot_wider(names_from = group, values_from = y) %>%
+    arrange(x) %>%
+    slice(1:n()-1)
+  
+  final_row = ecdf_wide %>%
+    select(-x) %>%
+    summarise(across(everything(), ~ max(.x, na.rm = TRUE))) %>%
+    mutate(x = xmax) %>%
+    select(x, everything())
+
+  ecdf_wide = bind_rows(ecdf_wide, final_row)
+
+  return(ecdf_wide)
+}
+
+export_data_from_ggplot_ecdf_csv = function(plot, filename) {
+  result = export_data_from_ggplot_ecdf(plot)
+  write.csv(result, file = filename, na = "") 
+}
 ```
 
 ## Loading BOBILib
@@ -108,7 +142,7 @@ all_results = rbind(
 )
 
 all_results = all_results %>%
-  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj), by = "instance") %>%
+  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj, class, type), by = "instance") %>%
   mutate(
     best_known_obj = na_if(best_known_obj, "None"),
     best_obj = na_if(best_obj, "None")
@@ -119,6 +153,16 @@ all_results = all_results %>%
   )
 
 paged_table(all_results)
+```
+
+```{r}
+all_results %>%
+  distinct(instance, .keep_all = TRUE) %>%
+  count(bobilib_status)
+
+all_results %>%
+  distinct(instance, .keep_all = TRUE) %>%
+  count(class, type)
 ```
 
 ## PADM
@@ -140,7 +184,10 @@ plot_ecdf_of_time = function(data) {
   return(p)
 }
 
-plot_ecdf_of_time(all_results %>% filter(method != "PADM-interdiction"))
+p = plot_ecdf_of_time(all_results %>% filter(!startsWith(method, "PADM-interdiction")))
+p
+export_data_from_ggplot_ecdf_csv(p, "ecdf_time_all.csv")
+
 ```
 
 ### Optimality Gap
@@ -178,7 +225,9 @@ solved_by_both = solved_by_both = all_results %>% filter(method == "PADM-100" | 
   filter(all(time < 3600 & time >= 0)) %>%
   ungroup()
 
-plot_ecdf_of_gap_wrt_best_known(solved_by_both)
+p = plot_ecdf_of_gap_wrt_best_known(solved_by_both)
+p
+export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_all.csv")
 ```
 
 ### Status change in BOBILib
@@ -191,9 +240,17 @@ all_results_with_status = all_results %>%
     new_bobilib_status = ifelse(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6, "was open with feasible point\n and is improving", bobilib_status),
     new_bobilib_status = ifelse(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6, "was optimal\n and found optimal point", new_bobilib_status),
     new_bobilib_status = ifelse(bobilib_status == "open", "was open", new_bobilib_status),
-    new_bobilib_status = ifelse(bobilib_status == "optimal", "was optimal\n and found feasible point", new_bobilib_status),
-    new_bobilib_status = ifelse(new_bobilib_status == "open with feasible point", "was open with feasible point\n and found non-improving\n feasible point", new_bobilib_status)
+    new_bobilib_status = ifelse(bobilib_status == "optimal" & abs(best_obj - best_known_obj) > 1e-6, "was optimal\n and found feasible point", new_bobilib_status),
+    new_bobilib_status = ifelse(new_bobilib_status == "open with feasible point" & best_obj >= best_known_obj, "was open with feasible point\n and found non-improving\n feasible point", new_bobilib_status)
   )
+
+padm_found_feasible_point = all_results %>%
+  filter(method == "PADM-1000" & time < 3600)
+
+was_open_and_is_improving = length(padm_found_feasible_point %>% filter(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6))
+was_optimal_and_found_optimal = length(padm_found_feasible_point %>% filter(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6))
+was_open_and_found_feasible = length(padm_found_feasible_point %>% filter( bobilib_status == "open" ))
+was_optimal_and_found_feasible = length(padm_found_feasible_point %>% filter(bobilib_status == "optimal" & abs(best_obj - best_known_obj) > 1e-6))
 
 ggplot(all_results_with_status, aes(x = new_bobilib_status)) +
   geom_bar(fill = "steelblue", width = .9) +
@@ -226,13 +283,17 @@ solved_by_both = solved_by_both = all_results %>% filter(method == "PADM-1000" |
 ```
 
 ```{r}
-plot_ecdf_of_time(all_results_common_to_padm_and_padm_interdiction)
+p = plot_ecdf_of_time(all_results_common_to_padm_and_padm_interdiction)
+p
+export_data_from_ggplot_ecdf_csv(p, "ecdf_time_interdiction.csv")
 ```
 
 #### Optimality gap 
 
 ```{r}
 plot_ecdf_of_gap_wrt_best_known(all_results %>% filter(method == "PADM-interdiction-1000"))
-plot_ecdf_of_gap_wrt_best_known(solved_by_both)
+p = plot_ecdf_of_gap_wrt_best_known(solved_by_both)
+p
+export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_interdiction.csv")
 ```
 

@@ -61,7 +61,7 @@ jobs:
         run: R -e "install.packages(\"rmarkdown\")"
         
       - name: Install kableExtra
-        run: R -e "install.packages(\"kableExtra\")"
+        run: R -e "install.packages(\"kableExtra\", dependencies = TRUE)"
         
       - name: Install tidyr
         run: R -e "install.packages(\"tidyr\")"

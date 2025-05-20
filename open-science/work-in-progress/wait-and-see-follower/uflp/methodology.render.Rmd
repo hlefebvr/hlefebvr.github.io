@@ -131,7 +131,7 @@ make_ecdf_master_time = function(data) {
 ## Two-stage robust problem
 
 ```{r}
-all_results_two_stage = read.csv("results.csv", header = FALSE)
+all_results_two_stage = read.csv("results-two-stage.csv", header = FALSE)
 colnames(all_results_two_stage) = c("tag",
                           "instance",
                           "n_facilities",
@@ -155,7 +155,7 @@ all_results_two_stage = all_results_two_stage %>%
     total_time = pmin(total_time, 10800)
   )
 
-all_results_two_stage = all_results_two_stage %>% filter(n_facilities <= 25 & n_customers <= 40 & separation_method == "Optimality_KKT_BigM")
+all_results_two_stage = all_results_two_stage %>% filter(n_facilities <= 25 & n_customers <= 40 & separation_method == "Optimality_KKT_SOS1")
 
 paged_table(all_results_two_stage)
 ```
@@ -173,7 +173,7 @@ make_heatmap(all_results_two_stage)
 ## Robust bilevel problem with wait-and-see follower
 
 ```{r}
-all_results_wait_and_see = read.csv("results-wait-and-see-uflp.csv", header = FALSE)
+all_results_wait_and_see = read.csv("results-wait-and-see.csv", header = FALSE)
 colnames(all_results_wait_and_see) = c("tag",
                           "instance",
                           "lower_objective_instance",
