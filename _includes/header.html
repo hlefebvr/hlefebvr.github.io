@@ -67,7 +67,7 @@
       var linkPath = $(this).attr('href');
 
       // Optional: Normalize trailing slashes for comparison
-      if (linkPath === currentPath) {
+      if (linkPath === currentPath || (linkPath == "/" && currentPath == "/index.html")) {
         $(this).addClass('active');
       }
     });
