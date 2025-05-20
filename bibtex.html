@@ -1,0 +1,13 @@
+---
+layout: page
+title: "BibTeX"
+---
+
+Here are all the references of papers or online preprint of which I am a co-author
+in bibtex format.
+
+{% assign combined = site.data.publications.submitted-articles | concat: site.data.publications.journal-articles %}
+
+<pre><code>{% for article in combined %}{{ article.bibtex }}
+
+{% endfor %}</code></pre>
