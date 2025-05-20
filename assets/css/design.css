@@ -35,8 +35,7 @@ pre {
 }
 
 #sidebar {
-    width: 20%;
-    min-width: 350px;
+    width: 350px;
     height: auto;
     min-height: auto;
     background-color: #1f5c88;
@@ -246,7 +245,7 @@ pre {
     border-left: 1px dashed black;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
 
     #container {
         flex-direction: column;
@@ -294,5 +293,11 @@ pre {
 
     body {
         font-size: 14px;
+    }
+}
+
+@media (min-width: 801px) and (max-width: 1100px) {
+    #content, #footer, .table-div {
+        width: 80%;
     }
 }
