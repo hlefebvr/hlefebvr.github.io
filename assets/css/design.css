@@ -245,6 +245,21 @@ pre {
     border-left: 1px dashed black;
 }
 
+.simplex-tableau {
+    display: block;
+    margin: auto;
+}
+
+.simplex-tableau td {
+    width: 70px;
+    text-align: right;
+}
+
+.simplex-tableau th {
+    border-bottom: 2px solid black;
+    text-align: right;
+}
+
 @media (max-width: 800px) {
 
     #container {
