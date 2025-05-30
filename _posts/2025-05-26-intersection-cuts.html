@@ -1,0 +1,462 @@
+---
+layout: post
+title: "Computing the cone defined by an LP basis with the Cplex C API"
+category: blog
+short: Shows how to compute the ray defined by an LP basis with the C API of Cplex.
+preview: ../moore-bard/cone-lp-basis.png
+---
+
+<h2>Introduction</h2>
+
+<h3>Problem statement</h3>
+
+<p>
+    We consider a linear problem (LP) given in the form
+
+    $$
+        \begin{aligned}
+            \min_{\tilde{x}\in\mathbb{R}^n} \quad & c^\top \tilde{x} \\
+            \text{s.t.} \quad & \tilde{A} \tilde{x} \le b, \\
+            & \tilde{\ell} \le \tilde{x} \le \tilde{u},
+        \end{aligned}
+    $$
+
+    with \(\tilde{A}\) the constraint matrix, \(b\) the right-hand side, \(c\)
+    the objective coefficient vector and \(\tilde{\ell}\) and \(\tilde{u}\)
+    the lower and upper bounds on the decision vector \(x\). In the following
+    discusson, we also allow for \(\tilde{\ell}_j = -\infty\) or \(
+    \tilde{u}_j = \infty \) for some \( j\in\{1,\dotsc,n\} \) in case some
+    variables have no lower or no upper bound. 
+</p>
+
+<p>
+    As classically done, we consider the standard form of this LP rather than
+    its "natural" formulation stated above. The standard form is obtained by
+    introducing slack variables \(s\) in such a way that all inequality
+    constraints are turned into equality constraints. In our case, the LP in
+    standard form reads
+
+    $$
+        \begin{aligned}
+            \min_{x,s} \quad & c^\top x \\
+            \text{s.t.} \quad & Ax + Is = b, \\
+            & \ell \le x \le u, \\
+            & s \ge 0.
+        \end{aligned}
+    $$
+
+    For the sake of presentation, we denote by \( A \) the matrix formed by
+    appending the identity matrix \(I\) to the matrix \(\tilde{A}\), i.e., \(
+    A := [\tilde{A},I] \). Additionally, \(\ell\) denotes the vector formed by
+    appending \(m\) zeroes to the vector \(\tilde{\ell}\) and \(u\) denotes the
+    vector formed by appending \(m\) infinite entries to the vector
+    \(\tilde{u}\). With this notation, we study the LP written in standard and
+    compact form
+
+    $$
+        \begin{aligned}
+            \min_x \quad & c^\top x \\
+            \text{s.t.} \quad & Ax = b, \\
+            & \ell \le x \le u.
+        \end{aligned}
+    $$
+
+    In the following, we define \( S := \{ 1,\dotsc,n \} \) the set of indices
+    which corresponds to <i>structural</i> variables, i.e., non slack
+    variables.
+</p>
+
+<h2>The cone defined by an LP basis</h2>
+
+<h3>Recalls on the Simplex algorithm with bounded variables</h3>
+
+<p>
+    Modern optimization solvers like Cplex typically solve LPs using the
+    revised Simplex algorithm with bounded variables. This version of the
+    Simplex explicitly accounts for bound constraints on the decision
+    variables which is typically faster than treating them as standard
+    constraints embedded in the definition of \(A\) and \(b\).
+</p>
+
+<p>
+    We say that a solution \( x^* \) is a basic solution if and only if
+    the \(n+m\) components of \(x\) can be partitioned into \( (B,L,U) \)
+    such that
+    <ol>
+        <li>
+            \( |B| = m \) and the matrix made of those columns in \( A \)
+            whose index is in \(B\), noted \( A_B \), is invertible;
+        </li>
+        <li>
+            It holds \( x_j^* = \ell_j \) for all \( j\in L \) and \(x_j^* =
+            u_j\) for all \(j\in U\).
+        </li>
+    </ol>
+    
+   A basic solution \(x^*\) is called feasible if and only if \( \ell \le x^*
+   \le u \) holds.
+</p>
+
+<p>
+    For more information on the Simplex algorithm with bounded variables, we
+    refer to Chapter 8 of the book <a
+    href="https://books.google.de/books/about/Linear_Programming.html?id=DN20_tW_BV0C&redir_esc=y"
+    target="_blank">Linear Programming by V. Chvátal</a> or to this <a
+    href="https://www.youtube.com/watch?v=uccbVoamiUM&t=1075s&ab_channel=ZuseInstituteBerlin"
+    target="_blank">YouTube video</a> of R. Bixby (in particular starting at
+    6:44 "Issue 0: Bounds on Variables").
+</p>
+
+<h3>Computing rays: the theory</h3>
+
+<p>
+    Let \(x^*\) denote a basic feasible solution with partition \( (B,L,U) \).
+    Then, one can express the basic variables in terms of the nonbasic ones by
+    rewritting the system \( Ax = b \) as
+
+    $$
+        \begin{aligned}
+            Ax^* = b \iff & A_Bx_B^* + A_Lx_L^* + A_Ux_U^* = b \\
+            \iff & x_B^* = A_B^{-1}b - A_B^{-1}A_Lx_L^* - A_B^{-1}A_Ux_U^*.
+        \end{aligned}
+    $$
+
+    Recall from the Simplex algorithm that moving from one extreme point \(
+    x^* \) to its neighboring extreme point, say \( x^k \), corresponds to a
+    nonbasic variable entering the basis while a basic variable leaves the
+    basis. Hence, pick any nonbasic variable (structural or slack) and let it
+    enter the basis. To start with, let's assume that this variable has an
+    index \( k\in L \). Because it is a nonbasic variable at its lower bound,
+    making it entering the basis will lead to a positive change of the form \(
+    x_k^k \gets x_k^* + \xi \) for some \( \xi > 0 \) while other nonbasic
+    variables do not change. More formally, performing a pivot operation leads
+    to 
+
+    $$
+        \begin{array}{cl}
+            x_B^k &= A_B^{-1}b - A_B^{-1}(A_{L\backslash\{k\}}x_{L\backslash\{k\}}^* + A_k(x_k^* + \xi) ) - A_B^{-1}A_Ux_U^*, \\
+            x_k^k &= x_k^* + \xi, \\
+            x_{L\backslash\{k\}}^k &= x_{L\backslash\{k\}}^*, \\
+            x_U^k &= x_U^*.
+        \end{array}
+    $$
+    for some \( \xi > 0 \).
+</p>
+
+<p>
+    The ray associated to moving from the basic solution \(x^*\) to the
+    nonbasic solution \(x^k\) can be computed as \( r^k := x^k - x^* \).
+    Hence, we obtain 
+    
+    $$
+        \begin{array}{cl} 
+            r^k_B &= -A_B^{-1}A_k\xi, \\
+            r_k^k &= \xi, \\
+            r_{L\backslash\{k\}}^k &= 0, \\
+            r_U &= 0,
+        \end{array}
+    $$
+
+    for some \( \xi > 0 \). Note that, for any \( \xi \), this ray is colinear
+    to the ray 
+    
+    $$
+        \begin{array}{cl} 
+            r^k_B &= -A_B^{-1}A_k, \\
+            r_k^k &= 1, \\
+            r_{L\backslash\{k\}}^k &= 0, \\
+            r_U &= 0.
+        \end{array}
+    $$
+
+    By convention, we will consider the latter in our implementation.
+
+    Similarly, if the nonbasic variable which we select to enter the basis is
+    at its upper bound, i.e., if \(k\in U\), one obtains the ray 
+
+    $$
+        \begin{array}{cl} 
+            r^k_B &= A_B^{-1}A_k, \\
+            r_k^k &= -1, \\
+            r_{U\backslash\{k\}}^k &= 0, \\
+            r_L &= 0.
+        \end{array}
+    $$
+
+    Notice how the sign flipped due to the change \( x_k^k \gets x_k^* - \xi
+    \) for some \( \xi> 0 \) instead of \( x_k^k \gets x_k^* + \xi \). This is
+    because \(x_k\) is at its upper bound and can only decrease its value to
+    preserve feasibility.
+</p>
+
+<b>
+    Question for later: What about fixed variables?
+</b>
+
+<h3>A toy example</h3>
+
+<p>
+    We consider a toy LP which has two (structural) variables and that is given by
+
+    $$
+        \begin{aligned}    
+            \min_{x,y} \quad & -x - 10y \\
+            \text{s.t.} \quad & -25x + 20y \le 30, \\
+            & x + 2y \le 10, \\
+            & 2x - y \le 15, \\
+            & 2x + 10y \ge 15, \\
+            & x,y \ge 0.
+        \end{aligned}
+    $$
+
+    This example actually stems from a famous bilevel problem considered by <a
+    href="https://www.jstor.org/stable/171050" target="_blank">Moore and Bard
+    (1990)</a> and corresponds to the linear relaxation of its high-point
+    relaxation. 
+</p>
+
+<p>
+    The feasible region of our example and its optimal point can be
+    represented in the following two-dimensional plot. <br />
+    
+    <img src="/assets/images/moore-bard/relaxation-feasible-region.png" style="width:100%" />
+</p>
+
+<p>
+    The optimal point is \( (x^*,y^*) \) and is associated to the following
+    simplex tableau.
+
+    <table class="simplex-tableau">
+        <tbody>
+            <tr>
+                <th></th>
+                <th>\(x\)</th>
+                <th>\(y\)</th>
+                <th>\(s_1\)</th>
+                <th>\(s_2\)</th>
+                <th>\(s_3\)</th>
+                <th>\(s_4\)</th>
+            </tr>
+        </tbody>
+        <tr>
+            <td>\(x\)</td>
+            <td>1</td>
+            <td>0</td>
+            <td>-0.0286</td>
+            <td>0.2857</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>\(y\)</td>
+            <td>0</td>
+            <td>1</td>
+            <td>0.0143</td>
+            <td>0.3571</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>\(s_3\)</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0.0714	</td>
+            <td>-0.2143</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>\(s_4\)</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0.0857</td>
+            <td>4.1429</td>
+            <td>0</td>
+            <td>1</td>
+        </tr>
+    </table>
+    
+    Here, there are 4 basic variables, \( (x,y,s_3,s_4) \), and 2 nonbasic
+    variables, \( (s_1,s_2) \), which are at their lower bounds (since they
+    are slack variables and thus have no upper bound). The two rays are given
+    by 
+
+    $$
+        r^1 := ( 0.0286, -0.0143 )
+        \quad\text{ and }\quad
+        r^2 := ( -0.2857, -0.3571 ).
+    $$
+
+    Note that, here, we have directly projected the ray in the \( x,y \)-space
+    and do not care about the slack variables.
+</p>
+
+
+<p>
+    A graphical representation of this cone is given hereafter. <br />
+    
+    <img src="/assets/images/moore-bard/cone-lp-basis.png" style="width:100%" />
+</p>
+
+<h2>Implemetation with the Cplex C API</h2>
+
+<h3>Defining the LP</h3>
+
+<pre><code>#define CALL_CPLEX(stmt) \
+if (int status = stmt ; status) { \
+    throw std::runtime_error("CPLEX error from C API, " \
+            "call ended with status " + std::to_string(status)); \
+}
+</code></pre>
+
+<pre><code>int status;
+CPXENVptr env = CPXopenCPLEX(&status);
+CPXLPptr lp = CPXcreateprob(env, &status, "model");
+
+// Set objective sense
+CALL_CPLEX(CPXchgobjsen(env, lp, CPX_MIN))
+
+// Add variables: x and y
+const int numcols = 2;
+const std::vector&lt;char> coltypes { 'I', 'I' };
+const std::vector&lt;double> obj { -1.0, -10.0 };
+const std::vector&lt;double> lb { 1, 0.0 };
+const std::vector&lt;double> ub { 10, 10 };
+std::vector&lt;char*> colnames { const_cast&lt;char*>("x"),
+                              const_cast&lt;char*>("y") };
+
+CALL_CPLEX(CPXnewcols(env,
+                      lp,
+                      numcols,
+                      obj.data(),
+                      lb.data(),
+                      ub.data(),
+                      coltypes.data(),
+                      colnames.data()))
+
+// Add constraints
+// Constraint coefficients
+const std::vector&lt;int> rmatbeg  {0, 2, 4, 6};
+const std::vector&lt;int> rmatind {
+        0, 1,   // -25x + 20y
+        0, 1,   //  x  + 2y
+        0, 1,   //  2x -  y
+        0, 1    //  2x + 10y
+};
+const std::vector&lt;double> rmatval {
+        -25, 20,
+        1,   2,
+        2,  -1,
+        2,  10
+};
+const std::vector&lt;char> ctr_type { 'L', 'L', 'L', 'G' };
+const std::vector&lt;double> rhs { 30, 10, 15, 15 };
+std::vector&lt;char*> rownames {
+        const_cast&lt;char*>("c1"),
+        const_cast&lt;char*>("c2"),
+        const_cast&lt;char*>("c3"),
+        const_cast&lt;char*>("c4")
+};
+
+CALL_CPLEX(CPXaddrows(
+        env, 
+        lp,
+        0,
+        4,
+        rmatval.size(),
+        rhs.data(),
+        ctr_type.data(),
+        rmatbeg.data(),
+        rmatind.data(),
+        rmatval.data(),
+        nullptr,
+        rownames.data()
+))
+</code></pre>
+
+<h3>Computing the cone</h3>
+
+<pre><code>// Get number of column and rows
+const int n_cols = CPXgetnumcols(env, lp);
+const int n_rows = CPXgetnumrows(env, lp);
+
+// Get row sense 
+std::vector&lt;char> row_sense(n_rows);
+CALL_CPLEX(CPXgetsense(env, lp, row_sense.data(), 0, n_rows - 1))
+
+// Get variable lower bounds  
+std::vector&lt;double> col_lb(n_cols);
+CALL_CPLEX(CPXgetlb(env, lp, col_lb.data(), 0, n_cols - 1))
+
+// Get variable upper bounds
+std::vector&lt;double> col_ub(n_cols);
+CALL_CPLEX(CPXgetub(env, lp, col_ub.data(), 0, n_cols - 1))<code></pre>
+
+<pre><code>// Get the current LP basis
+std::vector&lt;int> var_status(n_cols), row_status(n_rows);
+CALL_CPLEX(CPXgetbase(env, lp, var_status.data(), row_status.data()))</code></pre>
+
+<pre><code>// Get basis indices
+std::vector&lt;int> basis_indices(n_basic_variables);
+std::vector&lt;double> x_basis(n_basic_variables);
+CALL_CPLEX(CPXgetbhead(env, lp, basis_indices.data(), x_basis.data()))</code></pre>
+
+<pre><code>// Get non-basic variable indices
+std::vector&lt;int> non_basic_variable_indices;
+for (unsigned int j = 0 ; j &lt; n_cols ; ++j) {
+    if (var_status[j] != CPX_BASIC) {
+        non_basic_variable_indices.emplace_back(j);
+    }
+}
+
+// Get non-basic slack variable indices
+for (unsigned int i = 0 ; i &lt; n_rows ; ++i) {
+    if (row_status[i] != CPX_BASIC) {
+        non_basic_variable_indices.emplace_back(- i - 1);
+    }
+}</code></pre>
+
+<pre><code>const unsigned int n_non_basic_variables = non_basic_variable_indices.size();
+const unsigned int n_basic_variables = n_cols + n_rows - n_non_basic_variables;
+</code></pre>
+
+<pre><code>// Compute rays
+std::vector&lt;std::vector&lt;double>> rays(n_non_basic_variables, 
+    std::vector&lt;double>(n_cols, 0.0)
+);
+for (unsigned int j = 0 ; j &lt; n_non_basic_variables ; ++j) {
+
+    const int j_index = non_basic_variable_indices[j];
+
+    double coeff;
+    if (j_index >= 0) {
+        assert(var_status[j_index] != CPX_FREE_SUPER);
+        if (var_status[j_index] == CPX_AT_UPPER) {
+            rays[j][j_index] = - 1.0;
+            coeff = 1.0;
+        } else {
+            rays[j][j_index] = + 1.0;
+            coeff = -1.0;
+        }
+    } else {
+        assert(row_status[j_index] != CPX_FREE_SUPER);
+        if (row_sense[-j_index - 1] == 'G') {
+            coeff = 1.0;
+        } else {
+            coeff = -1.0;
+        }
+    }
+
+    std::vector&lt;double> BinvAj(n_rows);
+    CALL_CPLEX(CPXbinvacol(env, lp, j_index, BinvAj.data()))
+
+    for (unsigned int k = 0 ; k &lt; n_basic_variables ; ++k) {
+
+        const int k_index = basis_indices[k];
+        if (k_index >= 0) {
+            rays[j][k_index] = coeff * BinvAj[k];
+        }
+
+    }
+
+}</code></pre>
