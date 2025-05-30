@@ -1,12 +1,14 @@
 ---
 layout: post
-title: "Computing the cone defined by an LP basis with the Cplex C API"
+title: "Implementing Intersection Cuts for Mixed-Integer Bilevel Problems"
 category: blog
-short: Shows how to compute the ray defined by an LP basis with the C API of Cplex.
+short: Shows how to implement intersection cuts for solving mixed-integer bilevel problems with the Cplex C API.
 preview: ../moore-bard/cone-lp-basis.png
 ---
 
 <h2>Introduction</h2>
+
+<h2>The cone defined by an LP basis</h2>
 
 <h3>Problem statement</h3>
 
@@ -66,8 +68,6 @@ preview: ../moore-bard/cone-lp-basis.png
     variables.
 </p>
 
-<h2>The cone defined by an LP basis</h2>
-
 <h3>Recalls on the Simplex algorithm with bounded variables</h3>
 
 <p>
@@ -85,7 +85,7 @@ preview: ../moore-bard/cone-lp-basis.png
     <ol>
         <li>
             \( |B| = m \) and the matrix made of those columns in \( A \)
-            whose index is in \(B\), noted \( A_B \), is invertible;
+            whose index are in \(B\), noted \( A_B \), is invertible;
         </li>
         <li>
             It holds \( x_j^* = \ell_j \) for all \( j\in L \) and \(x_j^* =
@@ -107,7 +107,7 @@ preview: ../moore-bard/cone-lp-basis.png
     6:44 "Issue 0: Bounds on Variables").
 </p>
 
-<h3>Computing rays: the theory</h3>
+<h3>Computing the rays</h3>
 
 <p>
     Let \(x^*\) denote a basic feasible solution with partition \( (B,L,U) \).
@@ -193,7 +193,88 @@ preview: ../moore-bard/cone-lp-basis.png
     Question for later: What about fixed variables?
 </b>
 
-<h3>A toy example</h3>
+<h2>Computing intersection cuts</h2>
+
+<p>
+    From the previous section, we are now able to compute the description of a
+    cone which is pointed at \( x^* \) and which contains all feasible points,
+    i.e., we have
+    
+    $$
+        C := \left\{ x^* + \sum_{k\in L\cup U} \lambda_k r^k : \lambda_k \ge 0 \text{ for all }k\in L\cup U \right\}.
+    $$
+
+    In this section, we assume to know the description of a polyhedron \( S \)
+    which contains \( x^* \) in its interior but no feasible point for the
+    original problem. We assume that this description is given by 
+
+    $$
+        S := \left\{
+            x : Fx \ge g    
+        \right\}.
+    $$
+
+    The intersection cut is defined as the halfspace \( \alpha^\top x \le
+    \beta \) whose boundary contains all intersection points between the cone
+    \( C \) and the set \( S \). Hence, our first task is to compute these
+    points. Hence, for each ray \( r^k \) with \( k\in L\cup U \), we want to
+    solve
+
+    $$
+        \begin{aligned}
+            \max_{\lambda_k} \quad & \lambda_k \\
+            \text{s.t.} \quad & x^* + \lambda_kr^k \in S, \\
+            & \lambda_k \ge 0.
+        \end{aligned}
+    $$
+
+    This problem can be solved analytically by noting the following:
+
+    $$
+        \begin{aligned}
+            F(x^* + \lambda_kr^k) \ge g 
+            & \iff \lambda_k (Fr^k) \ge g - Fx^* \\
+            & \iff \begin{cases}
+                \lambda_k \ge (g_i - F_{i\cdot}x^*)/(F_{i\cdot}r^k) & \text{if } F_{i\cdot}r^k > 0, \\
+                \lambda_k \le (g_i - F_{i\cdot}x^*)/(F_{i\cdot}r^k) & \text{if } F_{i\cdot}r^k < 0, \\
+                \lambda_k \ge 0 & \text{otherwise},
+            \end{cases} \\
+            & \iff 
+            \lambda_k = \min_{i} \left\{
+                (g_i - F_{i\cdot}x^*)/(F_{i\cdot}r^k) : F_{i\cdot}r^k \le 0
+            \right\}.
+        \end{aligned}
+    $$
+
+    Note that if \( F_{i\cdot}r^k \ge 0 \) for all \( i \), we fix \(
+    \lambda_k = \infty \). This situation corresponds to a case in which \(
+    r^k \) is parallel to a face of \( C \).
+</p>
+
+<p>
+    The coefficients \( (\alpha, \beta) \) of the intersection cut are then
+    given by the solution to the following linear system:
+
+    $$
+        \begin{aligned}
+            & \alpha^\top( x^* + \lambda_kr^k ) = \beta & \text{for all } k\in L\cup U : \lambda_k < \infty, \\
+            & \alpha^\top r^k = 0 & \text{for all } k\in L\cup U : \lambda_k = \infty.
+        \end{aligned}
+    $$
+
+    The first set of constraints ask that the boundary of the halfspace
+    contains the intersection points while the second set of constraints
+    requires that the boundary is parallel to the extreme rays \(r^k\) if no
+    intersection point exists.
+</p>
+
+<p>
+    Here again, an analytical solution can be obtained. 
+</p>
+
+<h2>Intersection cuts for mixed-integer bilevel problems</h2>
+
+<h3>The Moore and Bard example</h3>
 
 <p>
     We consider a toy LP which has two (structural) variables and that is given by
@@ -298,9 +379,9 @@ preview: ../moore-bard/cone-lp-basis.png
     <img src="/assets/images/moore-bard/cone-lp-basis.png" style="width:100%" />
 </p>
 
-<h2>Implemetation with the Cplex C API</h2>
+<h3>Implemetation in Cplex</h3>
 
-<h3>Defining the LP</h3>
+<h4>Defining the high-point relaxation</h4>
 
 <pre><code>#define CALL_CPLEX(stmt) \
 if (int status = stmt ; status) { \
@@ -374,7 +455,7 @@ CALL_CPLEX(CPXaddrows(
 ))
 </code></pre>
 
-<h3>Computing the cone</h3>
+<h4>Computing the cone defined by an LP basis</h4>
 
 <pre><code>// Get number of column and rows
 const int n_cols = CPXgetnumcols(env, lp);

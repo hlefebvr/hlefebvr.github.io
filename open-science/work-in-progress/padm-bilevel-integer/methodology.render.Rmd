@@ -61,11 +61,7 @@ paged_table(bobilib)
 # Function to read results obtained on the HPC
 get_results_from_hpc = function(method) {
   
-  if (method == "MILP") {
-    result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
-  } else {
-    result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
-  }
+  result = read.csv(paste0("results/results-", method, ".csv"), header = FALSE, sep = ",")
   
   if (method == "PADM") {
     colnames(result) = c("tag", "instance", "method", "update_rule", "factor", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops", "lambda", "pi_lb", "pi_ub")
@@ -75,8 +71,6 @@ get_results_from_hpc = function(method) {
     colnames(result) = c("tag", "instance", "method", "update_rule", "factor", "initial_penalty_parameter", "time", "status", "reason", "best_obj", "outer_loops", "inner_loops")
     result[result$status != "Feasible",]$time = 3600
     result = result %>% mutate(method = paste0(method, "-", initial_penalty_parameter))
-  } else if(method == "MILP-first") {
-    colnames(result) = c("tag", "instance", "method", "time", "best_bound", "best_obj") 
   } else {
     colnames(result) = c("tag", "instance", "method", "time", "status", "reason", "best_bound", "best_obj", "lambda", "pi_lb", "pi_ub") 
   }
