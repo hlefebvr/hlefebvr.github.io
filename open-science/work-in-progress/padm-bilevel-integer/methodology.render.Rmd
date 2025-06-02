@@ -50,7 +50,8 @@ export_data_from_ggplot_ecdf_csv = function(plot, filename) {
 bobilib_columns = c("instance", "class", "type", "n_upper_vars", "n_upper_integer_vars", "n_upper_binary_vars", "n_lower_vars", "n_lower_integer_vars", "n_lower_binary_vars", "n_linking_vars", "n_linking_integer_vars", "n_linking_binary_vars", "n_linking_continuous_vars", "n_upper_ctrs", "n_lower_ctrs", "n_coupling_ctrs", "best_known_obj", "bobilib_status", "difficulty")
 bobilib = read.csv("bobilib.csv", header = FALSE, col.names = bobilib_columns)
 
-instances = bobilib %>% filter(n_linking_integer_vars == 0 & n_linking_continuous_vars == 0)
+bobilib = bobilib %>% mutate(n_vars = as.numeric(n_upper_vars + n_lower_vars),
+                             n_ctrs = as.numeric(n_upper_ctrs + n_lower_ctrs))
 
 paged_table(bobilib)
 ```
@@ -136,7 +137,7 @@ all_results = rbind(
 )
 
 all_results = all_results %>%
-  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj, class, type), by = "instance") %>%
+  left_join(bobilib %>% select(instance, bobilib_status, best_known_obj, class, type, n_vars, n_ctrs), by = "instance") %>%
   mutate(
     best_known_obj = na_if(best_known_obj, "None"),
     best_obj = na_if(best_obj, "None")
@@ -164,7 +165,81 @@ all_results %>%
 ### Computational Times
 
 ```{r}
-plot_ecdf_of_time = function(data) {
+# Step 0: Compute size per unique instance and assign quantile bins as factors
+instance_sizes <- all_results %>%
+  distinct(instance, n_vars, n_ctrs) %>%
+  mutate(
+    size = n_vars + n_ctrs,
+    size_group = ntile(size, 5),
+    size_group = factor(size_group)  # convert to factor here
+  )
+
+# Step 1: Create readable interval labels for each bin, keeping size_group as factor
+group_labels <- instance_sizes %>%
+  group_by(size_group) %>%
+  summarise(
+    min_size = min(size),
+    max_size = max(size),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    label = paste0(min_size, "--", max_size),
+    size_group = factor(size_group)  # factor again for safety
+  )
+
+# Step 2: Join size and group info into main data (filter methods first)
+all_results_with_size <- all_results %>%
+  filter(method %in% c("MibS", "MILP", "MILP-first", "PADM-1000")) %>%
+  left_join(instance_sizes %>% select(instance, size_group, size), by = "instance") %>%
+  left_join(group_labels, by = "size_group") %>%
+  mutate(size_group_label = factor(label, levels = group_labels$label))  # preserve order
+
+# Step 3: Count total instances per group (unique problems)
+total_counts <- all_results_with_size %>%
+  distinct(instance, size_group_label) %>%
+  count(size_group_label, name = "count") %>%
+  mutate(type = "Total")
+
+# Step 4: Count solved instances per method
+solved_counts <- all_results_with_size %>%
+  filter(time < 3600) %>%
+  group_by(size_group_label, method) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  rename(type = method)
+
+# Step 4.1: Fill in missing combinations (show 0 count bars)
+all_methods <- unique(all_results_with_size$method)
+all_groups <- unique(all_results_with_size$size_group_label)
+
+solved_counts <- solved_counts %>%
+  complete(size_group_label = all_groups, type = all_methods, fill = list(count = 0))
+
+# Step 5: Combine and plot
+plot_data <- bind_rows(total_counts, solved_counts)
+
+ggplot(plot_data, aes(x = size_group_label, y = count, fill = type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Instance and Solved Counts by Size Interval",
+    x = "Size Interval",
+    y = "Count",
+    fill = "Type"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+wide_data = plot_data %>%
+  pivot_wider(
+    names_from = type,
+    values_from = count,
+    values_fill = 0  # Fill missing combinations with 0
+  )
+
+#write.csv(wide_data, "barplot_solved.csv", row.names = FALSE, quote = FALSE)
+```
+
+```{r}
+plot_ecdf_of_time = function(data, log = FALSE) {
   p = ggplot(data, aes(x = time, color = method)) +
     stat_ecdf(geom = "step", linewidth = 1) +
     labs(
@@ -175,13 +250,16 @@ plot_ecdf_of_time = function(data) {
     theme_minimal() +
     scale_color_brewer(palette = "Set1")  
   
+  if (log) {
+    p = p + scale_x_log10()
+  }
+  
   return(p)
 }
 
 p = plot_ecdf_of_time(all_results %>% filter(!startsWith(method, "PADM-interdiction")))
 p
 export_data_from_ggplot_ecdf_csv(p, "ecdf_time_all.csv")
-
 ```
 
 ```{r}
@@ -197,7 +275,8 @@ ggplot(padm_raw, aes(x = lambda, color = method)) +
     theme_minimal() +
     scale_color_brewer(palette = "Set1")  
 
-padm_raw %>% filter(lambda > 1e7)
+summary(padm_raw$lambda)
+# padm_raw %>% filter(lambda > 1e10)
 ```
 
 ### Optimality Gap
