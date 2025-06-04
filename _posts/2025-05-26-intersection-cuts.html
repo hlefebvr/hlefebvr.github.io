@@ -269,7 +269,28 @@ preview: ../moore-bard/cone-lp-basis.png
 </p>
 
 <p>
-    Here again, an analytical solution can be obtained. 
+    Here again, an analytical solution can be obtained. Note that there are \(
+    n + 1 \) variables and \( |L\cup U| = n \) constraints. Hence, there is a
+    unique solution (up to a constant) as the extreme rays \( r^k \) are
+    linearly independent. For the example, let's consider \( k\in L \) such
+    that \( \lambda_k < \infty \). We rewrite the \( k \)-th constraint as 
+
+    $$
+        \begin{aligned}
+            & \alpha^\top( x^* + \lambda_k r^k ) = \beta \\
+            \iff &
+            \alpha_{B}^\top ( x^*_{B} + \lambda_k r^k_{B} )
+            + \alpha_{L}^\top ( x^*_{L} + \lambda_k r^k_{L} )
+            + \alpha_{U}^\top ( x^*_{U} + \lambda_k r^k_{U} ) = \beta \\
+            \iff & 
+            \alpha_{B}^\top ( A_B^{-1}b - A_B^{-1}A_L\ell_L - A_B^{-1}A_Uu_U - \lambda_k A^{-1}_BA_k ) + \lambda_k\alpha_k = \beta \\
+            \iff & 
+            \alpha_k = 
+            \frac{\beta - \alpha_{B}^\top ( A_B^{-1}b - A_B^{-1}A_L\ell_L - A_B^{-1}A_Uu_U )}{\lambda_k} 
+            - \lambda_k\alpha_B^\top A^{-1}_BA_k
+        \end{aligned}
+    $$
+
 </p>
 
 <h2>Intersection cuts for mixed-integer bilevel problems</h2>
