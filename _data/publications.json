@@ -1,6 +1,21 @@
 {
   "submitted-articles": [
     {
+      "code": "AM",
+      "title": "A New Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches",
+      "authors": "Martin Schmidt",
+      "year": 2025,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "#"
+        }
+      ],
+      "open-science-page": "open-science/AM-a-new-single-level-reformulation-for-mixed-integer-bilevel-optimization",
+      "abstract": "to be added.",
+      "bibtex": "to be added."
+    },
+    {
       "code": "AI",
       "title": "On Coupling Constraints in Pessimistic Linear Bilevel Optimization",
       "authors": "Dorothee Henke, Martin Schmidt and Johannes Thürauf",
