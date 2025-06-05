@@ -1,10 +1,17 @@
+<!-- {% if counter == nil %} -->
+  {% assign counter = 1 %}
+<!-- {% endif %} -->
+
+{% assign counter = 1 %}
+
 {% assign years = include.articles | map: "year" | uniq | sort | reverse %}
 
 {% for year in years %}
   <h3>{{ year }}</h3>
-  <ul>
+  <ol  start="{{ counter }}">
     {% for paper in include.articles %}
       {% if paper.year == year %}
+        {% assign counter = counter | plus: 1 %}
         <li>
           <p>
             <div class="paper-list">
@@ -82,5 +89,5 @@
         </li>
       {% endif %}
     {% endfor %}
-  </ul>
+  </ol>
 {% endfor %}

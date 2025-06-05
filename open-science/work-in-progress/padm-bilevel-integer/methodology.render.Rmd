@@ -387,3 +387,9 @@ p
 export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_interdiction.csv")
 ```
 
+```{r}
+to_check = read.csv("to_check.csv", col.names = c("tag", "instance", "check", "reason"))
+to_check = to_check %>% mutate(instance = basename(instance), instance = gsub("\\.aux$", "", instance))
+
+all_results %>% filter(method == "MILP-first" & instance %in% to_check$instance & time < 3600)
+```
