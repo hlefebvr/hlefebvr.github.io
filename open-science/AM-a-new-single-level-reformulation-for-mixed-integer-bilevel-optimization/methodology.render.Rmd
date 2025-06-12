@@ -352,6 +352,14 @@ ggplot(all_results_with_status, aes(x = new_bobilib_status)) +
   theme(
     axis.text.x = element_text(angle = 0, hjust = .5, vjust = 1, lineheight = 1)
   )
+
+all_results %>% 
+  filter(method == "PADM-1000" | method == "MILP-first") %>%
+  filter(time < 3600) %>%
+  filter(  (bobilib_status == "open") ) %>%
+  select(instance) %>%
+  unique() %>% 
+  count()
 ```
 
 ## PADM interdiction 
@@ -388,8 +396,8 @@ export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_interdiction.csv")
 ```
 
 ```{r}
-to_check = read.csv("to_check.csv", col.names = c("tag", "instance", "check", "reason"))
-to_check = to_check %>% mutate(instance = basename(instance), instance = gsub("\\.aux$", "", instance))
+#to_check = read.csv("to_check.csv", col.names = c("tag", "instance", "check", "reason"))
+#to_check = to_check %>% mutate(instance = basename(instance), instance = gsub("\\.aux$", "", instance))
 
-all_results %>% filter(method == "MILP-first" & instance %in% to_check$instance & time < 3600)
+#all_results %>% filter(method == "MILP-first" & instance %in% to_check$instance & time < 3600)
 ```

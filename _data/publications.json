@@ -12,8 +12,8 @@
         }
       ],
       "open-science-page": "open-science/AM-a-new-single-level-reformulation-for-mixed-integer-bilevel-optimization",
-      "abstract": "to be added.",
-      "bibtex": "to be added."
+      "abstract": "Bilevel optimization problems arise in numerous real-world applications. While single-level reformulations are a common strategy for solving convex bilevel problems, such approaches usually fail when the follower's problem includes integer variables. In this paper, we present the first single-level reformulation for mixed-integer linear bilevel optimization, which does not rely on the follower's value function. Our approach is based on convexifying the follower's problem via a Dantzig-Wolfe reformulation and exploits strong duality of the reformulated problem. By doing so, we derive a nonlinear single-level problem, which is equivalent to the original bilevel model. Moreover, we show that this problem can be transformed into a mixed-integer linear problem using standard linearization techniques and bounds on the dual variables of the convexified follower's problem. Notably, we show that these bounds can be computed in practice via a polynomial-time-solvable problem, which is purely based on the primal problem's data. This results in a new branch-and-cut approach for mixed-integer linear bilevel optimization. In addition to this exact solution approach, we also present a penalty alternating direction method, which computes high-quality feasible points. Numerical experiments on instances from the BOBILib shows that we are able to improve the best known solution of 427 instances out of a test set of 2216 instances.",
+      "bibtex": "@misc{lefebvre2025reformulation,\n  title={A New Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches},\n  author={Henri Lefebvre and Martin Schmidt},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={####TO BE ADDED####}\n}"
     },
     {
       "code": "AI",
