@@ -2,13 +2,13 @@
   "submitted-articles": [
     {
       "code": "AM",
-      "title": "A New Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches",
+      "title": "A Dantzig-Wolfe Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches",
       "authors": "Martin Schmidt",
       "year": 2025,
       "preprints": [
         {
           "title": "Optimization Online",
-          "link": "#"
+          "link": "https://optimization-online.org/?p=30703"
         }
       ],
       "open-science-page": "open-science/AM-a-new-single-level-reformulation-for-mixed-integer-bilevel-optimization",
