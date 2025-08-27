@@ -289,3 +289,151 @@ for (norm in unique(data$norm)) {
   #dev.off()
 }
 ```
+
+
+# GUROBI RESULTS
+
+### Results
+
+```{r}
+
+gurobi = read.csv("gurobi.csv", header = FALSE)
+stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inner_iterations","l1_norm", "l2_norm")
+colnames(gurobi) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
+
+# Remove tag
+gurobi$tag = gurobi$n_vars = gurobi$n_ctrs = NULL
+
+# Add a one-word solver description
+gurobi$solver = "Gurobi"
+
+# Add 'n_mutable_columns' based on instance name
+gurobi$n_mutable_columns = gsub(".*_(\\d+)$", "\\1", gurobi$instance)
+
+# Clean instance name
+gurobi$full_instance = basename(gurobi$instance)
+
+gurobi$instance = sub("_.*", "", gurobi$full_instance)
+
+gurobi$total_time = ifelse(gurobi$status == "Infeasible", time_limit, gurobi$time)
+#gurobi$total_time = gurobi$time
+
+gurobi$solved = gurobi$reason != "Infeasible" & gurobi$total_time < time_limit
+
+n_unsolved = sum(!gurobi$solved)
+if (n_unsolved > 0) {
+  gurobi[!gurobi$solved,]$total_time = time_limit
+}
+
+gurobi$n_mutable_columns <- as.numeric(as.character(gurobi$n_mutable_columns))  # Convert to numeric
+
+
+```
+
+### Merge Instances and Results
+
+```{r}
+gurobi = merge(gurobi, instances[, c("instance", "n_vars", "n_ctrs")], 
+                     by = "instance",
+                     all.x = TRUE)
+```
+
+```{r, echo = FALSE}
+paged_table(gurobi)
+```
+```{r}
+all = rbind(data %>% filter(norm == "l1"), gurobi)
+ggplot(all, aes(x = total_time, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Time for Gurobi"),
+         x = "Time",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 60), limits = c(0, time_limit)) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+```
+
+```{r}
+for (norm in unique(all$norm)) {
+  
+  sub_data = all[all$norm == norm,]
+  
+  sub_data = sub_data %>%
+    group_by( sub("^(.+_[0-9]+)_.*", "\\1", full_instance)) %>%
+    filter(any(solved == TRUE)) %>%
+    ungroup()
+
+  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
+    stat_ecdf(geom = "step") + 
+    labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
+         x = "Time",
+         y = "ECDF",
+         color = "Solver") +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 300), limits = c(0, time_limit)) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
+    facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
+  
+  ########## SAVING DATA TO FILE FOR TIKZ ##########
+  ecdf_data = data.frame(time = sub_data$total_time)
+  
+  for (n_mutable_columns_val in unique(sub_data$n_mutable_columns)) {
+    
+    for (warm_start_val in unique(sub_data$warm_start)) {
+      
+      facet_data = sub_data %>% filter(n_mutable_columns == n_mutable_columns_val & warm_start == warm_start_val)
+      
+      ecdf_values = ecdf(facet_data$total_time)(sub_data$total_time)
+      
+      ecdf_data = cbind(ecdf_data, y = ecdf_values)
+      colnames(ecdf_data)[ncol(ecdf_data)] = paste0(n_mutable_columns_val, "_w", warm_start_val)
+      
+    }
+  }
+  
+  ecdf_data <- as.data.frame(ecdf_data)
+  ecdf_data <- ecdf_data[order(ecdf_data$time), ]
+  ecdf_data = ecdf_data %>% filter(time < 1800)
+  
+  indices <- seq(1, length(ecdf_data$time), length.out = 100)
+  ecdf_data <- ecdf_data[indices, ]
+  
+  file_name <- paste0("ecdf_", norm, ".csv")
+  write.csv(ecdf_data, file_name, row.names = FALSE)
+  ###################################################
+  
+  print(plot)
+   
+}
+```
+
+```{r}
+all %>%
+  filter(solver == "Gurobi" | (warm_start == 1 & initial_penalty == 500 & norm == "l1")) %>%
+  group_by(full_instance) %>%
+  filter(any(solver == "Gurobi" & status == "Infeasible") &
+         any(method == "PADM"  & solved == TRUE & solution_ok == 1))
+```
+```{r}
+all %>%
+  filter(
+    (solver == "Gurobi") | (warm_start == 1 & initial_penalty == 500 & norm == "l1" & update_rule_parameter == 2)
+  ) %>%
+  filter(total_time < time_limit) %>%
+  group_by(full_instance) %>%
+  filter(
+    any(solver == "Gurobi" & status == "Infeasible") &
+    any(method == "PADM" & solved == TRUE)
+  ) %>%
+  summarise(
+    gurobi_status = paste(unique(status[solver == "Gurobi"]), collapse = ", "),
+    gruobi_total_time = mean(total_time[solver == "Gurobi"]),
+    padm_status   = paste(unique(status[solver != "Gurobi"]), collapse = ", "),
+    padms   = paste(unique(solver[solver != "Gurobi"]), collapse = ", "),
+    padm_total_time = mean(total_time[solver != "Gurobi"]),
+    .groups = "drop"
+  )
+```
