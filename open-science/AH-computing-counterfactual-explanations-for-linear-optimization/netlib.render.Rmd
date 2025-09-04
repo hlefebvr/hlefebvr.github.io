@@ -6,6 +6,7 @@ library(rmarkdown)
 suppressMessages(library(dplyr))
 suppressMessages(library(knitr))
 suppressMessages(library(kableExtra))
+library(tikzDevice)
 ```
 
 ## Loading Results
@@ -32,17 +33,21 @@ paged_table(instances)
 
 ```{r}
 
-time_limit = 1800
+time_limit = 900
 
-data = read.csv("results.csv", header = FALSE)
+data = rbind(
+  read.csv("all.csv", header = FALSE)
+)
 stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inner_iterations","l1_norm", "l2_norm")
-colnames(data) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
+colnames(data) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "only_constraints", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
+
+data$warm_start_status = ifelse(is.na(data$warm_start_status), "-", data$warm_start_status)
 
 # Remove tag
 data$tag = data$n_vars = data$n_ctrs = NULL
 
 # Add a one-word solver description
-data$solver = paste0(data$method, " - ", data$update_rule, " ", data$update_rule_parameter, " - ", data$norm, " - init ", data$initial_penalty, " - warm start ", data$warm_start)
+data$solver = ifelse(data$method == "PADM", paste0(data$method, " - ", data$update_rule, " ", data$update_rule_parameter, " - ", data$norm, " - init ", data$initial_penalty, " - warm start ", data$warm_start, " - only constraints ", data$only_constraints), data$method)
 
 # Add 'n_mutable_columns' based on instance name
 data$n_mutable_columns = gsub(".*_(\\d+)$", "\\1", data$instance)
@@ -52,17 +57,17 @@ data$full_instance = basename(data$instance)
 
 data$instance = sub("_.*", "", data$full_instance)
 
-data$total_time = ifelse(is.na(data$warm_start_time), 0, data$warm_start_time) + data$time
+data$adjusted_time = ifelse(is.na(data$warm_start_time), 0, data$warm_start_time) + data$time
+data$total_time = data$adjusted_time
 
-data$solved = data$status == "Feasible" & data$total_time < time_limit
+data$solved = (data$status == "Optimal" | data$status == "Feasible") & data$adjusted_time < time_limit
 
 n_unsolved = sum(!data$solved)
 if (n_unsolved > 0) {
-  data[!data$solved,]$total_time = time_limit
+  data[!data$solved,]$adjusted_time = time_limit
 }
 
 data$n_mutable_columns <- as.numeric(as.character(data$n_mutable_columns))  # Convert to numeric
-
 
 ```
 
@@ -87,7 +92,7 @@ This is the same table as Table 6 in "Counterfactual Explanations for Linear Opt
 We focus on l1-norm with warm-start.
 
 ```{r}
-sub_data = data %>%
+padm_with_warm_start = data %>%
   filter(method == "PADM",
          update_rule == "adapt",
          norm == "l1",
@@ -103,7 +108,7 @@ summary_table = NULL
 for (i in seq_along(labels)) {
   for (j in seq_along(labels)) {
     
-    sub_summary_table <- sub_data %>%
+    sub_summary_table <- padm_with_warm_start %>%
       filter(
         n_vars >= var_bounds[[i]][1] & n_vars <= var_bounds[[i]][2],
         n_ctrs >= ctr_bounds[[j]][1] & n_ctrs <= ctr_bounds[[j]][2]
@@ -128,21 +133,21 @@ for (i in seq_along(labels)) {
   }
 }
 
-summary_table %>%
-  kable("html", align = "c", col.names = c()) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
-  add_header_above(c("n" = 1, "m" = 1, "# mut. columns" = 1, "# inst." = 1, "feasible (in %)" = 1, 
-                     "# mutable objective param." = 1, "# mutable constraint param." = 1)) %>%
-  group_rows("small", 1, 6) %>%
-  group_rows("medium", 7, 15) %>%
-  group_rows("large", 16, 24)
+#summary_table %>%
+#  kable("html", align = "c", col.names = c()) %>%
+#  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
+#  add_header_above(c("n" = 1, "m" = 1, "# mut. columns" = 1, "# inst." = 1, "feasible (in %)" = 1, 
+#                     "# mutable objective param." = 1, "# mutable constraint param." = 1)) %>%
+#  group_rows("small", 1, 6) %>%
+#  group_rows("medium", 7, 15) %>%
+#  group_rows("large", 16, 24)
 
 ```
 
 ### Solved Instances by Number of Mutable Columns
 
-```{r, fig.height = 30, fig.width = 10}
-bar_data = sub_data %>%
+```{r, fig.height = 30, fig.width = 10, eval = FALSE}
+bar_data = padm_with_warm_start %>%
   filter(solved == TRUE) %>%  # Only consider solved instances
   group_by(instance, n_mutable_columns) %>%
   summarise(solved_count = n(), .groups = "drop")  # Count solved instances
@@ -164,26 +169,6 @@ ggplot(bar_data, aes(x = instance, y = solved_count, fill = factor(n_mutable_col
 
 ### Computational Times
 
-```{r, fig.width=10, fig.height=8, results="asis"}
-for (norm in unique(data$norm)) {
-  
-  sub_data = data[data$norm == norm, ]
-  
-  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
-         x = "Time",
-         y = "ECDF",
-         color = "Solver") +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 60), limits = c(0, time_limit)) +
-    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
-
-  print(plot)
-}
-```
-
 ```{r, fig.width=12, fig.height=5, results="asis"}
 for (norm in unique(data$norm)) {
   
@@ -194,7 +179,7 @@ for (norm in unique(data$norm)) {
     filter(any(solved == TRUE)) %>%
     ungroup()
 
-  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
+  plot = ggplot(sub_data, aes(x = adjusted_time, group = solver, color = solver)) + 
     stat_ecdf(geom = "step") + 
     labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
          x = "Time",
@@ -202,30 +187,33 @@ for (norm in unique(data$norm)) {
          color = "Solver") +
     theme_minimal() +
     theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 300), limits = c(0, time_limit)) +
+    scale_x_continuous(breaks = seq(0, max(sub_data$adjusted_time), by = 300), limits = c(0, time_limit)) +
     scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
     facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
   
   ########## SAVING DATA TO FILE FOR TIKZ ##########
-  ecdf_data = data.frame(time = sub_data$total_time)
+  ecdf_data = data.frame(time = sub_data$adjusted_time)
   
   for (n_mutable_columns_val in unique(sub_data$n_mutable_columns)) {
     
-    for (warm_start_val in unique(sub_data$warm_start)) {
+    for (pair_val in unique(paste0(sub_data$method, "_", sub_data$warm_start))) {
       
-      facet_data = sub_data %>% filter(n_mutable_columns == n_mutable_columns_val & warm_start == warm_start_val)
+      parts = strsplit(pair_val, "_")[[1]]
+      method_val = parts[1]
+      warm_start_val = as.integer(parts[2])
+      facet_data = sub_data %>% filter(n_mutable_columns == n_mutable_columns_val & warm_start == warm_start_val & method == method_val)
       
-      ecdf_values = ecdf(facet_data$total_time)(sub_data$total_time)
+      ecdf_values = ecdf(facet_data$adjusted_time)(sub_data$adjusted_time)
       
       ecdf_data = cbind(ecdf_data, y = ecdf_values)
-      colnames(ecdf_data)[ncol(ecdf_data)] = paste0(n_mutable_columns_val, "_w", warm_start_val)
+      colnames(ecdf_data)[ncol(ecdf_data)] = paste0(n_mutable_columns_val, "_", method_val, "_", warm_start_val)
       
     }
   }
   
   ecdf_data <- as.data.frame(ecdf_data)
   ecdf_data <- ecdf_data[order(ecdf_data$time), ]
-  ecdf_data = ecdf_data %>% filter(time < 1800)
+  ecdf_data = ecdf_data %>% filter(time < time_limit)
   
   indices <- seq(1, length(ecdf_data$time), length.out = 100)
   ecdf_data <- ecdf_data[indices, ]
@@ -239,201 +227,127 @@ for (norm in unique(data$norm)) {
 }
 ```
 
-### Scatter Plot of Solved and Unsolved Instances
-
-```{r}
-sub_data = data[data$update_rule == "adapt" & data$norm == "l1" & data$initial_penalty == 5e2,]
-
-# Create a scatter plot with colors based on the normalized time
-ggplot(sub_data, aes(x = n_vars, y = n_ctrs, color = as.numeric(solved))) +
-  geom_point(alpha = .5, size = 1) +  # Transparency and point size
-  scale_x_log10() +  # Logarithmic scale for n_vars
-  scale_y_log10() +  # Logarithmic scale for n_ctrs
-  scale_color_gradient(low = "red", high = "green") +  # Color gradient
-  labs(title = "Scatter Plot of (n_vars, n_ctrs) with Log Scale and Transparency",
-       x = "Number of Variables (n_vars)",
-       y = "Number of Constraints (n_ctrs)",
-       color = "Solved") +
-  theme_minimal()  # Minimal theme for clean look
-```
-
-
 ## Solution Analysis 
 
 
-```{r, fig.width=10}
-for (norm in unique(data$norm)) {
-  sub_data = data[ data$norm == norm,]
+```{r, fig.width=8}
+for (norm_val in unique(data$norm)) {
+  sub_data = data %>% filter(norm == norm_val)
+  
+  sub_data = sub_data %>% mutate(l1_norm = ifelse(l1_norm < 1e-5, 1e-5, l1_norm))
   
   sub_data = sub_data %>%
-    group_by(full_instance, warm_start) %>%
+    group_by(full_instance) %>%
     filter(all(solved == TRUE)) %>%
     ungroup()
   
   summarize(sub_data)
   
-  plot = ggplot(sub_data, aes(x = l1_norm, y = as.factor(warm_start), fill = as.factor(warm_start))) + 
+  plot = ggplot(sub_data, aes(x = l1_norm, y = as.factor(solver), fill = as.factor(solver))) + 
     geom_boxplot() + 
-    labs(title = "", #paste0("Boxplot of l1-norm of CE when using the objective function: ", norm),
+    labs(title = "Over those instances for which all methods computed a feasible point", #paste0("Boxplot of l1-norm of CE when using the objective function: ", norm),
          x = "",
          y = "") +
-    scale_y_discrete(labels = c("No Warm Start", "Warm Start")) + 
-    scale_x_log10(breaks = scales::log_breaks(base = 10, n = 8)) +
+    #scale_y_discrete(labels = c("NLP", "NLP-first", "PADM", "PADM warm start")) +
+    scale_x_log10(breaks = scales::log_breaks(base = 10, n = 4)) +
     theme_minimal() +
-    theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = .5))
+    theme(legend.position = "none", axis.text.y = element_text(angle = 0, hjust = .5)) # +
+    #facet_wrap(~ n_mutable_columns, ncol = 3)
   
   print(plot)
   
-  #tikz(file = paste0("boxplot_", norm, ".tex"), width = 4, height = 3)
+  tikz(file = paste0("boxplot_", norm_val, ".tex"), width = 4, height = 3)
   print(plot)
-  #dev.off()
+  dev.off()
 }
 ```
 
-
-# GUROBI RESULTS
-
-### Results
+## Infeasibility and Fails
 
 ```{r}
+gurobi_found = data %>%
+  filter(method == "NLP", status == "Optimal" | status == "Feasible") %>%
+  pull(full_instance)
 
-gurobi = read.csv("gurobi.csv", header = FALSE)
-stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inner_iterations","l1_norm", "l2_norm")
-colnames(gurobi) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
+gurobi_infeasible <- data %>%
+  filter(method == "NLP" & status == "Infeasible" & total_time < time_limit) %>%
+  pull(full_instance)
 
-# Remove tag
-gurobi$tag = gurobi$n_vars = gurobi$n_ctrs = NULL
 
-# Add a one-word solver description
-gurobi$solver = "Gurobi"
-
-# Add 'n_mutable_columns' based on instance name
-gurobi$n_mutable_columns = gsub(".*_(\\d+)$", "\\1", gurobi$instance)
-
-# Clean instance name
-gurobi$full_instance = basename(gurobi$instance)
-
-gurobi$instance = sub("_.*", "", gurobi$full_instance)
-
-gurobi$total_time = ifelse(gurobi$status == "Infeasible", time_limit, gurobi$time)
-#gurobi$total_time = gurobi$time
-
-gurobi$solved = gurobi$reason != "Infeasible" & gurobi$total_time < time_limit
-
-n_unsolved = sum(!gurobi$solved)
-if (n_unsolved > 0) {
-  gurobi[!gurobi$solved,]$total_time = time_limit
-}
-
-gurobi$n_mutable_columns <- as.numeric(as.character(gurobi$n_mutable_columns))  # Convert to numeric
-
+gurobi_unknown <- data %>%
+  filter(!(full_instance %in% gurobi_found) & !(full_instance %in% gurobi_infeasible)) %>%
+  pull(full_instance)
 
 ```
 
-### Merge Instances and Results
+### The instance status is Feasible
 
 ```{r}
-gurobi = merge(gurobi, instances[, c("instance", "n_vars", "n_ctrs")], 
-                     by = "instance",
-                     all.x = TRUE)
-```
 
-```{r, echo = FALSE}
-paged_table(gurobi)
-```
-```{r}
-all = rbind(data %>% filter(norm == "l1"), gurobi)
-ggplot(all, aes(x = total_time, group = solver, color = solver)) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of Time for Gurobi"),
-         x = "Time",
-         y = "ECDF",
-         color = "Solver") +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 60), limits = c(0, time_limit)) +
-    scale_y_continuous(breaks = seq(0, 1, by = 0.1))
-```
-
-```{r}
-for (norm in unique(all$norm)) {
-  
-  sub_data = all[all$norm == norm,]
-  
-  sub_data = sub_data %>%
-    group_by( sub("^(.+_[0-9]+)_.*", "\\1", full_instance)) %>%
-    filter(any(solved == TRUE)) %>%
-    ungroup()
-
-  plot = ggplot(sub_data, aes(x = total_time, group = solver, color = solver)) + 
-    stat_ecdf(geom = "step") + 
-    labs(title = paste0("ECDF of Time for Each Solver using ", norm, " norm"),
-         x = "Time",
-         y = "ECDF",
-         color = "Solver") +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    scale_x_continuous(breaks = seq(0, max(sub_data$total_time), by = 300), limits = c(0, time_limit)) +
-    scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
-    facet_wrap(~ n_mutable_columns, ncol = 3)  # Facet by mutable_columns, 3 columns
-  
-  ########## SAVING DATA TO FILE FOR TIKZ ##########
-  ecdf_data = data.frame(time = sub_data$total_time)
-  
-  for (n_mutable_columns_val in unique(sub_data$n_mutable_columns)) {
-    
-    for (warm_start_val in unique(sub_data$warm_start)) {
-      
-      facet_data = sub_data %>% filter(n_mutable_columns == n_mutable_columns_val & warm_start == warm_start_val)
-      
-      ecdf_values = ecdf(facet_data$total_time)(sub_data$total_time)
-      
-      ecdf_data = cbind(ecdf_data, y = ecdf_values)
-      colnames(ecdf_data)[ncol(ecdf_data)] = paste0(n_mutable_columns_val, "_w", warm_start_val)
-      
-    }
-  }
-  
-  ecdf_data <- as.data.frame(ecdf_data)
-  ecdf_data <- ecdf_data[order(ecdf_data$time), ]
-  ecdf_data = ecdf_data %>% filter(time < 1800)
-  
-  indices <- seq(1, length(ecdf_data$time), length.out = 100)
-  ecdf_data <- ecdf_data[indices, ]
-  
-  file_name <- paste0("ecdf_", norm, ".csv")
-  write.csv(ecdf_data, file_name, row.names = FALSE)
-  ###################################################
-  
-  print(plot)
-   
-}
-```
-
-```{r}
-all %>%
-  filter(solver == "Gurobi" | (warm_start == 1 & initial_penalty == 500 & norm == "l1")) %>%
-  group_by(full_instance) %>%
-  filter(any(solver == "Gurobi" & status == "Infeasible") &
-         any(method == "PADM"  & solved == TRUE & solution_ok == 1))
-```
-```{r}
-all %>%
-  filter(
-    (solver == "Gurobi") | (warm_start == 1 & initial_penalty == 500 & norm == "l1" & update_rule_parameter == 2)
-  ) %>%
-  filter(total_time < time_limit) %>%
-  group_by(full_instance) %>%
-  filter(
-    any(solver == "Gurobi" & status == "Infeasible") &
-    any(method == "PADM" & solved == TRUE)
-  ) %>%
-  summarise(
-    gurobi_status = paste(unique(status[solver == "Gurobi"]), collapse = ", "),
-    gruobi_total_time = mean(total_time[solver == "Gurobi"]),
-    padm_status   = paste(unique(status[solver != "Gurobi"]), collapse = ", "),
-    padms   = paste(unique(solver[solver != "Gurobi"]), collapse = ", "),
-    padm_total_time = mean(total_time[solver != "Gurobi"]),
-    .groups = "drop"
+feasible_instances = data %>% 
+  filter(method == "PADM") %>% 
+  filter(full_instance %in% gurobi_found) %>%
+  group_by(solver, status, reason) %>% 
+  summarize(
+    Count = length(full_instance),
+    instances = paste0(paste0(unique(full_instance)[1:5], collapse = ", "), " ...")
   )
+
+feasible_instances %>%
+  kable("html", booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+
+```
+
+### The instance status is Infeasible
+
+```{r}
+
+infeasible_instances = data %>% 
+  filter(method == "PADM") %>% 
+  filter(full_instance %in% gurobi_infeasible) %>%
+  group_by(solver, status, reason) %>% 
+  summarize(
+    Count = length(full_instance),
+    instances = paste0(paste0(unique(full_instance)[1:5], collapse = ", "), " ...")
+  )
+
+infeasible_instances %>%
+  kable("html", booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+
+```
+
+### The instance status is Unknown
+
+
+```{r}
+
+unknown_instances = data %>% 
+  filter(method == "PADM") %>% 
+  filter(full_instance %in% gurobi_unknown) %>%
+  group_by(solver, status, reason) %>% 
+  summarize(
+    Count = length(full_instance), 
+    instances = paste0(paste0(unique(full_instance)[1:5], collapse = ", "), " ...")
+  )
+
+unknown_instances %>%
+  kable("html", booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+
+```
+
+```{r}
+ws_gap = data %>% filter(method == "PADM", !is.na(warm_start_l1_norm), !is.na(l1_norm)) %>%
+    mutate(gap_warm_start = (warm_start_l1_norm - l1_norm) / (1e-10 + warm_start_l1_norm)) %>%
+    select(full_instance, warm_start_l1_norm, l1_norm, gap_warm_start)
+
+ws_gap %>% filter(gap_warm_start < 0)
+
+ggplot(ws_gap, aes(x = gap_warm_start)) + 
+    stat_ecdf(geom = "step")
 ```

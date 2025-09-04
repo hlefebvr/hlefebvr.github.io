@@ -69,21 +69,6 @@
       "bibtex": "@techreport{lefebvre2024counterfactual,\n  author       = {Henri Lefebvre and Martin Schmidt},\n  title        = {Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method},\n  year         = {2024},\n  note         = {Published: 2024-12-19, Updated: 2025-01-08},\n  howpublished = {\\url{https://optimization-online.org/?p=28803}},\n  keywords     = {bilevel optimization, Counterfactual explanations, explainability, Linear Optimization, Penalty alternating direction method},\n  categories   = {Energy, Nonlinear Optimization, Optimization in Data Science}\n}"
     },
     {
-      "code": "AK",
-      "title": "Correction to <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
-      "authors": "Anirudh Subramanyam",
-      "year": 2024,
-      "preprints": [
-        {
-          "title": "arXiv",
-          "link": "https://arxiv.org/abs/2411.04307"
-        }
-      ],
-      "open-science-page": "open-science/AK-correction-to-a-Lagrangian-dual-method-for-two-stage-robust-optimization-with-binary-uncertainties",
-      "abstract": "We provide a correction to the sufficient conditions under which closed-form expressions for the optimal Lagrange multiplier are provided in arXiv:2112.13138 [math.OC]. We first present a simple counterexample where the original conditions are insufficient, highlight where the original proof fails, and then provide modified conditions along with a correct proof of their validity. Finally, although the original paper discusses modifications to their method for problems that may not satisfy any sufficient conditions, we substantiate that discussion along two directions. We first show that computing an optimal Lagrange multiplier can still be done in polynomial time. We then provide complete and correct versions of the corresponding Benders and column-and-constraint generation algorithms in which the original method is used. We also discuss the implications of our findings on computational performance.",
-      "bibtex": "@techreport{lefebvre2025correctiontolagrangiandual,\n  title={Correction to: A Lagrangian dual method for two-stage robust optimization with binary uncertainties},\n  author={Henri Lefebvre and Anirudh Subramanyam},\n  year={2025},\n  archivePrefix={arXiv},\n  primaryClass={math.OC},\n  url={https://arxiv.org/abs/2411.04307}\n}"
-    },
-    {
       "code": "AJ",
       "title": "Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization",
       "authors": "Martin Schmidt",
@@ -130,6 +115,25 @@
     }
   ],
   "journal-articles": [
+    {
+      "code": "AK",
+      "title": "Remarks on: <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
+      "authors": "Anirudh Subramanyam",
+      "year": 2025,
+      "preprints": [
+        {
+          "title": "Optimization and Engineering",
+          "link": "https://doi.org/10.1007/s11081-025-10015-y"
+        },
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2411.04307"
+        }
+      ],
+      "open-science-page": "open-science/AK-correction-to-a-Lagrangian-dual-method-for-two-stage-robust-optimization-with-binary-uncertainties",
+      "abstract": "We provide a correction to the sufficient conditions under which closed-form expressions for the optimal Lagrange multiplier are provided in arXiv:2112.13138 [math.OC]. We first present a simple counterexample where the original conditions are insufficient, highlight where the original proof fails, and then provide modified conditions along with a correct proof of their validity. Finally, although the original paper discusses modifications to their method for problems that may not satisfy any sufficient conditions, we substantiate that discussion along two directions. We first show that computing an optimal Lagrange multiplier can still be done in polynomial time. We then provide complete and correct versions of the corresponding Benders and column-and-constraint generation algorithms in which the original method is used. We also discuss the implications of our findings on computational performance.",
+      "bibtex": "@article{Lefebvre2025,\n  title = {Remarks on: A Lagrangian dual method for two-stage robust optimization with binary uncertainties},\n  ISSN = {1573-2924},\n  url = {http://dx.doi.org/10.1007/s11081-025-10015-y},\n  DOI = {10.1007/s11081-025-10015-y},\n  journal = {Optimization and Engineering},\n  publisher = {Springer Science and Business Media LLC},\n  author = {Lefebvre,  Henri and Subramanyam,  Anirudh},\n  year = {2025},\n  month = aug\n}"
+    },
     {
       "code": "AF",
       "title": "On Coupling Constraints in Linear Bilevel Optimization",
