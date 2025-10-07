@@ -382,3 +382,131 @@ knitr::kable(final_result,
       add_header_above(c(" " = 5, "Solved instances" = 5, "Unsolved instances" = 3)
 )
 ```
+
+## Comparison with Static Robust Problem 
+
+```{r}
+static = read.table("./static-rap-results.csv", header = FALSE, sep = ',')
+colnames(static) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail", "use_bilevel_separation", "use_budgeted_unc")
+static$tag = NULL 
+```
+
+```{r}
+columns_to_keep = c("instance", "Gamma", "deviation", "n_servers", "n_clients", "method", "total_time", "best_bound", "iteration_count")
+ccg = all_results %>% filter(method == "CCG", use_heuristic == 0, use_bilevel_separation == 0, use_budgeted_unc == 1) %>% select(all_of(columns_to_keep), p)
+static = static %>% select(columns_to_keep)
+
+ccg = ccg %>% mutate(instance = basename(instance))
+static = static %>% mutate(instance = basename(instance))
+
+merged_df = merge(ccg, static,
+                   by = c("instance", "Gamma", "deviation"), 
+                   all = TRUE,
+                   suffixes = c(".ccg", ".static"))
+merged_df %>% filter(best_bound.ccg > best_bound.static)
+merged_df %>% filter(best_bound.static < 1e-4)
+```
+
+
+```{r}
+library(tidyr)
+
+# 1. Compute summary
+summary_table <- merged_df %>%
+  mutate(
+    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.static)) * 100,
+    time_status = ifelse(total_time.ccg < time_limit, "within_time", "timed_out")
+  ) %>%
+  group_by(n_servers.ccg, n_clients.ccg, p, deviation, time_status) %>%
+  summarise(
+    n_instances = length(best_bound.static),
+    n_missing_static = sum(is.na(best_bound.static)),
+    avg_ccg_time = mean(total_time.ccg),
+    avg_static_time = mean(total_time.static),
+    avg_gap = ifelse(sum(!is.na(best_bound.static) & best_bound.ccg < 1e20) > 0, 
+                 mean(gap[!is.na(best_bound.static) & best_bound.ccg < 1e20]), 
+                 NA),
+    .groups = "drop"
+  )
+
+# 2. Pivot wider
+summary_wide <- summary_table %>%
+  pivot_wider(
+    names_from = time_status,
+    values_from = c(n_instances, n_missing_static, avg_ccg_time, avg_static_time, avg_gap),
+    names_glue = "{time_status}_{.value}"
+  ) %>%
+  arrange(n_servers.ccg, n_clients.ccg, p, deviation)
+
+summary_wide = summary_wide %>% select(n_servers.ccg, n_clients.ccg, p, deviation, within_time_n_instances, within_time_n_missing_static, within_time_avg_ccg_time, within_time_avg_static_time, within_time_avg_gap, timed_out_n_instances, timed_out_n_missing_static, timed_out_avg_gap)
+# 3. Pretty table with exact column names
+kable(summary_wide, "html", digits = 4, escape = FALSE, col.names = c(
+  "|V_1|", "|V_2|", "p", "dev",
+  "n_instances", "n_static_is_infeasible", "avg_ccg_time", "avg_static_time", "avg_gap (%)",
+  "n_instances", "n_static_is_infeasible", "avg_gap (%)"
+)) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  add_header_above(c(" " = 4, "Solved by CCG" = 5, "Time out" = 3))
+
+```
+
+### Larger instances 
+
+```{r}
+larger = read.table("./larger-results.csv", header = FALSE, sep = ',')
+colnames(larger) <- c("tag", "instance", "n_servers", "n_clients", "Gamma", "deviation", "time_limit", "method", "use_heuristic", "total_time", "master_time", "separation_time", "best_bound", "iteration_count", "fail", "use_bilevel_separation", "use_budgeted_unc")
+larger$tag = NULL 
+larger$p = larger$Gamma / larger$n_clients
+larger$p = ceiling(larger$p / .05) * .05
+
+ccg = larger %>% filter(method == "CCG", use_heuristic == 1)
+static = larger %>% filter(method == "Static")
+static$p = NULL
+
+merged_df = merge(ccg, static,
+                   by = c("instance", "Gamma", "deviation"), 
+                   all = TRUE,
+                   suffixes = c(".ccg", ".static"))
+merged_df %>% filter(best_bound.ccg > best_bound.static)
+merged_df %>% filter(best_bound.static < 1e-4)
+
+
+# 1. Compute summary
+summary_table <- merged_df %>%
+  mutate(
+    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.static)) * 100,
+    time_status = ifelse(total_time.ccg < time_limit, "within_time", "timed_out")
+  ) %>%
+  group_by(n_servers.ccg, n_clients.ccg, p, deviation, time_status) %>%
+  summarise(
+    n_instances = length(best_bound.static),
+    n_missing_static = sum(is.na(best_bound.static)),
+    avg_ccg_time = mean(total_time.ccg),
+    avg_static_time = mean(total_time.static),
+    avg_gap = ifelse(sum(!is.na(best_bound.static) & best_bound.ccg < 1e20) > 0, 
+                 mean(gap[!is.na(best_bound.static) & best_bound.ccg < 1e20]), 
+                 NA),
+    .groups = "drop"
+  )
+
+# 2. Pivot wider
+summary_wide <- summary_table %>%
+  pivot_wider(
+    names_from = time_status,
+    values_from = c(n_instances, n_missing_static, avg_ccg_time, avg_static_time, avg_gap),
+    names_glue = "{time_status}_{.value}"
+  ) %>%
+  arrange(n_servers.ccg, n_clients.ccg, p, deviation)
+
+summary_wide = summary_wide %>% select(n_servers.ccg, n_clients.ccg, p, deviation, timed_out_n_instances, timed_out_n_missing_static, timed_out_avg_gap)
+# 3. Pretty table with exact column names
+kable(summary_wide, "html", digits = 4, escape = FALSE, col.names = c(
+  "|V_1|", "|V_2|", "p", "dev",
+  "n_instances", "n_static_is_infeasible", "avg_gap (%)"
+)) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  add_header_above(c(" " = 4, "Time out" = 3))
+
+```
+
+

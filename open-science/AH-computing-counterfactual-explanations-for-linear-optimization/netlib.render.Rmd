@@ -33,10 +33,10 @@ paged_table(instances)
 
 ```{r}
 
-time_limit = 900
+time_limit = 1800
 
 data = rbind(
-  read.csv("all.csv", header = FALSE)
+  read.csv("new-results.csv", header = FALSE)
 )
 stats = c("time", "status", "reason", "objective", "n_outer_iterations", "n_inner_iterations","l1_norm", "l2_norm")
 colnames(data) = c("tag", "instance", "n_vars", "n_ctrs", "desired_space_dim", "n_mutable_coefficients", "n_mutable_costs", "n_mutable_rhs", "method", "update_rule", "update_rule_parameter", "norm", "initial_penalty",  "warm_start", "only_constraints", "sol_file", paste0("warm_start_", stats), stats, "solution_ok", "unconstrained_obj", "constrained_obj", "gap")
@@ -58,6 +58,7 @@ data$full_instance = basename(data$instance)
 data$instance = sub("_.*", "", data$full_instance)
 
 data$adjusted_time = ifelse(is.na(data$warm_start_time), 0, data$warm_start_time) + data$time
+data = data %>% mutate(adjusted_time = ifelse(solution_ok == 0, time_limit, adjusted_time))
 data$total_time = data$adjusted_time
 
 data$solved = (data$status == "Optimal" | data$status == "Feasible") & data$adjusted_time < time_limit
@@ -81,6 +82,10 @@ data = merge(data, instances[, c("instance", "n_vars", "n_ctrs")],
 
 ```{r, echo = FALSE}
 paged_table(data)
+```
+
+```{r}
+data %>% filter(solution_ok == 0, method == "NLP-first", n_mutable_costs == 0) %>% select(instance, full_instance, n_mutable_coefficients, solution_ok, constrained_obj, unconstrained_obj, gap)
 ```
 
 ## Performance Analysis
@@ -120,7 +125,8 @@ for (i in seq_along(labels)) {
       group_by(var_cat, ctr_cat, n_mutable_columns) %>%
       summarise(
         `# inst.` = n_distinct(instance),  # Count number of instances
-        `feasible (in %)` = mean(solved) * 100,  # Percentage of feasible instances
+        `# full inst.` = n_distinct(full_instance), 
+        `feasible (in %)` = sum(solved) / n_distinct(full_instance) * 100,  # Percentage of feasible instances
         `# mutable objective param.` = mean(n_mutable_costs, na.rm = TRUE),  # Avg mutable objective parameters
         `# mutable constraint param.` = mean(n_mutable_coefficients, na.rm = TRUE),  # Avg mutable constraint parameters
         .groups = "drop"
@@ -133,14 +139,14 @@ for (i in seq_along(labels)) {
   }
 }
 
-#summary_table %>%
-#  kable("html", align = "c", col.names = c()) %>%
-#  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
-#  add_header_above(c("n" = 1, "m" = 1, "# mut. columns" = 1, "# inst." = 1, "feasible (in %)" = 1, 
-#                     "# mutable objective param." = 1, "# mutable constraint param." = 1)) %>%
-#  group_rows("small", 1, 6) %>%
-#  group_rows("medium", 7, 15) %>%
-#  group_rows("large", 16, 24)
+summary_table %>%
+  kable("html", align = "c", col.names = c()) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "center") %>%
+  add_header_above(c("n" = 1, "m" = 1, "# mut. columns" = 1, "# inst." = 1, "# full inst." = 1, "feasible (in %)" = 1, 
+                     "# mutable objective param." = 1, "# mutable constraint param." = 1)) %>%
+  group_rows("small", 1, 6) %>%
+  group_rows("medium", 7, 15) %>%
+  group_rows("large", 16, 24)
 
 ```
 
@@ -248,10 +254,10 @@ for (norm_val in unique(data$norm)) {
     labs(title = "Over those instances for which all methods computed a feasible point", #paste0("Boxplot of l1-norm of CE when using the objective function: ", norm),
          x = "",
          y = "") +
-    #scale_y_discrete(labels = c("NLP", "NLP-first", "PADM", "PADM warm start")) +
+    scale_y_discrete(labels = c("NLP", "NLP-first", "PADM", "PADM warm start")) +
     scale_x_log10(breaks = scales::log_breaks(base = 10, n = 4)) +
     theme_minimal() +
-    theme(legend.position = "none", axis.text.y = element_text(angle = 0, hjust = .5)) # +
+    theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = .5)) # +
     #facet_wrap(~ n_mutable_columns, ncol = 3)
   
   print(plot)
@@ -342,12 +348,20 @@ unknown_instances %>%
 ```
 
 ```{r}
-ws_gap = data %>% filter(method == "PADM", !is.na(warm_start_l1_norm), !is.na(l1_norm)) %>%
+ws_gap = data %>% 
+    filter(method == "PADM", !is.na(warm_start_l1_norm), !is.na(l1_norm)) %>%
     mutate(gap_warm_start = (warm_start_l1_norm - l1_norm) / (1e-10 + warm_start_l1_norm)) %>%
-    select(full_instance, warm_start_l1_norm, l1_norm, gap_warm_start)
+    select(full_instance, n_mutable_columns, warm_start_l1_norm, l1_norm, gap_warm_start)
 
 ws_gap %>% filter(gap_warm_start < 0)
 
 ggplot(ws_gap, aes(x = gap_warm_start)) + 
     stat_ecdf(geom = "step")
+
+x = seq(-1,1,.01)
+ecdf_ws_improve = data.frame(
+  p = x,
+  ecdf = ecdf(ws_gap$gap_warm_start)(x)
+)
+write.csv(ecdf_ws_improve, file = "ecdf_ws_improve.csv", row.names = FALSE)
 ```
