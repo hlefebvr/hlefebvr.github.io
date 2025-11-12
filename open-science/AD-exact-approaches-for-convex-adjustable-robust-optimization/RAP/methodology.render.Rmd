@@ -414,7 +414,7 @@ library(tidyr)
 # 1. Compute summary
 summary_table <- merged_df %>%
   mutate(
-    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.static)) * 100,
+    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.ccg)) * 100,
     time_status = ifelse(total_time.ccg < time_limit, "within_time", "timed_out")
   ) %>%
   group_by(n_servers.ccg, n_clients.ccg, p, deviation, time_status) %>%
@@ -474,8 +474,8 @@ merged_df %>% filter(best_bound.static < 1e-4)
 # 1. Compute summary
 summary_table <- merged_df %>%
   mutate(
-    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.static)) * 100,
-    time_status = ifelse(total_time.ccg < time_limit, "within_time", "timed_out")
+    gap = (best_bound.static - best_bound.ccg) / (1e-10 + abs(best_bound.ccg)) * 100,
+    time_status = "timed_out",#ifelse(total_time.ccg < time_limit, "within_time", "timed_out")
   ) %>%
   group_by(n_servers.ccg, n_clients.ccg, p, deviation, time_status) %>%
   summarise(

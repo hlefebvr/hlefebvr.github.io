@@ -74,18 +74,27 @@ make_heatmap = function(data) {
 make_ecdf_total_time = function(data) {
   p = ggplot(data, aes(x = total_time, color = factor(Gamma), linetype = full_approach ) ) +
       stat_ecdf(geom = "step", linewidth = .5) +
-      scale_y_continuous(labels = scales::percent) +
+      #scale_y_continuous(labels = function(x) gsub("%", "\\\\%", scales::label_percent()(x))) +
       labs(
         title = "ECDF of Total Computation Time",
         x = "Time (s)",
-        y = "Instances (%)",
+        y = "Instances",
         color = "Uncertainty budget",
         linetype = "Solution Approach"
       ) +
+      xlim(c(0,10800)) +
       theme_minimal() +
       scale_color_brewer(palette = "Set1")
   
-  return(p)
+  print(p)
+  
+  ecdf_table <- all_results_wait_and_see %>%
+    group_by(Gamma, full_approach) %>%
+    arrange(total_time) %>%
+    mutate(y = ecdf(total_time)(total_time)) %>%
+    select(Gamma, full_approach, x = total_time, y)
+  
+  return(ecdf_table)
 }
 
 make_ecdf_gap = function(data) {
@@ -163,11 +172,14 @@ make_master_time_barplot = function(data) {
 }
 
 ```
+
 ## Robust bilevel problem with wait-and-see follower
 
 ```{r}
-#all_results_wait_and_see = read.csv("results-wait-and-see.csv", header = FALSE)
-all_results_wait_and_see = read.csv("tmp-wait-and-see.csv", header = FALSE)
+all_results_wait_and_see = rbind(
+  read.csv("ws_results.csv", header = FALSE),
+  read.csv("aro_results.csv", header = FALSE)
+)
 colnames(all_results_wait_and_see) = c("tag",
                           "instance",
                           "lower_objective_instance",
@@ -190,15 +202,26 @@ colnames(all_results_wait_and_see) = c("tag",
 all_results_wait_and_see = all_results_wait_and_see %>%
   mutate(
     separation_type = sub("_.*", "", separation_method),
+    separation_method = gsub("_", " ", separation_method),
     separation_approach = sub("^[^_]+_", "", separation_method),
-    full_approach = paste0(master_method, " / ", separation_approach),
+    full_approach = paste0(master_method, " - ", separation_approach),
     sigma_square = as.numeric(sub(".*_\\d+_(\\d+)_\\d+\\.txt$", "\\1", lower_objective_instance)),
-    total_time = pmin(total_time, 10800)
+    total_time = pmin(total_time, 10800),
+    gap = (best_obj - best_bound) / (abs(best_obj) + 1e-10)
   )
 
 #all_results_wait_and_see = all_results_wait_and_see %>% filter(n_facilities <= 25 & n_customers <= 40)
 
 all_results_wait_and_see$tag = NULL
+
+#print("*********************** WARNING: Filtering instances here ***********************")
+
+#all_results_wait_and_see <- all_results_wait_and_see %>%
+#  group_by(instance, lower_objective_instance, Gamma) %>%
+#  mutate(n_full_approach = n_distinct(full_approach)) %>%
+#  ungroup() %>%
+#  filter(n_full_approach == n_distinct(all_results_wait_and_see$full_approach)) %>%
+#  select(-n_full_approach)
 
 paged_table(all_results_wait_and_see)
 ```
@@ -206,7 +229,54 @@ paged_table(all_results_wait_and_see)
 ### How Does the Algorithm Perform?
 
 ```{r}
-make_ecdf_total_time(all_results_wait_and_see)
+
+table = make_ecdf_total_time(all_results_wait_and_see)
+
+write_ecdf_csv = function(data, column_name, filename) {
+  
+  x_points <- seq(0, max(data[[column_name]]), length.out = 100)
+
+  combinations <- data %>%
+    select(full_approach, Gamma) %>%
+    distinct()
+  
+  # Compute ECDF values for each combination
+  ecdf_table <- combinations %>%
+    rowwise() %>%
+    do({
+      approach <- .$full_approach
+      gamma <- .$Gamma
+      
+      # Subset the data
+      df_sub <- data %>%
+        filter(full_approach == approach, Gamma == gamma)
+      
+      # Compute ECDF
+      F <- ecdf(df_sub[[column_name]])
+      
+      # Evaluate at x_points
+      data.frame(
+        x = x_points,
+        value = F(x_points),
+        full_approach = approach,
+        Gamma = gamma
+      )
+    }) %>%
+    ungroup()
+  
+  ecdf_wide <- ecdf_table %>%
+    unite("approach_Gamma", full_approach, Gamma, sep = "_") %>%
+    pivot_wider(names_from = approach_Gamma, values_from = value)
+  
+  
+  ecdf_wide
+  
+  write.csv(ecdf_wide, filename, row.names = FALSE, quote = FALSE)
+}
+
+write_ecdf_csv(all_results_wait_and_see, "total_time", "rap-ecdf-time.csv")
+write_ecdf_csv(all_results_wait_and_see, "gap", "rap-ecdf-gap.csv")
+
 make_ecdf_gap(all_results_wait_and_see)
 make_ecdf_master_time(all_results_wait_and_see)
 make_master_time_barplot(all_results_wait_and_see)
@@ -215,7 +285,7 @@ make_master_time_barplot(all_results_wait_and_see)
 ## What Can We Solve? 
 
 ```{r}
-wait_and_see_big_M = all_results_wait_and_see %>% filter(full_approach == "BigM / KKT_BigM")
+wait_and_see_big_M = all_results_wait_and_see %>% filter(full_approach == "BigM - Optimality KKT BigM")
 make_heatmap(wait_and_see_big_M)
 ```
 
@@ -247,9 +317,29 @@ ggplot(avg_iterations_combined, aes(x = pair, y = avg_iterations, fill = problem
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+## Summary Table
+
+```{r}
+summary_table <- all_results_wait_and_see %>%
+  filter(total_time < 10800) %>%
+  group_by(full_approach, Gamma, n_facilities, n_customers) %>%
+  summarise(
+    #instance = paste(unique(instance), collapse = ", "),
+    n_instances = n(),
+    avg_total_time = mean(total_time, na.rm = TRUE),
+    avg_master_share = mean(master_time / total_time * 100, na.rm = TRUE),
+    avg_n_iterations = mean(n_iterations, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+kable(summary_table)
+```
+
 ## Is the Angle Making Things Harder?
 
 ```{r}
+wait_and_see_big_M %>% group_by(sigma_square) %>% summarise(avg_angle = mean(angle))
+
 ggplot(wait_and_see_big_M, aes(x = factor(sigma_square), y = angle)) +
   geom_boxplot(outlier.alpha = 0.3, fill = "lightblue") +
   labs(
@@ -313,4 +403,6 @@ check_obj_consistency <- function(data) {
 }
 
 check_obj_consistency(all_results_wait_and_see)
+
+all_results_wait_and_see %>% filter(n_iterations > 100)
 ```

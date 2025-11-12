@@ -163,6 +163,7 @@ make_master_time_barplot = function(data) {
 }
 
 ```
+
 ## Robust bilevel problem with wait-and-see follower
 
 ```{r}
@@ -188,10 +189,11 @@ all_results_wait_and_see = all_results_wait_and_see %>%
     separation_type = "MibS",
     separation_approach = "MibS",
     full_approach = paste0(master_method, " / ", separation_approach),
-    total_time = pmin(total_time, 10800)
+    total_time = pmin(total_time, 10800),
+    gap = (best_obj - best_bound) / (abs(best_obj) + 1e-10)
   )
 
-#all_results_wait_and_see = all_results_wait_and_see %>% filter(n_items <= 25 & n_knapsacks <= 40)
+all_results_wait_and_see = all_results_wait_and_see %>% filter(n_items <= 15)
 
 all_results_wait_and_see$tag = NULL
 all_results_wait_and_see$blank = NULL
@@ -206,6 +208,52 @@ make_ecdf_total_time(all_results_wait_and_see)
 make_ecdf_gap(all_results_wait_and_see)
 make_ecdf_master_time(all_results_wait_and_see)
 make_master_time_barplot(all_results_wait_and_see)
+
+
+write_ecdf_csv = function(data, column_name, filename) {
+  
+  x_points <- seq(0, max(data[[column_name]]), length.out = 100)
+
+  combinations <- data %>%
+    select(full_approach, Gamma) %>%
+    distinct()
+  
+  # Compute ECDF values for each combination
+  ecdf_table <- combinations %>%
+    rowwise() %>%
+    do({
+      approach <- .$full_approach
+      gamma <- .$Gamma
+      
+      # Subset the data
+      df_sub <- data %>%
+        filter(full_approach == approach, Gamma == gamma)
+      
+      # Compute ECDF
+      F <- ecdf(df_sub[[column_name]])
+      
+      # Evaluate at x_points
+      data.frame(
+        x = x_points,
+        value = F(x_points),
+        full_approach = approach,
+        Gamma = gamma
+      )
+    }) %>%
+    ungroup()
+  
+  ecdf_wide <- ecdf_table %>%
+    unite("approach_Gamma", full_approach, Gamma, sep = "_") %>%
+    pivot_wider(names_from = approach_Gamma, values_from = value)
+  
+  
+  ecdf_wide
+  
+  write.csv(ecdf_wide, filename, row.names = FALSE, quote = FALSE)
+}
+
+write_ecdf_csv(all_results_wait_and_see, "total_time", "mkp-ecdf-time.csv")
+write_ecdf_csv(all_results_wait_and_see, "gap", "mkp-ecdf-gap.csv")
 ```
 
 ## What Can We Solve? 
@@ -241,4 +289,23 @@ ggplot(avg_iterations_combined, aes(x = pair, y = avg_iterations, fill = problem
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+## Summary Table
+
+```{r}
+summary_table <- all_results_wait_and_see %>%
+  filter(total_time < 10800) %>%
+  group_by(full_approach, Gamma, n_items, n_knapsacks) %>%
+  summarise(
+    #instance = paste(unique(instance), collapse = ", "),
+    n_instances = n(),
+    avg_total_time = mean(total_time, na.rm = TRUE),
+    avg_master_share = mean(master_time / total_time * 100, na.rm = TRUE),
+    avg_n_iterations = mean(n_iterations, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+kable(summary_table)
 ```
