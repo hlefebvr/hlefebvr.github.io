@@ -274,8 +274,8 @@ write_ecdf_csv = function(data, column_name, filename) {
   write.csv(ecdf_wide, filename, row.names = FALSE, quote = FALSE)
 }
 
-write_ecdf_csv(all_results_wait_and_see, "total_time", "rap-ecdf-time.csv")
-write_ecdf_csv(all_results_wait_and_see, "gap", "rap-ecdf-gap.csv")
+write_ecdf_csv(all_results_wait_and_see, "total_time", "uflp-ecdf-time.csv")
+write_ecdf_csv(all_results_wait_and_see, "gap", "uflp-ecdf-gap.csv")
 
 make_ecdf_gap(all_results_wait_and_see)
 make_ecdf_master_time(all_results_wait_and_see)
