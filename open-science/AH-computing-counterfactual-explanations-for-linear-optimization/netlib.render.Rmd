@@ -6,7 +6,7 @@ library(rmarkdown)
 suppressMessages(library(dplyr))
 suppressMessages(library(knitr))
 suppressMessages(library(kableExtra))
-library(tikzDevice)
+#library(tikzDevice)
 ```
 
 ## Loading Results
@@ -262,9 +262,9 @@ for (norm_val in unique(data$norm)) {
   
   print(plot)
   
-  tikz(file = paste0("boxplot_", norm_val, ".tex"), width = 4, height = 3)
-  print(plot)
-  dev.off()
+  #tikz(file = paste0("boxplot_", norm_val, ".tex"), width = 4, height = 3)
+  #print(plot)
+  #dev.off()
 }
 ```
 
