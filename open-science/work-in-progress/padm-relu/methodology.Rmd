@@ -1,0 +1,94 @@
+---
+title: "methodology"
+output: html_document
+---
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(rmarkdown)
+suppressWarnings(library(dplyr))
+library(knitr)
+library(kableExtra)
+library(stringr)
+library(RColorBrewer)
+library(tidyr)
+```
+
+```{r}
+data = read.csv("results-2.csv")
+#data  = data %>% mutate(success = ifelse(status %in% c("SUBOPTIMAL", "TIME_LIMIT"), FALSE, TRUE))
+data = data %>% mutate(full_method = paste0(method, " - ", warm_start))
+
+
+paged_table(data)
+
+data %>%
+  group_by(method) %>%
+  summarise(n = n(), .groups = "drop")
+
+data %>% filter(architecture == "mnist_1layer_100hidden_acc97.7_delta_5", instance == "11418", warm_start == "ws")
+```
+
+
+```{r, fig.height = 8, fig.width = 12}
+# Aggregate the data: count successes per architecture and method
+agg_data <- data %>%
+  group_by(architecture, full_method) %>%
+  summarise(success_count = sum(success, na.rm = TRUE), .groups = "drop")
+
+# Plot
+ggplot(agg_data, aes(x = factor(architecture), y = factor(full_method), fill = success_count)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = success_count), color = "black") +
+  scale_fill_gradient(low = "white", high = "darkgreen", na.value = "black") +
+  theme_minimal() +
+  labs(fill = "Number of Successes", x = "Architecture", y = "Method") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+
+```{r}
+max_gap = 2e3
+max_gap = 4e3
+
+data_with_best_other <- data %>%
+  #filter(method %in% c("ipopt_FixedParam", "gurobi_FixedParam", "gurobi_TwoBlockPADM")) %>%
+  filter(warm_start == "ws") %>%
+  group_by(architecture) %>%
+  mutate(
+    best_other_objective = sapply(1:n(), function(i) {
+      # Exclude the current method
+      other_bounds <- objective[-i]
+      if (length(other_bounds) == 0) {
+        return(NA)
+      } else {
+        return(min(other_bounds, na.rm = TRUE))
+      }
+    })
+  ) %>%
+  ungroup() %>%
+  mutate(gap_to_best = (objective - best_other_objective)/(1e-10 + abs(best_other_objective)) * 100) %>%
+  mutate(gap_to_best_plot = ifelse(is.na(gap_to_best) | gap_to_best > max_gap, max_gap, gap_to_best))
+
+data_with_best_other
+
+ggplot(data_with_best_other, aes(x = gap_to_best_plot, color = full_method)) +
+  stat_ecdf(geom = "step") + 
+  xlim(c(0,max_gap)) +
+  theme_minimal()  +
+  labs(
+    x = "Gap to Best Objective Found (Up to 4000 %, ws)",
+    y = "Instances (%)"
+  )
+
+ggplot(data %>% filter(warm_start == "ws"), aes(x = time, color = full_method)) +
+  stat_ecdf(geom = "step") + 
+  xlim(c(0,300)) +
+  theme_minimal()  +
+  labs(
+    x = "Computation Time",
+    y = "Instances (%)"
+  )
+```
+
