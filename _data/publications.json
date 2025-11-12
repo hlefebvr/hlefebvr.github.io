@@ -1,6 +1,21 @@
 {
   "submitted-articles": [
     {
+      "code": "AN",
+      "title": "A One-Extra Player Reduction of GNEPs to NEPs",
+      "authors": "David Salas and Martin Schmidt",
+      "year": 2025,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=32565"
+        }
+      ],
+      "open-science-page": "open-science/AN-a-one-extra-player-reduction-of-GNEPs-to-NEPs",
+      "abstract": "It is common opinion that generalized Nash equilibrium problems are harder than Nash equilibrium problems. In this work, we show that by adding a new player, it is possible to reduce many generalized problems to standard equilibrium problems. The reduction holds for linear problems and smooth convex problems verifying a Slater-type condition. We also derive a similar reduction for quasi-variational inequalities to variational inequalities under similar assumptions. The reduction is also obtained for purely integer linear problems. Interestingly, we show that, in general, our technique does not work for mixed-integer linear problems. The present work is built upon the recent developments in exact penalization for generalized games.",
+      "bibtex": "@techreport{Lefebvre2025OneExtra,\n   title        = {A One-Extra Player Reduction of GNEPs to NEPs},\n   author       = {Henri Lefebvre and David Salas and Martin Schmidt},\n   year         = {2025},\n   institution  = {Optimization Online},\n   url          = {https://optimization-online.org/?p=32565},\n   abstract     = {It is common opinion that generalized Nash equilibrium problems are harder than Nash equilibrium problems. In this work, we show that by adding a new player, it is possible to reduce many generalized problems to standard equilibrium problems. The reduction holds for linear problems and smooth convex problems verifying a Slater-type condition. We also derive a similar reduction for quasi-variational inequalities to variational inequalities under similar assumptions. The reduction is also obtained for purely integer linear problems. Interestingly, we show that, in general, our technique does not work for mixed-integer linear problems. The present work is built upon the recent developments in exact penalization for generalized games.},\n   keywords     = {generalized nash equilibrium problems, nash equilibrium problems, penalization, reformulation, variational inequalities},\n }"
+    },
+    {
       "code": "AM",
       "title": "A Dantzig-Wolfe Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches",
       "authors": "Martin Schmidt",
