@@ -274,6 +274,10 @@ pre {
     max-height: 300px;
 }
 
+code {
+    border: 1px solid #a3a3a3;
+}
+
 @media (max-width: 800px) {
 
     #container {
