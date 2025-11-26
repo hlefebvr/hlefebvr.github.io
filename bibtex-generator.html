@@ -3,6 +3,8 @@ layout: page
 title: "BibTeX Generator"
 ---
 
+<i>This is a work in progress... Will work with DOI for sure.</i><br /><br />
+
 <span color="#495057">
   This script generates BibTex entries from DOI, ArXiv or Optimization-Online URLs.
 </span>
@@ -260,6 +262,21 @@ title: "BibTeX Generator"
 
   }
 
+  const getArXiv = async (url) => {
+    // Extract arXiv ID from URL
+    const match = url.match(/\/(\d{4}\.\d{4,5})(v\d+)?/);
+    if (!match) throw new Error("Cannot extract arXiv ID");
+    const id = match[1];
+
+    const apiUrl = `http://export.arxiv.org/api/query?id_list=${id}`;
+    const res = await fetch(apiUrl);
+    const text = await res.text();
+
+    alert(text)
+
+    return text;
+  }
+
   $("#bib-button").click(async () => {
 
     const doi = $("#doi-entry").val().trim();
@@ -274,9 +291,12 @@ title: "BibTeX Generator"
     output.text("Loading...")
 
     const isOptimizationOnline = (url) => /^https?:\/\/(www\.)?optimization-online\.org/.test(url);
+    const isArXiv = (url) => /^https?:\/\/(www\.)?arxiv\.org\/(abs|pdf)\/\d{4}\.\d{4,5}(v\d+)?/.test(url);
 
     if (isOptimizationOnline(doi)) {
       text = await getOptimizationOnline(doi)
+    } else if (isArXiv(doi)) {
+      text = await getArXiv(doi)
     } else {
       text = await getDOI(doi)
     }
