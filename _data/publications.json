@@ -97,16 +97,22 @@
       "open-science-page": "open-science/AJ-exact-augmented-lagrangian-duality-for-nonconvex-mixed-integer-nonlinear-optimization",
       "abstract": "In the context of mixed-integer nonlinear problems (MINLPs), it is well-known that strong duality does not hold in general if the standard Lagrangian dual is used. Hence, we consider the augmented Lagrangian dual (ALD), which adds a nonlinear penalty function to the classic Lagrangian function. For this setup, we study conditions under which the ALD leads to a zero duality gap for general MINLPs. In particular, under mild assumptions and for a large class of penalty functions, we show that the ALD yields zero duality gaps if the penalty parameter goes to infinity. If the penalty function is a norm, we also show that the ALD leads to zero duality gaps for a finite penalty parameter. Moreover, we show that such a finite penalty parameter can be computed in polynomial time in the mixed-integer linear case. This generalizes the recent results on linearly constrained mixed-integer problems by Bhardwaj et al. (2024), Boland and Eberhard (2014), Feizollahi et al. (2016), and Gu et al. (2020).",
       "bibtex": "@techreport{lefebvre2024exact,\n  title={Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization},\n  author={Henri Lefebvre and Martin Schmidt},\n  year={2024},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=27046}\n}"
-    },
+    }
+  ],
+  "journal-articles": [
     {
       "code": "AE",
-      "title": "Using Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization",
+      "title": "Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints",
       "authors": "Martin Schmidt, Johannes Thürauf",
-      "year": 2023,
+      "year": 2025,
       "preprints": [
         {
           "title": "Optimization Online",
           "link": "https://optimization-online.org/?p=24462"
+        },
+        {
+          "title": "Accepted at Mathematical Programming Computation",
+          "link": "#"
         }
       ],
       "open-science-page": "open-science/AE-using-column-generation-in-column-and-constraints-generation-for-adjustable-robust-optimization",
@@ -117,19 +123,21 @@
       "code": "AD",
       "title": "Exact Approaches for Convex Adjustable Robust Optimization",
       "authors": "Enrico Malaguti, Michele Monaci",
-      "year": 2023,
+      "year": 2025,
       "preprints": [
         {
           "title": "Optimization Online",
           "link": "https://optimization-online.org/?p=20869"
+        },
+        {
+          "title": "Accepted at Mathematical Programming",
+          "link": "#"
         }
       ],
       "open-science-page": "open-science/AD-exact-approaches-for-convex-adjustable-robust-optimization",
       "abstract": "Adjustable Robust Optimization (ARO) is a paradigm for facing uncertainty in a decision problem, in case some recourse actions are allowed after the actual value of all input parameters is revealed. While several approaches have been introduced for the linear case, little is known regarding exact methods for the convex case. In this work, we introduce a new general framework for attacking ARO problems involving convex functions in the recourse problem. We first recall a semi-infinite reformulation of the problem and, provided that one can solve a non-convex separation problem, show how to solve it either by a generalized Benders decomposition or by a column-and-constraint generation approach. For the relevant case in which the uncertainty set has an affine mapping to a 0-1 polytope, we show that the separation problem can be reformulated as a convex Mixed-Integer NonLinear Problem, thus allowing us to derive computationally sound exact methods. Finally, we apply the resulting algorithms to two different applications, namely a nonlinear facility location problem and a nonlinear resource allocation problem, to numerically assess their computational performance.",
       "bibtex": "@techreport{lefebvre2022exact,\n  title={Exact Approaches for Convex Adjustable Robust Optimization},\n  author={Henri Lefebvre and Enrico Malaguti and Michele Monaci},\n  year={2022},\n  note={Updated: 2025/04/18},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=20869}\n}"
-    }
-  ],
-  "journal-articles": [
+    },
     {
       "code": "AK",
       "title": "Remarks on: <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
