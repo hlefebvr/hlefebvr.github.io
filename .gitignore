@@ -13,3 +13,4 @@ uml
 *.rendered.Rmd
 *rendered.html
 *.rendered_files
+.DS_Store

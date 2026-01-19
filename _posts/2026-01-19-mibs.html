@@ -1,0 +1,85 @@
+---
+layout: post
+title: "Installing the bilevel solver MibS with CPLEX"
+category: blog
+short: Shows how to install MibS with CPLEX for solving bilevel optimization problems.
+date: 2026-01-19
+preview: ../coin-or.png
+---
+
+
+<p>
+    <a href="https://github.com/coin-or/MibS">MibS</a> is an open-source solver for bilevel optimization.
+</p>
+
+<p>
+    The GitHub page explains how to install the default version, which comes with
+    <code>Symphony</code> as the underlying solver.
+</p>
+
+<h2>Installing with CPLEX</h2>
+
+<h3>Local Installation</h3>
+
+<p>
+    First, get
+    <a href="https://github.com/coin-or/coinbrew">coinbrew</a>.
+    This is a tool that helps install all COIN-OR libraries.
+</p>
+
+<pre><code>wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew</code></pre>
+
+<p>Then, download MibS with:</p>
+
+<pre><code>./coinbrew fetch MibS@1.2</code></pre>
+
+<p>Next, install MibS with the following options:</p>
+
+<ul>
+<li>
+    <code>--with-cplex-incdir=</code> should point to the
+    <code>include</code> directory of CPLEX.
+</li>
+<li>
+    <code>--with-cplex-lib=</code> is used to pass linking options necessary
+    for MibS to communicate with CPLEX. The <code>-L</code> flag should point
+    to the CPLEX <code>lib</code> directory. The flags
+    <code>-lm</code> and <code>-lpthread</code> add libraries required by CPLEX.
+</li>
+<li>
+    <code>--disable-cplex-libcheck --tests=none</code> disables unit testing.
+    See this
+    <a href="https://github.com/coin-or/MibS/discussions/91">GitHub Discussion</a>
+    for details.
+</li>
+</ul>
+
+<p>Putting it all together:</p>
+
+<pre><code>
+./coinbrew build MibS \
+--with-cplex-incdir=/opt/ibm/ILOG/CPLEX_Studio2211/cplex/include/ilcplex/ \
+--with-cplex-lib="-L/opt/ibm/ILOG/CPLEX_Studio2211/cplex/lib/x86-64_linux/static_pic/ -lcplex -lpthread -lm -ldl" \
+--disable-cplex-libcheck --tests=none
+</code></pre>
+
+<p>
+For C++ users, you may want to add <code>--enable-debug</code> if you plan
+to link directly against MibS and need debugging support.
+</p>
+
+<p>
+The MibS executable is located at <code>./dist/bin/mibs</code>. You can run it as follows:
+</p>
+
+<pre><code>
+./dist/bin/mibs \
+-MibS_auxiliaryInfoFile /path/to/the/auxilary/file.aux \
+-instance /path/to/the/mps/file.mps.gz \
+-feasCheckSolver CPLEX
+</code></pre>
+
+<p>
+For more information, see the
+<a href="https://coin-or.github.io/MibS/">official documentation</a>.
+</p>
