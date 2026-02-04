@@ -105,14 +105,16 @@
       "title": "Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints",
       "authors": "Martin Schmidt, Johannes Thürauf",
       "year": 2025,
+      "published": [
+        {
+          "title": "Accepted at Mathematical Programming Computation",
+          "link": "#"
+        }
+      ],
       "preprints": [
         {
           "title": "Optimization Online",
           "link": "https://optimization-online.org/?p=24462"
-        },
-        {
-          "title": "Accepted at Mathematical Programming Computation",
-          "link": "#"
         }
       ],
       "open-science-page": "open-science/AE-using-column-generation-in-column-and-constraints-generation-for-adjustable-robust-optimization",
@@ -124,14 +126,17 @@
       "title": "Exact Approaches for Convex Adjustable Robust Optimization",
       "authors": "Enrico Malaguti, Michele Monaci",
       "year": 2025,
+      "doi": "10.1007/s10107-025-02311-3",
+      "published": [
+        {
+          "title": "Mathematical Programming",
+          "link": "https://doi.org/10.1007/s10107-025-02311-3"
+        }
+      ],
       "preprints": [
         {
           "title": "Optimization Online",
           "link": "https://optimization-online.org/?p=20869"
-        },
-        {
-          "title": "Accepted at Mathematical Programming",
-          "link": "#"
         }
       ],
       "open-science-page": "open-science/AD-exact-approaches-for-convex-adjustable-robust-optimization",
@@ -143,11 +148,14 @@
       "title": "Remarks on: <i>A Lagrangian dual method for two-stage robust optimization with binary uncertainties</i>",
       "authors": "Anirudh Subramanyam",
       "year": 2025,
-      "preprints": [
+      "doi": "10.1007/s11081-025-10015-y",
+      "published": [
         {
           "title": "Optimization and Engineering",
           "link": "https://doi.org/10.1007/s11081-025-10015-y"
-        },
+        }
+      ],
+      "preprints": [
         {
           "title": "arXiv",
           "link": "https://arxiv.org/abs/2411.04307"
@@ -166,7 +174,7 @@
       "published": [
         {
           "title": "Optimization Letters",
-          "details": "Online First"
+          "link": "https://doi.org/10.1007/s11590-024-02156-3"
         }
       ],
       "preprints": [
@@ -193,7 +201,7 @@
       "published": [
         {
           "title": "INFORMS Journal on Computing",
-          "details": "Volume 36, Issue 1, Pages 1-304, C2"
+          "link": "https://doi.org/10.1287/ijoc.2022.0086"
         }
       ],
       "preprints": [
@@ -213,7 +221,7 @@
       "published": [
         {
           "title": "4OR - A Quarterly Journal of Operations Research",
-          "details": "PhD Abstract"
+          "link": "https://doi.org/10.1007/s10288-023-00557-1"
         }
       ],
       "open-science-page": "https://link.springer.com/article/10.1007/s10288-023-00557-1"
@@ -227,7 +235,7 @@
       "published": [
         {
           "title": "European Journal of Operations Research",
-          "details": "Volume 312, Issue 1, Pages 373-384"
+          "link": "https://doi.org/10.1016/j.ejor.2023.06.042"
         }
       ],
       "preprints": [
@@ -249,7 +257,7 @@
       "published": [
         {
           "title": "Journal of Scheduling",
-          "details": "Volume 26, Pages 169-191"
+          "link": "https://doi.org/10.1007/s10951-022-00775-1"
         }
       ],
       "preprints": [

@@ -6,11 +6,17 @@ html, body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    font-size: .95rem;
 }
 
 h1, h2, h3, h4, h5 {
     margin: 0;
     padding: 0;
+    font-weight: normal;
+}
+
+h3 {
+    color: #a0a0a0;
 }
 
 html {
@@ -29,9 +35,36 @@ body {
     min-height: 100vh;
 }
 
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  font-size: 0.8em;
+  background-color: #f4f6f8;   /* very light gray */
+  color: #2d3748;              /* dark blue-gray */
+  padding: 0.15em 0.35em;
+  border-radius: 0.35rem;
+}
+
 pre {
-    width: 580px;
-    overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  line-height: 1.5;
+
+  background-color: #f8fafc;   /* near-white, slightly cool */
+  color: #1f2933;
+
+  padding: .5rem;
+  margin: 1rem 0;
+
+  border: 1px solid #e5e7eb;   /* light gray border */
+  border-radius: 0.6rem;
+
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 #sidebar {
@@ -153,7 +186,7 @@ pre {
     margin-right: 3%;
     padding: 60px;
     background-color: white;
-    color: #27292B;
+    color: #2b2b2b;;
     line-height: 1.5;
     box-shadow: 0 0 2px 0 rgba(39, 43, 47, 0.1);
 }
@@ -183,15 +216,20 @@ pre {
     text-align: center;
     margin-top: 1.5%;
     margin-left: 3%;
-    color: gray;
+    color: #a0a0a0;
     font-size: 0.8rem;
 }
 
 .block {
-    padding-left: 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
     border-left: 5px solid #42b983;
+    background-color: #f2fdfa;
+}
+
+.block h3 {
+    color: #2b2b2b;
 }
 
 #r-content img {
@@ -216,7 +254,8 @@ pre {
 .category-item-image {
     width: 25%;
     text-align: center;
-    border: 1px solid #8d8d8d;
+    border: 1px solid #e0e0e0;   /* very light gray */
+    border-radius: 0.4rem;      /* soft rounding */
     height: 90px;
 }
 
@@ -226,7 +265,8 @@ pre {
 }
 
 .category-item-date {
-    color: gray;
+    color: #a0a0a0;
+    font-size: 0.8rem;
 }
 
 .category-item-text {
@@ -234,8 +274,13 @@ pre {
     width: 75%;
 }
 
+.category-item-text a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
 .theorem, .definition {
-    border: 1px solid gray;
+    border: 1px solid #a0a0a0;
     padding: 15px;
     margin-top: 15px;
     margin-bottom: 15px;
@@ -263,7 +308,7 @@ pre {
 #preview {
     width: 100%;
     max-height: 304px;
-    border: 2px solid darkgray;
+    border: 2px solid dark#a0a0a0;
     text-align: center;
     margin-bottom: 10px;
     margin-top: 10px;
@@ -274,8 +319,43 @@ pre {
     max-height: 300px;
 }
 
-code {
-    border: 1px solid #a3a3a3;
+.paper-list a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.preprint-link {
+  display: inline-block;        /* allows padding & margin */
+  padding: 0.15rem 0.6rem;     /* small button size */
+  font-size: 0.875rem;         /* slightly smaller text */
+  font-weight: 500;            /* medium weight for modern look */
+  color: #333;                 /* dark text for contrast */
+  background-color: #ffffff;   /* white button background */
+  border: 1px solid #ccc;      /* light #a0a0a0 border */
+  border-radius: 0.4rem;       /* rounded corners */
+  text-decoration: none;       /* remove underline */
+  transition: all 0.2s ease;   /* smooth hover effect */
+  cursor: pointer;             /* looks clickable */
+  font-weight: normal !important;
+  font-size: 0.8rem !important;
+}
+
+.preprint-link:hover {
+  background-color: #f5f5f5;  /* subtle hover background */
+  border-color: #bbb;          /* slightly darker border on hover */
+}
+
+ol {
+  padding-left: 0;               /* no padding on the list itself */
+  margin-left: 0;
+}
+
+ol li {
+    padding-left: 1rem;
+}
+
+ol li::marker {
+    color: #a0a0a0;  /* your desired color for the number */
 }
 
 @media (max-width: 800px) {

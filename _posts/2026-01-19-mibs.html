@@ -54,8 +54,7 @@ preview: ../coin-or.png
 
 <p>Putting it all together:</p>
 
-<pre><code>
-./coinbrew build MibS \
+<pre><code>./coinbrew build MibS \
 --with-cplex-incdir=/opt/ibm/ILOG/CPLEX_Studio2211/cplex/include/ilcplex/ \
 --with-cplex-lib="-L/opt/ibm/ILOG/CPLEX_Studio2211/cplex/lib/x86-64_linux/static_pic/ -lcplex -lpthread -lm -ldl" \
 --disable-cplex-libcheck --tests=none
@@ -70,8 +69,7 @@ to link directly against MibS and need debugging support.
 The MibS executable is located at <code>./dist/bin/mibs</code>. You can run it as follows:
 </p>
 
-<pre><code>
-./dist/bin/mibs \
+<pre><code>./dist/bin/mibs \
 -MibS_auxiliaryInfoFile /path/to/the/auxilary/file.aux \
 -instance /path/to/the/mps/file.mps.gz \
 -feasCheckSolver CPLEX

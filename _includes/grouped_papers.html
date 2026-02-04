@@ -16,63 +16,34 @@
           <p>
             <div class="paper-list">
               <span style="color:black;font-weight: 400;">
-                {% if paper.open-science-page %}
-                  <a href="{{ paper.open-science-page }}">{{ paper.title }}</a>.
-                {% else %}
-                  {{ paper.title }}
-                {% endif %}
+                  <b>{{ paper.title }}</b>
               </span><br />
               {% if paper.authors %}
-                Jointly with {{ paper.authors }}.
+                Jointly with <span color="black">{{ paper.authors }}</span>.
               {% else %}
                 Single author.
               {% endif %}
               <br />
               {% if paper.published %}
-                In 
-                {% for location in paper.published %}
-                  {% if location.link %}
-                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>,
-                  {% else %}
-                    {{ location.title }},
-                  {% endif %}
-                  {% if location.details %}
-                    {{ location.details }}.
-                  {% endif %}
-                  {% unless forloop.last %} - {% endunless %}
+                {% for preprint in paper.published %}
+                  <a href="{{ preprint.link }}" class="preprint-link" style="background-color: #f0fbff;" target="_blank">{{ preprint.title }}</a> &nbsp;
+                {% endfor %}
+              {% endif %}
+              {% if paper.preprints %}
+                {% for preprint in paper.preprints %}
+                  <a href="{{ preprint.link }}" class="preprint-link" target="_blank">{{ preprint.title }}</a> &nbsp;
                 {% endfor %}
               {% endif %}
 
               {% if paper.locations %}
-                At 
                 {% for location in paper.locations %}
                   {% if location.link %}
-                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>.
+                    <a href="{{ location.link }}" class="preprint-link" target="_blank">{{ location.title }}</a>
                   {% else %}
                     {{ location.title }}.
                   {% endif %}
                 {% endfor %}
               {% endif %}
-
-              
-              {% if paper.doi %}
-                <a href="http://doi.org/{{ paper.doi }}" style="text-decoration: none;">{{ paper.doi }}</a><br />
-              {% endif %}
-              <!--
-              {% if paper.link %}
-                <a href="{{ paper.link }}">External link</a>
-              {% endif %}
-              {% if paper.preprints %}
-                {% for location in paper.preprints %}
-                  {% if location.link %}
-                    <a href="{{ location.link }}" target="_blank">{{ location.title }}</a>
-                  {% else %}
-                    {{ location.title }}
-                  {% endif %}
-                  {% unless forloop.last %} - {% endunless %}
-                {% endfor %}
-              {% endif %}
-              -->
 
               {% if paper.comment %}
                 {{ paper.comment }}<br />
