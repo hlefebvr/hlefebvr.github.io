@@ -95,6 +95,10 @@ pre {
     font-family: "Rokkitt", sans-serif;
 }
 
+#logo a {
+    text-decoration: none !important;
+}
+
 #logo h1 img {
     display: block;
     margin: 0 auto;
