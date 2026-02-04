@@ -280,14 +280,16 @@ pre {
 }
 
 .theorem, .definition {
-    border: 1px solid #a0a0a0;
-    padding: 15px;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;      /* soft light gray */
+    background-color: #f9fafb;     /* very subtle background */
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+
+    border-radius: 0.6rem;         /* modern rounding */
 }
 
 .unproved {
-    border-left: 1px dashed black;
+    border-left: 3px solid #9ca3af;
 }
 
 .simplex-tableau {
