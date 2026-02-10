@@ -69,21 +69,6 @@
       "bibtex": "@techreport{lefebvre2025decisiondependent,\n  title={Solving Decision-Dependent Robust Problems as Bilevel Optimization Problems},\n  author={Henri Lefebvre and Martin Schmidt and Simon Stevens and Johannes Thürauf},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=29420}\n}"
     },
     {
-      "code": "AH",
-      "title": "Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method",
-      "authors": "Martin Schmidt",
-      "year": 2024,
-      "preprints": [
-        {
-          "title": "Optimization Online",
-          "link": "https://optimization-online.org/?p=28803"
-        }
-      ],
-      "open-science-page": "open-science/AH-computing-counterfactual-explanations-for-linear-optimization",
-      "abstract": "Explainable artificial intelligence is one of the most important trends in modern machine-learning research. The idea is to explain the outcome of a model by presenting a certain change in the input of the model so that the outcome changes significantly. In this paper, we study this question for linear optimization problems as an automated decision-making tool. This leads to a new class of linear bilevel optimization problems that have more nonlinearities in their single-level reformulations compared to traditionally studied linear bilevel problems. For this class of problems, we present a tailored penalty alternating direction method and present its convergence theory that mainly ensures that we compute stationary points of the single-level reformulation. Finally, we illustrate the applicability of this method using the example of a real-world energy system model as well as by computing counterfactual explanations for a large set of linear optimization problems from the NETLIB as it has been proposed in the recent literature.",
-      "bibtex": "@techreport{lefebvre2024counterfactual,\n  author       = {Henri Lefebvre and Martin Schmidt},\n  title        = {Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method},\n  year         = {2024},\n  note         = {Published: 2024-12-19, Updated: 2025-01-08},\n  howpublished = {\\url{https://optimization-online.org/?p=28803}},\n  keywords     = {bilevel optimization, Counterfactual explanations, explainability, Linear Optimization, Penalty alternating direction method},\n  categories   = {Energy, Nonlinear Optimization, Optimization in Data Science}\n}"
-    },
-    {
       "code": "AJ",
       "title": "Exact Augmented Lagrangian Duality for Nonconvex Mixed-Integer Nonlinear Optimization",
       "authors": "Martin Schmidt",
@@ -101,10 +86,31 @@
   ],
   "journal-articles": [
     {
+      "code": "AH",
+      "title": "Computing Weak Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method",
+      "authors": "Martin Schmidt",
+      "year": 2026,
+      "published": [
+        {
+          "title": "Accepted in European Journal of Operational Research",
+          "link": "#"
+        }
+      ],
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=28803"
+        }
+      ],
+      "open-science-page": "open-science/AH-computing-counterfactual-explanations-for-linear-optimization",
+      "abstract": "Explainable artificial intelligence is one of the most important trends in modern machine-learning research. The idea is to explain the outcome of a model by presenting a certain change in the input of the model so that the outcome changes significantly. In this paper, we study this question for linear optimization problems as an automated decision-making tool. This leads to a new class of linear bilevel optimization problems that have more nonlinearities in their single-level reformulations compared to traditionally studied linear bilevel problems. For this class of problems, we present a tailored penalty alternating direction method and present its convergence theory that mainly ensures that we compute stationary points of the single-level reformulation. Finally, we illustrate the applicability of this method using the example of a real-world energy system model as well as by computing counterfactual explanations for a large set of linear optimization problems from the NETLIB as it has been proposed in the recent literature.",
+      "bibtex": "@techreport{lefebvre2024counterfactual,\n  author       = {Henri Lefebvre and Martin Schmidt},\n  title        = {Computing Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method},\n  year         = {2024},\n  note         = {Published: 2024-12-19, Updated: 2025-01-08},\n  howpublished = {\\url{https://optimization-online.org/?p=28803}},\n  keywords     = {bilevel optimization, Counterfactual explanations, explainability, Linear Optimization, Penalty alternating direction method},\n  categories   = {Energy, Nonlinear Optimization, Optimization in Data Science}\n}"
+    },
+    {
       "code": "AE",
       "title": "Column Generation in Column-and-Constraint Generation for Adjustable Robust Optimization with Interdiction-Type Linking Constraints",
       "authors": "Martin Schmidt, Johannes Thürauf",
-      "year": 2025,
+      "year": 2026,
       "published": [
         {
           "title": "Accepted at Mathematical Programming Computation",
