@@ -397,6 +397,7 @@ check_obj_consistency <- function(data) {
       n_methods = n_distinct(full_approach),
       n_obj     = n_distinct(best_obj),
       same_obj  = (n_obj == 1),
+      obs = paste0(best_obj, collapse = ", "),
       .groups = "drop"
     ) %>%
     filter(!same_obj)

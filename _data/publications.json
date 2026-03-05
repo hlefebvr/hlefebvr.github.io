@@ -1,6 +1,17 @@
 {
   "submitted-articles": [
     {
+      "title": "Branch-and-Cut for Mixed-Integer Linear Decision-Dependent Robust Optimization",
+      "authors": "Henri Lefebvre, Martin Schmidt, Simon Stevens and Johannes Thürauf",
+      "year": 2026,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=33886"
+        }
+      ]
+    },
+    {
       "code": "AN",
       "title": "A One-Extra Player Reduction of GNEPs to NEPs",
       "authors": "David Salas and Martin Schmidt",
@@ -113,8 +124,8 @@
       "year": 2026,
       "published": [
         {
-          "title": "Accepted at Mathematical Programming Computation",
-          "link": "#"
+          "title": "Mathematical Programming Computation",
+          "link": "https://doi.org/10.1007/s12532-025-00300-3"
         }
       ],
       "preprints": [
