@@ -42,37 +42,37 @@ jobs:
       - name: Install Jekyll
         run: sudo apt-get install jekyll
         
-      - name: Install dependencies of kableExtra
-        run: sudo apt-get install libxml2-dev libfontconfig1-dev libcurl4-openssl-dev
+      # - name: Install dependencies of kableExtra
+      #   run: sudo apt-get install libxml2-dev libfontconfig1-dev libcurl4-openssl-dev
         
-      - uses: r-lib/actions/setup-pandoc@v2
+      # - uses: r-lib/actions/setup-pandoc@v2
       
-      - uses: r-lib/actions/setup-r@v2
+      # - uses: r-lib/actions/setup-r@v2
       
-      - name: Cache R packages
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-R-${{ hashFiles('**/DESCRIPTION') }}
-          restore-keys: |
-            ${{ runner.os }}-R-
+      # - name: Cache R packages
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.R_LIBS_USER }}
+      #     key: ${{ runner.os }}-R-${{ hashFiles('**/DESCRIPTION') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-R-
 
-      - name: Install rmarkdown
-        run: R -e "install.packages(\"rmarkdown\")"
+      # - name: Install rmarkdown
+      #   run: R -e "install.packages(\"rmarkdown\")"
         
-      - name: Install kableExtra
-        run: |
-          sudo apt-get install -y libmagick++-dev libharfbuzz-dev libfribidi-dev libxml2-dev libcurl4-openssl-dev libfontconfig1-dev 
-          R -e "install.packages(\"kableExtra\", dependencies = TRUE)"
+      # - name: Install kableExtra
+      #   run: |
+      #     sudo apt-get install -y libmagick++-dev libharfbuzz-dev libfribidi-dev libxml2-dev libcurl4-openssl-dev libfontconfig1-dev 
+      #     R -e "install.packages(\"kableExtra\", dependencies = TRUE)"
         
-      - name: Install tidyr
-        run: R -e "install.packages(\"tidyr\")"
+      # - name: Install tidyr
+      #   run: R -e "install.packages(\"tidyr\")"
         
-      - name: Install dplyr
-        run: R -e "install.packages(\"dplyr\")"
+      # - name: Install dplyr
+      #   run: R -e "install.packages(\"dplyr\")"
         
-      - name: Install ggplot2
-        run: R -e "install.packages(\"ggplot2\")"
+      # - name: Install ggplot2
+      #   run: R -e "install.packages(\"ggplot2\")"
         
       #- name: Install tikzDevice
       #  run: R -e "install.packages(\"tikzDevice\")"
