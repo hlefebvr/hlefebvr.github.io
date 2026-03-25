@@ -12,7 +12,7 @@ html, body {
 h1, h2, h3, h4, h5 {
     margin: 0;
     padding: 0;
-    font-weight: normal;
+    font-weight: 300;
 }
 
 h3 {
@@ -196,12 +196,12 @@ pre {
 }
 
 #content a {
-    color:#27292B;
-    transition: color 0.2s ease-in-out;
+  color: #2563eb;
+  text-decoration: underline;
 }
 
 #content a:hover {
-    color:#616569;
+  color: #1d4ed8;
 }
 
 #content p {
@@ -335,11 +335,11 @@ pre {
   padding: 0.15rem 0.6rem;     /* small button size */
   font-size: 0.875rem;         /* slightly smaller text */
   font-weight: 500;            /* medium weight for modern look */
-  color: #333;                 /* dark text for contrast */
+  color: #333 !important;                 /* dark text for contrast */
   background-color: #ffffff;   /* white button background */
   border: 1px solid #ccc;      /* light #a0a0a0 border */
   border-radius: 0.4rem;       /* rounded corners */
-  text-decoration: none;       /* remove underline */
+  text-decoration: none !important;       /* remove underline */
   transition: all 0.2s ease;   /* smooth hover effect */
   cursor: pointer;             /* looks clickable */
   font-weight: normal !important;
@@ -362,6 +362,10 @@ ol li {
 
 ol li::marker {
     color: #a0a0a0;  /* your desired color for the number */
+}
+
+li:not(:last-child) {
+  margin-bottom: 10px;
 }
 
 @media (max-width: 800px) {
