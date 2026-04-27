@@ -326,6 +326,14 @@ infeasible_instances %>%
 
 ```
 
+```{r}
+data %>% 
+  filter(method == "PADM") %>% 
+  filter(full_instance %in% gurobi_infeasible) %>%
+  filter(status == "Feasible" & warm_start == FALSE & gap > 1e-3) %>%
+  select(full_instance, method, warm_start, time, status, reason, l1_norm, solution_ok, gap)
+```
+
 ### The instance status is Unknown
 
 

@@ -1,6 +1,17 @@
 {
   "submitted-articles": [
     {
+      "title": "Robust Bilevel Optimization with a Wait-and-See Follower: A Column-and-Constraint Generation Approach",
+      "authors": "Henri Lefebvre and Johannes Thürauf",
+      "year": 2026,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=34583"
+        }
+      ]
+    },
+    {
       "title": "Branch-and-Cut for Mixed-Integer Linear Decision-Dependent Robust Optimization",
       "authors": "Henri Lefebvre, Martin Schmidt, Simon Stevens and Johannes Thürauf",
       "year": 2026,

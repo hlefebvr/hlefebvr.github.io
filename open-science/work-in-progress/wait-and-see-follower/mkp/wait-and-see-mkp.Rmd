@@ -301,9 +301,9 @@ summary_table <- all_results_wait_and_see %>%
   summarise(
     #instance = paste(unique(instance), collapse = ", "),
     n_instances = n(),
-    avg_total_time = mean(total_time, na.rm = TRUE),
-    avg_master_share = mean(master_time / total_time * 100, na.rm = TRUE),
-    avg_n_iterations = mean(n_iterations, na.rm = TRUE),
+    avg_total_time = median(total_time, na.rm = TRUE),
+    avg_master_share = median(master_time / total_time * 100, na.rm = TRUE),
+    avg_n_iterations = median(n_iterations, na.rm = TRUE),
     .groups = "drop"
   )
 
