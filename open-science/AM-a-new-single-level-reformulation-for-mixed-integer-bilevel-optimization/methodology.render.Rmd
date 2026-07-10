@@ -175,6 +175,8 @@ all_results %>%
 ### Computational Times
 
 ```{r}
+#all_results = all_results %>% filter(class != "interdiciton")
+
 # Step 0: Compute size per unique instance and assign quantile bins as factors
 instance_sizes <- all_results %>%
   distinct(instance, n_vars, n_ctrs) %>%
@@ -199,7 +201,7 @@ group_labels <- instance_sizes %>%
 
 # Step 2: Join size and group info into main data (filter methods first)
 all_results_with_size <- all_results %>%
-  filter(method %in% c("MibS", "MILP", "MILP-first", "PADM-1000")) %>%
+  filter(method %in% c("MibS", "MILP", "MibS-First", "MILP-first", "PADM-1000")) %>%
   left_join(instance_sizes %>% select(instance, size_group, size), by = "instance") %>%
   left_join(group_labels, by = "size_group") %>%
   mutate(size_group_label = factor(label, levels = group_labels$label))  # preserve order
@@ -267,7 +269,7 @@ plot_ecdf_of_time = function(data, log = FALSE) {
   return(p)
 }
 
-p = plot_ecdf_of_time(all_results %>% filter(!startsWith(method, "PADM-interdiction")), log = TRUE)
+p = plot_ecdf_of_time(all_results %>% filter(!startsWith(method, "PADM-interdiction")), log = FALSE) # , class == "interdiction"
 p
 export_data_from_ggplot_ecdf_csv(p, "ecdf_time_all.csv")
 ```
@@ -314,7 +316,7 @@ plot_ecdf_of_gap_wrt_best_known = function(data, t_type = NULL, t_class = NULL, 
   p = ggplot(results_with_gaps, aes(x = gap, color = method)) +
     stat_ecdf(geom = "step", linewidth = 1) +
     #scale_x_log10() +
-    coord_cartesian(xlim = c(-1, 2e1)) +
+    coord_cartesian(xlim = c(-1, 1e1)) +
     labs(
       title = paste("ECDF of Gap / ", t_type, "/", t_class),
       x = "Gap (%)",
@@ -331,15 +333,17 @@ solved_by_both = solved_by_both = all_results %>% filter(method == "PADM-100" | 
   filter(all(time < 3600 & time >= 0)) %>%
   ungroup()
 
+p = plot_ecdf_of_gap_wrt_best_known(solved_by_both)
+print(p)
+export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_bobilib.csv")
+
 for (class in unique(all_results$class)) {
   p = plot_ecdf_of_gap_wrt_best_known(solved_by_both, t_class = class)
   print(p)
 }
 
-plot_ecdf_of_gap_wrt_best_known(solved_by_both, t_status = "open with feasible point")
-
-for (t_method in c("PADM-100", "MILP-first", "MibS-First")) {
-  solved_by_both = solved_by_both = all_results %>% filter(method == t_method) %>%
+for (t_class in unique(all_results$class)) {
+  solved_by_both = solved_by_both = all_results %>% filter(class == t_class) %>%
     filter(time < 3600 & time >= 0) %>%
     ungroup()
   
@@ -353,9 +357,10 @@ for (t_method in c("PADM-100", "MILP-first", "MibS-First")) {
 ```{r}
 MAX_REL_GAP = 1e2
 TIME_LIMIT_HEUR = 3600
+MIN_TIME = 120
 
 slow_instances <- all_results %>%
-  filter(method == "MibS-First", time > 120) %>%
+  filter(method == "MibS-First", time >= MIN_TIME) %>%
   distinct(instance)
 
 filtered = all_results %>% filter(instance %in% slow_instances$instance)
@@ -368,13 +373,15 @@ best_per_instance <- filtered %>%
 df <- filtered %>%
   filter(method != "PADM-interdiction-100" & method != "PADM-interdiction-1000" & method != "MibS" & method != "MILP") %>%
   left_join(best_per_instance, by = "instance") %>%
-  mutate(rel_gap = ifelse(time > TIME_LIMIT_HEUR | best_obj > 1e19 | is.na(best_obj) | is.na(best_obj_instance), MAX_REL_GAP, 100 * abs(best_obj - best_obj_instance) / (1e-10 + abs(best_obj_instance)))) %>%
+  mutate(rel_gap = ifelse(best_obj > 1e19 | is.na(best_obj) | is.na(best_obj_instance), MAX_REL_GAP, 100 * abs(best_obj - best_obj_instance) / (1e-10 + abs(best_obj_instance)))) %>%
   mutate(rel_gap = ifelse(abs(rel_gap) < 1e-4, 1e-4, rel_gap)) %>%
   mutate(rel_gap = ifelse(rel_gap > MAX_REL_GAP, MAX_REL_GAP, rel_gap))
 
+length(unique(df$instance))
+
 r_max <- max(df$rel_gap[is.finite(df$rel_gap)], na.rm = TRUE)
 
-ggplot(df, aes(x = rel_gap, color = method)) +
+p = ggplot(df, aes(x = rel_gap, color = method)) +#  
   stat_ecdf(size = 1)  +
   #coord_cartesian(xlim = c(0, 12.5)) +
   #scale_x_log10() +
@@ -385,7 +392,8 @@ ggplot(df, aes(x = rel_gap, color = method)) +
     color = "Method"
   ) +
   theme_minimal()
-
+print(p)
+export_data_from_ggplot_ecdf_csv(p, "ecdf_gap_all_after_120.csv")
 ```
 
 ### Status change in BOBILib
@@ -393,7 +401,7 @@ ggplot(df, aes(x = rel_gap, color = method)) +
 ```{r}
 
 all_results_with_status = all_results %>%
-  filter(method == "MILP-first" & time < 3600) %>%
+  filter(method == "PADM-1000" & time < 3600) %>%
   mutate(
     new_bobilib_status = ifelse(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6, "was open with feasible point\n and is improving", bobilib_status),
     new_bobilib_status = ifelse(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6, "was optimal\n and found optimal point", new_bobilib_status),
@@ -403,7 +411,7 @@ all_results_with_status = all_results %>%
   )
 
 padm_found_feasible_point = all_results %>%
-  filter(method == "MILP-first" & time < 3600)
+  filter(method == "PADM-1000" & time < 3600)
 
 was_open_and_is_improving = length(padm_found_feasible_point %>% filter(bobilib_status == "open with feasible point" & best_obj < best_known_obj - 1e-6))
 was_optimal_and_found_optimal = length(padm_found_feasible_point %>% filter(bobilib_status == "optimal" & abs(best_obj - best_known_obj) < 1e-6))
