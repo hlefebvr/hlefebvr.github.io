@@ -1,0 +1,93 @@
+---
+layout: post
+title: "A Cheatsheet on Prametric Optimization"
+category: blog
+short: Some useful results in parametric optimization
+preview: parametric.png
+---
+
+<h2>Continuity Results</h2>
+
+<div class="theorem">
+    Let \( X:T\rightrightarrows \mathbb{R}^n \) be lower semicontinuous and let
+    \( f:\text{graph}(X)\rightarrow\mathbb{R} \) be lower semicontinuous. Then,
+    the extended real optimal-value function 
+    $$
+        \varphi(t) := \sup_{ x\in X(t) } \ f(t,x)
+    $$
+    is lower semicontinuous.
+    <div class="cite-as">\textcite[Lemma~17.29]{aliprantis2006}.</div>
+</div>
+
+<div class="theorem">
+    Let \( X:T\rightrightarrows \mathbb{R}^n \) be lower semicontinuous and let
+    \( f:\text{graph}(X)\rightarrow\mathbb{R} \) be upper semicontinuous. Then,
+    the extended real optimal-value function $$ \varphi(t) := \inf_{x\in X(t)} \
+    f(t,x) $$ is upper semicontinuous.
+    <div class="cite-as">\textcite[Lemma~17.29]{aliprantis2006}.</div>
+</div>
+
+<div class="theorem">
+    Let \( X:T\rightrightarrows \mathbb{R}^n \) be upper semicontinuous with
+    nonempty compact values and let \( f:\text{graph}(X)\rightarrow\mathbb{R} \)
+    be upper semicontinuous. Then, the extended real optimal-value function $$
+    \varphi(t) := \max_{ x\in X(t) } \ f(t,x) $$ is upper semicontinuous.
+    <div class="cite-as">\textcite[Lemma~17.30]{aliprantis2006}.</div>
+</div>
+
+<div class="theorem">
+    Let \( X:T\rightrightarrows \mathbb{R}^n \) be upper semicontinuous with
+    nonempty compact values and let \( f:\text{graph}(X)\rightarrow\mathbb{R} \) be
+    lower semicontinuous. Then, the extended real optimal-value function $$
+    \varphi(t) := \min_{x\in X(t)} \ f(t,x) $$ is lower semicontinuous.
+    <div class="cite-as">\textcite[Lemma~17.30]{aliprantis2006}.</div>
+</div>
+
+<div class="theorem">
+    <b>(Berge Maximum Theorem)</b>
+    Let \( X:T\rightrightarrows \mathbb{R}^n \) be continuous with nonempty
+    compact values and let \( f:\text{graph}(X)\rightarrow\mathbb{R} \) be
+    continuous. Then, the optimal-value function $$ \varphi(t) := \max_{ x\in
+    X(t) } \ f(t,x) $$ is continuous. Moreover, the solution set mapping is
+    upper semicontinuous.
+    <div class="cite-as">\textcite[Theorem~17.31]{aliprantis2006}.</div>
+</div>
+
+<div class="theorem">
+    <b>(Convex Optimization - Lower Semicontinuity)</b>
+    Let \( T\subseteq\mathbb{R}^m \) be a given set and let \( S(t) \) denote
+    the solution set of the convex problem 
+
+    $$
+        \begin{align*}
+            \min_{x} \quad & f(x) \\
+            \text{s.t.} \quad & g_i(x) \le t_i, \quad \text{for all }i = 1,\dotsc,m.
+        \end{align*}
+    $$
+
+    Assume that \( f \) and \( g_i \) are convex and weakly analytic for all \(
+    i=1,\dotsc,m \) and that \( S(t) \neq \emptyset \) holds for all \( t\in T
+    \). Then, the solution set mapping \( S \) is lower semicontinuous on \( T
+    \).
+
+    <div class="cite-as">\textcite[Theorem~4.3.5]{Bank_1982}.</div>
+</div>
+
+<h2>References</h2>
+
+<pre><code>@book{Bank_1982,
+  title = {Non-Linear Parametric Optimization},
+  isbn = {9783034863285},
+  doi = {10.1007/978-3-0348-6328-5},
+  publisher = {Birkhäuser Basel},
+  author = {Bank, B. and Guddat, J. and Klatte, D. and Kummer, B. and Tammer, K.},
+  year = {1982}
+}
+
+@book{aliprantis2006,
+  title={Infinite dimensional analysis: a hitchhiker's guide},
+  author={Aliprantis, Charalambos D and Border, Kim C},
+  year={2006},
+  publisher={Springer},
+  doi={10.1007/3-540-29587-9}
+}</code></pre>
