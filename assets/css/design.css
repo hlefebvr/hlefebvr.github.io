@@ -99,7 +99,7 @@ pre {
     text-decoration: none !important;
 }
 
-#logo h1 img {
+#logo img {
     display: block;
     margin: 0 auto;
     width: 150px;
@@ -113,7 +113,7 @@ pre {
     transition: 0.2s ease-in-out;
 }
 
-#logo h1:hover img {
+#logo:hover img {
     transform: scale(1.05);
 }
 
@@ -292,6 +292,10 @@ pre {
     border-radius: 0.6rem;         /* modern rounding */
 }
 
+.theorem b, .definition b {
+    display: block;
+}
+
 .unproved {
     border-left: 3px solid #9ca3af;
 }
@@ -366,6 +370,34 @@ ol li::marker {
 
 li:not(:last-child) {
   margin-bottom: 10px;
+}
+
+#toc {
+    border-bottom: 4px solid #e5e7eb;
+}
+
+#toc li {
+    margin-bottom: 0;
+}
+
+.hljs {
+    background: transparent !important;
+}
+
+.cite-as {
+    float: right;
+
+    padding: 2px 6px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+
+    font-size: 0.8em;
+}
+
+summary {
+    font-size: .8em;
+    font-style: italic;
 }
 
 @media (max-width: 800px) {

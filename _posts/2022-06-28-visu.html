@@ -63,24 +63,37 @@ preview: poly.png
 </div>
 
 
-<h2>Credit</h2>
+<h2>How does it Work?</h2>
 
 <p>
-This tool is just an interface to [Sage](https://www.sagemath.org/). SageMath is a free open-source mathematics software system licensed under the GPL. [SageMathCell](https://sagecell.sagemath.org/) project is an easy-to-use web interface to a free open-source mathematics software system SageMath. It allows embedding Sage computations into any webpage. Resources for your computation are provided by SageMath, Inc.. 
-
+    This page uses <a href="https://www.sagemath.org/">SageMath</a> for
+    visualization. SageMath is a free open-source mathematics software system
+    licensed under the GPL. The <a
+    href="https://sagecell.sagemath.org/">SageMathCell</a>
+    project is an easy-to-use web interface to SageMath. It allows embedding
+    Sage computations into any webpage. Resources for your computation are
+    provided by SageMath, Inc.. 
 </p>
+
 <p>
-    This tool calls the `Polyhedron` class to define your polyhedron. The argument `ieqs` is a vector of vectors \( [d, a, b, c] \) to indicate constraint \( ax_1 + bx_2 + cx_3 + d \ge 0 \). Then, `plot` is called on that object. For instance, the following Sage command will plot \( X \) defined below.
+    This tool calls the <code>Polyhedron</code> class to define your polyhedron.
+    The argument <code>ieqs</code> is a vector of vectors \( [d, a, b, c] \) to
+    indicate constraint \( ax_1 + bx_2 + cx_3 + d \ge 0 \). Then,
+    <code>plot</code> is called on that object. For instance, the following Sage
+    command will plot \( X \) defined below.
 </p>
 
-<pre><code class="sage">Polyhedron(ieqs = [[2,-1,-1,-1],[0,1,0,0],[0,0,1,0],[0,0,0,1],[1,-1,0,0],[1,0,-1,0],[1,0,0,-1]]).plot()</code></pre>
-
-$$ X = \left\{ x\in\mathbb R^3 : \begin{array}{ll} 
-    x_1 + x_2 + x_3 \le 2 \\
-    x_1 \le 1 \\
-    x_2 \le 1 \\
-    x_3 \le 1 \\
-    x_1 \ge 0 \\
-    x_2 \ge 0 \\
-    x_4 \ge 0
-\end{array} \right\} $$
+<p>
+    For instance, to draw the polytope
+    $$ \left\{ x\in\mathbb R^3 : \ \begin{array}{ll} 
+        x_1 + x_2 + x_3 \le 2, \\
+        x_1 \le 1, \\
+        x_2 \le 1, \\
+        x_3 \le 1, \\
+        x_1 \ge 0, \\
+        x_2 \ge 0, \\
+        x_4 \ge 0,
+    \end{array} \right\}, $$
+    one should run the following command.
+    <pre><code class="sage">Polyhedron(ieqs = [[2,-1,-1,-1],[0,1,0,0],[0,0,1,0],[0,0,0,1],[1,-1,0,0],[1,0,-1,0],[1,0,0,-1]]).plot()</code></pre>
+</p>

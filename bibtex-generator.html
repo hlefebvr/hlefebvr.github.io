@@ -3,11 +3,9 @@ layout: page
 title: "BibTeX Generator"
 ---
 
-<i>This is a work in progress... Will work with DOI for sure.</i><br /><br />
-
-<span color="#495057">
-  This script generates BibTex entries from DOI, ArXiv or Optimization-Online URLs.
-</span>
+<div style="color:#495057;border-bottom: 4px solid #e5e7eb;padding-bottom: 10px;">
+  This script generates BibTeX entries from a DOI or an ArXiv url.
+</div>
 
 <style>
   #form {
@@ -34,7 +32,7 @@ title: "BibTeX Generator"
 
   #doi-entry {
     display: block;
-    width: 70%;
+    width: 73%;
     height: calc(1.5em + .75rem + 2px);
     padding: .375rem .75rem;
     font-size: 1rem;
@@ -62,9 +60,7 @@ title: "BibTeX Generator"
   <input type="button" value="Get BibTex" id="bib-button" />
 </center>
 
-<pre style="white-space: pre-wrap;">
-  <code id="bib-output" style="display: none;" class="language-latex hljs"></code>
-</pre>
+<pre id="bib-block" style="display: none; white-space: pre-wrap;"><code id="bib-output" class="language-latex hljs"></code></pre>
 
 <script>
   // Function to prettify BibTeX
@@ -174,92 +170,73 @@ title: "BibTeX Generator"
 
   const getDOI = async doi => {
     
-    try {
-      
-      const response = await fetch(`https://doi.org/${encodeURIComponent(doi)}`, {
-        headers: { "Accept": "application/x-bibtex" }
-      });
+    const response = await fetch(`https://doi.org/${encodeURIComponent(doi)}`, {
+      headers: { "Accept": "application/x-bibtex" }
+    });
 
-      if (!response.ok) throw new Error(`HTTP error, returned status: ${response.status}.`);
-      
-      const bibtex = await response.text();
-      return bibtex;
-
-    } catch (error) {
-      
-      console.error(error);
-      return "Error fetching BibTeX: " + error
+    if (!response.ok) throw new Error(`HTTP error, returned status: ${response.status}.`);
     
-    }
-
+    const bibtex = await response.text();
+    return bibtex;
   }
 
   const getOptimizationOnline = async url => {
+  
+    let apiUrl
+    let params = "_embed"
     
-    try {
-      let apiUrl
-      let params = "_embed"
-      
-      // Check if URL is ?p=<NUMBER>
-      const idMatch = url.match(/\?p=(\d+)/);
-      if (idMatch) {
-        const postId = idMatch[1];
-        apiUrl = `https://optimization-online.org/wp-json/wp/v2/posts/${postId}?${params}`;
-      }  else {
-        // Otherwise, treat it as /yyyy/mm/slug/
-        // Extract slug from URL
-        const slugMatch = url.match(/\/\d{4}\/\d{2}\/([^\/]+)\/?$/);
-        if (!slugMatch) throw new Error("Cannot extract slug from URL");
-        const slug = slugMatch[1];
-        apiUrl = `https://optimization-online.org/wp-json/wp/v2/posts/?slug=${slug}&${params}`;
-      }
-      console.log(apiUrl)
-      const response = await fetch(apiUrl)
+    // Check if URL is ?p=<NUMBER>
+    const idMatch = url.match(/\?p=(\d+)/);
+    if (idMatch) {
+      const postId = idMatch[1];
+      apiUrl = `https://optimization-online.org/wp-json/wp/v2/posts/${postId}?${params}`;
+    }  else {
+      // Otherwise, treat it as /yyyy/mm/slug/
+      // Extract slug from URL
+      const slugMatch = url.match(/\/\d{4}\/\d{2}\/([^\/]+)\/?$/);
+      if (!slugMatch) throw new Error("Cannot extract slug from URL");
+      const slug = slugMatch[1];
+      apiUrl = `https://optimization-online.org/wp-json/wp/v2/posts/?slug=${slug}&${params}`;
+    }
+    console.log(apiUrl)
+    const response = await fetch(apiUrl)
 
-      if (!response.ok) throw new Error(`HTTP error, returned status: ${response.status}.`);
-      
-      json = await response.text();
-      json = JSON.parse(json)
-      if (Array.isArray(json)) {
-        if (!json.length) throw new Error("Post not found");
-        json = json[0]
-      }
-
-      const terms = json["_embedded"]["wp:term"]
-      const allTerms = terms.flat();
-
-      const formatName = slug => 
-        slug
-          .split(/[\._-]/)        // split on dot, underscore, or dash
-          .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-          .join(" ");
-
-      let authors = terms
-        .flat()
-        .filter(term => term.taxonomy === "author")
-        .map(term => formatName(term.name) || formatName(term.slug))
-        .filter(Boolean)
-      
-      first_author = authors[0]
-      first_author = first_author.includes(" ") ? first_author.split(" ").slice(-1)[0] : first_author;
-      authors = authors.join(" and ");
-
-      const post = json
-      const title = post.title?.rendered || "ERROR"
-      const id = post.id || "ERROR"
-      const short = post.guid?.rendered || "ERROR"
-      const year = new Date(post.date_gmt).getUTCFullYear();
-      const tag = `${first_author}${year}`
-
-      return `@misc{${tag}, title={${title}}, author={${authors}}, year={${year}}, archivePrefix={Optimization Online}, url={${short}}}`;
-
-    } catch (error) {
-
-      console.error(error)
-      return "Error fetching BibTeX: " + error
-
+    if (!response.ok) throw new Error(`HTTP error, returned status: ${response.status}.`);
+    
+    json = await response.text();
+    json = JSON.parse(json)
+    if (Array.isArray(json)) {
+      if (!json.length) throw new Error("Post not found");
+      json = json[0]
     }
 
+    const terms = json["_embedded"]["wp:term"]
+    const allTerms = terms.flat();
+
+    const formatName = slug => 
+      slug
+        .split(/[\._-]/)        // split on dot, underscore, or dash
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(" ");
+
+    let authors = terms
+      .flat()
+      .filter(term => term.taxonomy === "author")
+      .map(term => formatName(term.name) || formatName(term.slug))
+      .filter(Boolean)
+    
+    first_author = authors[0]
+    first_author = first_author.includes(" ") ? first_author.split(" ").slice(-1)[0] : first_author;
+    authors = authors.join(" and ");
+
+    const post = json
+    const title = post.title?.rendered || "ERROR"
+    const id = post.id || "ERROR"
+    const short = post.guid?.rendered || "ERROR"
+    const year = new Date(post.date_gmt).getUTCFullYear();
+    const tag = `${first_author}${year}`
+
+    return `@misc{${tag}, title={${title}}, author={${authors}}, year={${year}}, archivePrefix={Optimization Online}, url={${short}}}`;
   }
 
   const getArXiv = async (url) => {
@@ -271,8 +248,6 @@ title: "BibTeX Generator"
     const apiUrl = `http://export.arxiv.org/api/query?id_list=${id}`;
     const res = await fetch(apiUrl);
     const text = await res.text();
-
-    alert(text)
 
     return text;
   }
@@ -287,20 +262,25 @@ title: "BibTeX Generator"
       return;
     }
 
-    output.css("display", "block")
+    $("#bib-block").css("display", "block")
     output.text("Loading...")
 
     const isOptimizationOnline = (url) => /^https?:\/\/(www\.)?optimization-online\.org/.test(url);
     const isArXiv = (url) => /^https?:\/\/(www\.)?arxiv\.org\/(abs|pdf)\/\d{4}\.\d{4,5}(v\d+)?/.test(url);
 
-    if (isOptimizationOnline(doi)) {
-      text = await getOptimizationOnline(doi)
-    } else if (isArXiv(doi)) {
-      text = await getArXiv(doi)
-    } else {
-      text = await getDOI(doi)
+    try {
+      if (isOptimizationOnline(doi)) {
+        text = await getOptimizationOnline(doi)
+      } else if (isArXiv(doi)) {
+        text = await getArXiv(doi)
+      } else {
+        text = await getDOI(doi)
+      }
+      output.text(formatBibTex(text))
+    } catch (error) {
+      console.error(error)
+      output.text("Error fetching BibTeX.\n" + error)
     }
-    output.text(formatBibTex(text))
 
   });
 

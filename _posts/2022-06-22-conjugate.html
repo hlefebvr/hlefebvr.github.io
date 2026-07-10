@@ -7,24 +7,18 @@ preview: conjugate.png
 ---
 
 <p>
-    Convex conjugacy plays a prominent role in many scientific fields. In
-    particular, it is central for deriving tractable robust counterparts of
-    uncertain optimization problems. This page regroups several facts (along
-    with their proof) regarding conjugate calculus and related formulas. 
+    Convex conjugates play a prominent role in convex optimization. This page
+    gathers several facts regarding conjugate calculus and related formulas. 
 </p>
 
-<div class="unproved" style="padding:5px">
-    <i>With a dotted black left-border, propositions which have no proofs on
-    this page yet due to lack of time (though the result is correct!).</i>
-</div>
-
-<div class="notation">
+<p class="notation">
+    <b>Notation.</b>
     Throughout this page, we will denote \( \overline{\mathbb R} = \mathbb R
     \cup \{ -\infty, +\infty \} \) the extended real number line. For a given
     function \( f:\mathbb R^n \rightarrow \overline{\mathbb R} \), we let \(
     \textrm{dom}(f) = \{ \mathbf x\in\mathbb R^n : f(\mathbf x) < +\infty \}
     \) be the domain of \(f\).
-</div>
+</p>
 
 <h2>Definition and Basic Properties</h2>
 
@@ -34,117 +28,80 @@ preview: conjugate.png
 </p>
 
 <div class="definition">
+    <b>(Definition)</b>
     The convex conjugate of \( f \) is noted \( f^* \) and is defined as
     $$ f^*(\mathbf y) = \sup_{ \mathbf x\in \textrm{dom}(f) } \{ \mathbf y^\top\mathbf x - f(\mathbf x) \} $$
     The concave conjugate of \( f \) is noted \( f_* \) and is defined as 
     $$ f_*(\mathbf y) = \inf_{ \mathbf x\in\textrm{dom}(f) } \{ \mathbf y^\top\mathbf x - f(\mathbf x) \} $$
+    <div class="cite-as">\textcite[page 104]{Rockafellar_1970}.</div>
 </div>
 
 <div class="theorem">
-    (Fenchel inequality)
-    For any \( \mathbf x\in\mathbb R^n \) and any \( \mathbf y\in\mathbb R^n \), the following holds.
-    $$ \mathbf y^\top\mathbf x \le f(\mathbf x) + f^*(\mathbf y) $$
-    <details>
-        <summary>Proof</summary>
-        <div>
-            This directly follows from the definition of \( f^* \) by a characterization of supremum.
-        </div>
-    </details>
+    <b>(Fenchel inequality)</b>
+    Let \( f \) be a proper convex function. Then, for any \( \mathbf
+    x\in\mathbb R^n \) and any \( \mathbf y\in\mathbb R^n \), we have $$
+    \mathbf y^\top\mathbf x \le f(\mathbf x) + f^*(\mathbf y). $$
+    <div class="cite-as">\textcite[page 105]{Rockafellar_1970}.</div>
 </div>
 
 <div class="theorem">
-    (Convexity)
-    \( f^* \) is closed and convex. It is always lower semi-continuous.
-    <details>
-        <summary>Proof</summary>
-        <div>
-            \( f^* \) is the supremum of affine functions.
-        </div>
-    </details>
+    <b>(Convexity)</b>
+    Let \( f \) be a convex function. Then, \( f^* \) is a closed proper convex
+    function if and only if \( f \) is proper. Moreover, \( (\text{cl}f)^* = f^* \) and
+    \( f^{**} = \text{cl} f \). <br />
+    We recall that a closed convex function is lower semicontinuous.
+    <div class="cite-as">\textcite[Theorem~12.2]{Rockafellar_1970}.</div>
 </div>
 
-<div class="theorem unproved">
-    (Order Reversing)
+<div class="theorem">
+    <b>(Order Reversing)</b>
     $$ f \le g \Rightarrow f^* \ge g^* $$
-    <details>
-        <summary>Proof</summary>
-        <div>
-            TODO
-        </div>
-    </details>
 </div>
 
-<div class="theorem unproved">
-    (Double conjugate)
+<div class="theorem">
+    <b>(Double conjugate)</b>
     $$ \text{cl}(\text{vex}(f)) = f^{**} \le f $$
     Moreover, if \( f = f^{**} \) if and only if it is convex and lower semi-continuous.
-    <details>
-    <summary>Proof</summary>
-    <div>
-        From Fenchel inequality, we have that for all \( \mathbf x\in\mathbb R^n \), \( \mathbf x^\top\mathbf y - f^*(\mathbf y) \le f(\mathbf x) \) for all \( \mathbf y\in\mathbb R^n \). Thus, \( \sup_{ \mathbf y \in\textrm{dom}(f^*) } \{ \mathbf x^\top\mathbf y - f^*(\mathbf y) \} \le f(\mathbf x) \) which shows that \(f^{**} \le f^*\). Now, let us assume that \( f \) is closed and convex. We show that \( f^{**} \ge f \). TODO.
-    </div>
-</details>
 </div>
 
-<div class="theorem unproved">
-    (Subgradients)
+<div class="theorem">
+    <b>(Subgradients)</b>
     Asume \( f \) is closed and convex, then $$ \mathbf y \in \partial f(\mathbf x) \Leftrightarrow \mathbf x \in \partial f^*(\mathbf y) \Leftrightarrow \mathbf x^\top\mathbf y = f(\mathbf x) + f^*(\mathbf y). $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Strongly convex)
+<div class="theorem">
+    <b>(Strongly convex)</b>
     Asume \( f \) is closed and strongly convex with parameter \( \mu > 0 \) for the norm \( ||.|| \), then \( \textrm{dom}(f^*) = \mathbb R^n \). Moreover, \( f^* \) is differentiable everywhere with
     $$ \nabla f^*(\mathbf y) = \textrm{argmax} \{ \mathbf y^\top\mathbf x - f(\mathbf x) : \mathbf x \in\mathbb R^n \} $$
     and \( \nabla f^*(\mathbf y) \) is \( \frac 1\mu \)-Lipschitz continuous with respect to the dual norm \( ||.||_* \), i.e., 
     $$ || \nabla f^*(\mathbf y) - \nabla f^*(\mathbf y') || \le \frac 1\mu || \mathbf y - \mathbf y' ||_*. $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Fenchel duality)
+<div class="theorem">
+    <b>(Fenchel duality)</b>
     Asume \( f \) is proper and convex and let \(g : \mathbb R^n \rightarrow \overline{\mathbb R} \) be a given proper concave function. If the following Slater's conditions hold,
     $$ \exists \hat{\mathbf x} \in \textrm{int}(\textrm{dom}(f))\cap\textrm{int}(\textrm{dom}(-g)), $$
     then the following equality holds.
     $$ \inf_{ \mathbf x\in\textrm{dom}(f)\cap\textrm{dom}(-g) } \{ f(\mathbf x) - g(\mathbf x) \} = \sup_{ \mathbf y\in\textrm{dom}(f^*)\cap\textrm{dom}(-g_*) } \{ g_*(\mathbf y) - f^*(\mathbf y) \} $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
 <div class="theorem">
-    (Maximizing a concave function over a convex set)
+    <b>(Maximizing a concave function over a convex set)</b>
     Let \( X\subseteq\mathbb R^n \) be a convex set with non-empty interior and let \( g:\mathbb R^n\rightarrow \mathbb R \) be a proper concave function over \( X \), then the following holds.
     $$
         \sup_{\mathbf x\in X} g(\mathbf x)
         =
         \inf_{\mathbf y\in\textrm{dom}({-g})}\{ \delta^*(\mathbf y | X) - g_*(\mathbf y) \}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        This results from a direct application of Fenchel duality by observing that \( \sup_{\mathbf x\in X} g(\mathbf x) = \sup_{\mathbf x\in\mathbb R^n} \{ g(\mathbf x) - \delta(\mathbf x | X) \} \).
-    </div>
-</details>
 </div>
 
 <h2>Examples</h2>
 
-<div class="theorem unproved">
-    (Affine functions)
+<div class="theorem">
+    <b>(Affine functions)</b>
     Assume \( f(\mathbf x) = \mathbf a^\top\mathbf x + \mathbf b \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -152,16 +109,11 @@ preview: conjugate.png
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Convex Quadratic Functions)
+<div class="theorem">
+    <b>(Convex Quadratic Functions)</b>
     Assume \( f(\mathbf x) = \frac 12\mathbf x^\top\mathbf A\mathbf x + \mathbf b^\top\mathbf x + c \) with \( \mathbf A \) a psd matrix, then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -172,16 +124,11 @@ preview: conjugate.png
     where \(\mathbf A^\dagger\) is the Moore-Penrose pseudo inverse of \( \mathbf A \). <br /><br />
     
     If \( f \) is strictly convex (i.e., \( \mathbf A \) is positive definite), then \( \mathbf A^\dagger = \mathbf A^{-1} \) and the column span of \( \mathbf A \) is \( \mathbb R^n \).
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Max)
+<div class="theorem">
+    <b>(Finite Maximum)</b>
     Assume \( f(\mathbf x) = \max_{i=1,...,n} x_i \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -189,16 +136,11 @@ preview: conjugate.png
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Soft max)
+<div class="theorem">
+    <b>(Soft max)</b>
     Assume \( \displaystyle f(\mathbf x) = \log\left(\sum_{i=1}^n e^{x_i}\right) \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -206,16 +148,11 @@ preview: conjugate.png
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Norms)
+<div class="theorem">
+    <b>(Norms)</b>
     Assume \( f(\mathbf x) = ||\mathbf x|| \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -223,30 +160,20 @@ preview: conjugate.png
             +\infty & \textrm{otherwise}
         \end{cases}
     $$ where \( ||\cdot||_* \) is the dual norm of \( ||\cdot|| \).
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Negative Entropy)
+<div class="theorem">
+    <b>(Negative Entropy)</b>
     Assume \( f(\mathbf x) = \displaystyle \sum_{i=1}^n x_i\log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \sum_{i=1}^n e^{y_i-1}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        See https://piazza.com/class_profile/get_resource/is58gs5cfya7ft/ivubdhmws163zc
-    </div>
-</details>
+    <div class="cite-as">https://piazza.com/class_profile/get_resource/is58gs5cfya7ft/ivubdhmws163zc</div>
 </div>
 
-<div class="theorem unproved">
-    (Negative logarithm)
+<div class="theorem">
+    <b>(Negative logarithm)</b>
     Assume \( \displaystyle f(\mathbf x) = -\sum_{i=1}^n \log{x_i} \) with \( \textrm{dom}(f) = \mathbb R_{++}^n \), then,
     $$
         f^*(\mathbf y) = \begin{cases}
@@ -254,16 +181,11 @@ preview: conjugate.png
             +\infty & \textrm{otherwise}
         \end{cases}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
-<div class="theorem unproved">
-    (Indicator of a convex set/cone)
+<div class="theorem">
+    <b>(Indicator of a convex set/cone)</b>
     Let \( X \) be a given convex set, then, by definition,
     $$
         \delta^*(\mathbf y | X) = \sup_{\mathbf x\in X} \mathbf y^\top\mathbf x.
@@ -277,32 +199,22 @@ preview: conjugate.png
         \end{cases}
     $$
     where \( X^* \) denotes the dual cone of \( X \).
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
 <h2>Calculus Rules</h2>
 
-<div class="theorem unproved">
-    (Addition with an Affine Mapping)
+<div class="theorem">
+    <b>(Addition with an Affine Mapping)</b>
     Assume \( f(\mathbf x) = \tilde f(\mathbf x) + \mathbf a^\top\mathbf x + b \), then,
     $$
         f^*(\mathbf y) =  \tilde f^*\left( \mathbf y - \mathbf a \right) - b
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    <div class="cite-as">\textcite[Theorem~12.3]{Rockafellar_1970}.</div>
 </div>
 
-<div class="theorem unproved">
-    (Composition with an Affine Mapping)
+<div class="theorem">
+    <b>(Composition with an Affine Mapping)</b>
     Assume \( f(\mathbf x) = \tilde f(\mathbf A\mathbf x + \mathbf b) \). <br /><br />
     
     If \( A \) is invertible, then,
@@ -317,31 +229,21 @@ preview: conjugate.png
             \text{s.t.} \ & \mathbf A^\top\mathbf \lambda = \mathbf y.
         \end{array}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    <div class="cite-as">\textcite[Theorem~12.3]{Rockafellar_1970}.</div>
 </div>
 
-<div class="theorem unproved">
-    (Separable sum)
+<div class="theorem">
+    <b>(Separable sum)</b>
     Assume \( f(\mathbf x_1, \mathbf x_2) = f_1(\mathbf x_i) + f_2(\mathbf x_2) \), then,
     $$
         f^*(\mathbf y_1, \mathbf y_2) = f_1^*(\mathbf y_1) + f_2^*(\mathbf y_2)
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
 
-<div class="theorem unproved">
-    (Non-separable sum)
+<div class="theorem">
+    <b>(Non-separable sum)</b>
     Assume \( \displaystyle f(\mathbf x) = \sum_{i=1}^p f_i(\mathbf x) \), then,
     $$
         f^*(\mathbf y) = \begin{array}[t]{ll}
@@ -350,34 +252,23 @@ preview: conjugate.png
             & \mathbf v^{(1)}, \dots, \mathbf v^{(p)} \in\mathbb R^{n}
         \end{array}
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO
-    </div>
-</details>
 </div>
 
 
-<div class="theorem unproved">
-    (Scalar multiplication)
+<div class="theorem">
+    <b>(Scalar multiplication)</b>
     Assume \( f(\mathbf x) = \alpha \tilde f(\mathbf x) \) with \( \alpha > 0 \), then,
     $$
         f^*(\mathbf y) = \alpha \tilde f^*\left(\frac{\mathbf y}\alpha\right)
     $$
-    <details>
-    <summary>Proof</summary>
-    <div>
-        TODO.
-    </div>
-</details>
+    
 </div>
 
 <div class="theorem">
-    (Convex/Concave conjugate)
+    <b>(Convex/Concave conjugate)</b>
     Let \( f \) be a given function, then $$ (-f)_*(\mathbf y) = -f^*(-\mathbf y). $$
     <details>
-    <summary>Proof</summary>
+    <summary>Proof.</summary>
     <div>
         $$
             (-f)_*(\mathbf y) = \inf_{\mathbf x}\{ \mathbf y^\top\mathbf x - (-f)(\mathbf x) \}
@@ -388,3 +279,14 @@ preview: conjugate.png
 </details>
 </div>
 
+<h2>References</h2>
+
+<pre>
+<code>@book{Rockafellar_1970,
+  title = {Convex Analysis},
+  isbn = {9781400873173},
+  doi = {10.1515/9781400873173},
+  publisher = {Princeton University Press},
+  author = {Rockafellar, Ralph Tyrell},
+  year = {1970}
+}</code></pre>

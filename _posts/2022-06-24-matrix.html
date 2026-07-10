@@ -1,7 +1,7 @@
 ---
 layout: post
 category: blog
-title: "Some Matrix Manipulation Formulas"
+title: "A Cheatsheet on Matrix Formulas"
 short: This is a personal cheatsheet with formulas I often use, and often forget.
 preview: matrix.png
 ---
@@ -44,34 +44,38 @@ preview: matrix.png
 
 <h2>Rows and Columns</h2>
 
-Let \( \mathbf{A}\in\mathbb{R}^{m\times n} \), \(\mathbf{b}\in\mathbb{R}^{m\times 1} \) and \( \mathbf{c}\in\mathbb{R}^{n\times 1} \). We denote by \( \
-a_{ij} \) the \( (i,j) \)-th component of \( \mathbf{A} \), by \( \mathbf{a}^{(j)} \) its \( j \)-th column  and by \( \mathbf{a}_{(i)} \) its \( i \)-th row. Vector \( \mathbf{e}^{(j)} \) (resp. \( \mathbf{e}_{(j)} \)) denote the \( j \)-th column (resp. the \(i\)-th row) of the identity matrix.
+<p>
+    Let \( \mathbf{A}\in\mathbb{R}^{m\times n} \), \(\mathbf{b}\in\mathbb{R}^{m\times 1} \) and \( \mathbf{c}\in\mathbb{R}^{n\times 1} \). We denote by \( \
+    a_{ij} \) the \( (i,j) \)-th component of \( \mathbf{A} \), by \( \mathbf{a}^{(j)} \) its \( j \)-th column  and by \( \mathbf{a}_{(i)} \) its \( i \)-th row. Vector \( \mathbf{e}^{(j)} \) (resp. \( \mathbf{e}_{(j)} \)) denote the \( j \)-th column (resp. the \(i\)-th row) of the identity matrix.
+</p>
 
-<ul>
-    <li> \( \mathbf{e}_{(k)}^\top = \mathbf{e}^{(k)} \) </li>
-    <li> \( \mathbf{e} = \sum_{k=1}^K \mathbf{e}^{(k)} \quad ; \quad \mathbf{e}^\top = \sum_{k=1}^K \mathbf{e}_{(k)} \) </li>
-    <li> \( \mathbf{A}\mathbf{e}^{(j)} = \mathbf{a}^{(j)} \) with \( j\in [n] \) </li>
-    <li> \( \mathbf{A}^\top\mathbf{e}^{(i)} = \mathbf{a}_{(i)}^\top \) with \( i\in[m] \) </li>
-    <li> \( \mathbf{e}_{(i)}\mathbf{A} = \mathbf{a}_{(i)} \) with \( i\in[m] \) </li>
-    <li> \( \mathbf{e}_{(j)}\mathbf{A}^\top  = {\mathbf{a}^{(j)}}^\top \) with \( j\in[n] \) </li>
-    <li> \( \mathbf{e}_{(i)}\mathbf{A}\mathbf{e}^{(j)} = a_{ij} \) with \( i\in[m], j\in[n] \) </li>
-    <li> \( \mathbf{e}^\top\mathbf{A} = \sum_{i=1}^m \mathbf{a}_{(i)} \) </li>
-    <li> \( \mathbf{A}\mathbf{e} = \sum_{j=1}^n \mathbf{a}^{(j)} \) </li>
-    <li> \( \mathbf{e}^\top\mathbf{A}\mathbf{c} = \sum_{i=1}^m \mathbf{a}_{(i)}\mathbf{c} \) </li>
-    <li> \( \mathbf{e}^\top\mathbf{A}^\top\mathbf{b} = \sum_{j=1}^n \mathbf{b}^\top\mathbf{a}^{(j)} \) </li>
-    <li> \( \mathbf{b}^\top\mathbf{e}^{(i)} = \mathbf{e}_{(i)}\mathbf{b} = b_i \) with \( i\in[m] \) </li>
-    <li> \( \mathbf{A}\mathbf{c} = \begin{pmatrix}
-        \mathbf{a}_{(1)}\mathbf{c} \\
-        \vdots \\
-        \mathbf{a}_{(m)}\mathbf{c}
-    \end{pmatrix} \) or \( [\mathbf{Ac}]_{(i)} = \mathbf{a}_{(i)}\mathbf{c} \) </li>
-    <li> \( \mathbf{A}^\top\mathbf{b} = \begin{pmatrix}
-        \mathbf{b}^\top\mathbf{a}^{(1)} \\
-        \vdots \\
-        \mathbf{b}^\top\mathbf{a}^{(n)}
-    \end{pmatrix} \) or \( [\mathbf{A}^\top\mathbf{b}]_{(j)} = \mathbf{b}^\top\mathbf{a}^{(j)} \) </li>
-    <li> \( \mathbf a^\top\mathbf a = \textrm{Tr}(\mathbf a\mathbf a^\top) \) </li>
-</ul>
+<p>
+    <ul>
+        <li> \( \mathbf{e}_{(k)}^\top = \mathbf{e}^{(k)} \) </li>
+        <li> \( \mathbf{e} = \sum_{k=1}^K \mathbf{e}^{(k)} \quad ; \quad \mathbf{e}^\top = \sum_{k=1}^K \mathbf{e}_{(k)} \) </li>
+        <li> \( \mathbf{A}\mathbf{e}^{(j)} = \mathbf{a}^{(j)} \) with \( j\in [n] \) </li>
+        <li> \( \mathbf{A}^\top\mathbf{e}^{(i)} = \mathbf{a}_{(i)}^\top \) with \( i\in[m] \) </li>
+        <li> \( \mathbf{e}_{(i)}\mathbf{A} = \mathbf{a}_{(i)} \) with \( i\in[m] \) </li>
+        <li> \( \mathbf{e}_{(j)}\mathbf{A}^\top  = {\mathbf{a}^{(j)}}^\top \) with \( j\in[n] \) </li>
+        <li> \( \mathbf{e}_{(i)}\mathbf{A}\mathbf{e}^{(j)} = a_{ij} \) with \( i\in[m], j\in[n] \) </li>
+        <li> \( \mathbf{e}^\top\mathbf{A} = \sum_{i=1}^m \mathbf{a}_{(i)} \) </li>
+        <li> \( \mathbf{A}\mathbf{e} = \sum_{j=1}^n \mathbf{a}^{(j)} \) </li>
+        <li> \( \mathbf{e}^\top\mathbf{A}\mathbf{c} = \sum_{i=1}^m \mathbf{a}_{(i)}\mathbf{c} \) </li>
+        <li> \( \mathbf{e}^\top\mathbf{A}^\top\mathbf{b} = \sum_{j=1}^n \mathbf{b}^\top\mathbf{a}^{(j)} \) </li>
+        <li> \( \mathbf{b}^\top\mathbf{e}^{(i)} = \mathbf{e}_{(i)}\mathbf{b} = b_i \) with \( i\in[m] \) </li>
+        <li> \( \mathbf{A}\mathbf{c} = \begin{pmatrix}
+            \mathbf{a}_{(1)}\mathbf{c} \\
+            \vdots \\
+            \mathbf{a}_{(m)}\mathbf{c}
+        \end{pmatrix} \) or \( [\mathbf{Ac}]_{(i)} = \mathbf{a}_{(i)}\mathbf{c} \) </li>
+        <li> \( \mathbf{A}^\top\mathbf{b} = \begin{pmatrix}
+            \mathbf{b}^\top\mathbf{a}^{(1)} \\
+            \vdots \\
+            \mathbf{b}^\top\mathbf{a}^{(n)}
+        \end{pmatrix} \) or \( [\mathbf{A}^\top\mathbf{b}]_{(j)} = \mathbf{b}^\top\mathbf{a}^{(j)} \) </li>
+        <li> \( \mathbf a^\top\mathbf a = \textrm{Tr}(\mathbf a\mathbf a^\top) \) </li>
+    </ul>
+</p>
 
 <!-- 
 <h2>Inverses</h2>
