@@ -64,25 +64,6 @@
       "bibtex": "@techreport{lefebvre2025reformulation,\n  title={A New Single-Level Reformulation for Mixed-Integer Bilevel Optimization: Exact and Heuristic Approaches},\n  author={Henri Lefebvre and Martin Schmidt},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=30703}\n}"
     },
     {
-      "code": "AI",
-      "title": "On Coupling Constraints in Pessimistic Linear Bilevel Optimization",
-      "authors": "Dorothee Henke, Martin Schmidt and Johannes Thürauf",
-      "year": 2025,
-      "preprints": [
-        {
-          "title": "Optimization Online",
-          "link": "https://optimization-online.org/?p=29476"
-        },
-        {
-          "title": "arXiv",
-          "link": "https://arxiv.org/abs/2503.01563"
-        }
-      ],
-      "open-science-page": "open-science/AI-on-coupling-constraints-in-pessimistic-linear-bilevel-optimization",
-      "abstract": "The literature on pessimistic bilevel optimization with coupling constraints is rather scarce and it has been common sense that these problems are harder to tackle than pessimistic bilevel problems without coupling constraints. In this note, we show that this is not the case. To this end, given a pessimistic problem with coupling constraints, we derive a pessimistic problem without coupling constraints that has the same set of globally optimal solutions. Moreover, our results also show that one can equivalently replace a pessimistic problem with such constraints with an optimistic problem without coupling constraints. This paves the way of both transferring theory and solution techniques from any type of these problems to any other one.",
-      "bibtex": "@techreport{henke2025coupling,\n  title={On Coupling Constraints in Pessimistic Linear Bilevel Optimization},\n  author={Dorothee Henke and Henri Lefebvre and Martin Schmidt and Johannes Thürauf},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=29476}\n}"
-    },
-    {
       "code": "AL",
       "title": "Solving Decision-Dependent Robust Problems as Bilevel Optimization Problems",
       "authors": "Martin Schmidt, Simon Stevens, Johannes Thürauf",
@@ -118,6 +99,29 @@
     }
   ],
   "journal-articles": [
+    {
+      "code": "AI",
+      "title": "On Coupling Constraints in Pessimistic Linear Bilevel Optimization",
+      "authors": "Dorothee Henke, Martin Schmidt and Johannes Thürauf",
+      "year": 2026,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=29476"
+        },
+        {
+          "title": "arXiv",
+          "link": "https://arxiv.org/abs/2503.01563"
+        },
+        {
+          "title": "Journal of Optimization Theory and Applications",
+          "link": "https://doi.org/10.1007/s10957-026-03026-x"
+        }
+      ],
+      "open-science-page": "open-science/AI-on-coupling-constraints-in-pessimistic-linear-bilevel-optimization",
+      "abstract": "The literature on pessimistic bilevel optimization with coupling constraints is rather scarce and it has been common sense that these problems are harder to tackle than pessimistic bilevel problems without coupling constraints. In this note, we show that this is not the case. To this end, given a pessimistic problem with coupling constraints, we derive a pessimistic problem without coupling constraints that has the same set of globally optimal solutions. Moreover, our results also show that one can equivalently replace a pessimistic problem with such constraints with an optimistic problem without coupling constraints. This paves the way of both transferring theory and solution techniques from any type of these problems to any other one.",
+      "bibtex": "@techreport{henke2025coupling,\n  title={On Coupling Constraints in Pessimistic Linear Bilevel Optimization},\n  author={Dorothee Henke and Henri Lefebvre and Martin Schmidt and Johannes Thürauf},\n  year={2025},\n  archivePrefix={Optimization Online},\n  url={https://optimization-online.org/?p=29476}\n}"
+    },
     {
       "code": "AH",
       "title": "Computing Weak Counterfactual Explanations for Linear Optimization: A New Class of Bilevel Models and a Tailored Penalty Alternating Direction Method",
