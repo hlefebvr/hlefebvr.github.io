@@ -2,7 +2,6 @@
   "submitted-articles": [
     {
       "title": "On the Convergence of Column-and-Constraint Generation Algorithms in Two-Stage Robust Optimization",
-      "authors": "Henri Lefebvre",
       "year": 2026,
       "preprints": [
         {
@@ -13,7 +12,7 @@
     },
     {
       "title": "Calmness of the Solution-Set Mapping for Linear Bilevel and Pricing Problems",
-      "authors": "Henri Lefebvre, Martin Schmidt, Anton Svensson and Johannes Thürauf",
+      "authors": "Martin Schmidt, Anton Svensson and Johannes Thürauf",
       "year": 2026,
       "preprints": [
         {
@@ -24,7 +23,7 @@
     },
     {
       "title": "Robust Bilevel Optimization with a Wait-and-See Follower: A Column-and-Constraint Generation Approach",
-      "authors": "Henri Lefebvre and Johannes Thürauf",
+      "authors": "Johannes Thürauf",
       "year": 2026,
       "preprints": [
         {
@@ -35,7 +34,7 @@
     },
     {
       "title": "Branch-and-Cut for Mixed-Integer Linear Decision-Dependent Robust Optimization",
-      "authors": "Henri Lefebvre, Martin Schmidt, Simon Stevens and Johannes Thürauf",
+      "authors": "Martin Schmidt, Simon Stevens and Johannes Thürauf",
       "year": 2026,
       "preprints": [
         {
