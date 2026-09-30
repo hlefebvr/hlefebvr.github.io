@@ -1,6 +1,17 @@
 {
   "submitted-articles": [
     {
+      "title": "",
+      "authors": "Henri Lefebvre",
+      "year": 2026,
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=37092"
+        }
+      ]
+    },
+    {
       "title": "Calmness of the Solution-Set Mapping for Linear Bilevel and Pricing Problems",
       "authors": "Henri Lefebvre, Martin Schmidt, Anton Svensson and Johannes Thürauf",
       "year": 2026,
