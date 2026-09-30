@@ -115,6 +115,12 @@
       "title": "On Coupling Constraints in Pessimistic Linear Bilevel Optimization",
       "authors": "Dorothee Henke, Martin Schmidt and Johannes Thürauf",
       "year": 2026,
+      "published": [
+        {
+          "title": "Journal of Optimization Theory and Applications",
+          "link": "https://doi.org/10.1007/s10957-026-03026-x"
+        }
+      ],
       "preprints": [
         {
           "title": "Optimization Online",
@@ -123,10 +129,6 @@
         {
           "title": "arXiv",
           "link": "https://arxiv.org/abs/2503.01563"
-        },
-        {
-          "title": "Journal of Optimization Theory and Applications",
-          "link": "https://doi.org/10.1007/s10957-026-03026-x"
         }
       ],
       "open-science-page": "open-science/AI-on-coupling-constraints-in-pessimistic-linear-bilevel-optimization",
