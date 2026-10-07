@@ -6,6 +6,10 @@
       "authors": "Ugur Karabas and Michaël Poss",
       "preprints": [
         {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=37224"
+        },
+        {
           "title": "HAL",
           "link": "https://hal.science/hal-05784143"
         }
