@@ -1,6 +1,14 @@
 {
   "submitted-articles": [
     {
+      "title": "Affine Decision Rules for Robust Optimization with Decision-Dependent Information Discovery",
+      "year": 2026,
+      "preprints": {
+        "title": "HAL",
+        "link": "https://hal.science/hal-05784143"
+      }
+    },
+    {
       "title": "On the Convergence of Column-and-Constraint Generation Algorithms in Two-Stage Robust Optimization",
       "year": 2026,
       "preprints": [
