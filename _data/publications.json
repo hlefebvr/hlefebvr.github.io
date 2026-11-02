@@ -1,6 +1,17 @@
 {
   "submitted-articles": [
     {
+      "title": "Explaining First-Stage Decisions of Two-Stage Stochastic Programs: Modeling, Reformulations and Solution Methods",
+      "year": 2026,
+      "authors": "Adrien Belfer, Luce Brotcorne, Marius Roland",
+      "preprints": [
+        {
+          "title": "Optimization Online",
+          "link": "https://optimization-online.org/?p=37829"
+        }
+      ]
+    },
+    {
       "title": "Affine Decision Rules for Robust Optimization with Decision-Dependent Information Discovery",
       "year": 2026,
       "authors": "Ugur Karabas and Michaël Poss",
