@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BibTeX generator regression checks</title>
+<script src="../assets/js/bibtex-generator.js"></script>
+<pre id="results">Running…</pre>
+<script>
+(async () => {
+  const { identify, formatBibTex, generate } = window.BibtexGenerator;
+  const results = [];
+  const check = (name, condition) => { if (!condition) throw new Error(name); results.push('PASS ' + name); };
+  try {
+    const formatted = formatBibTex('@article{Key, Title={A {Nested} Title}, month=jan, URL={https://example.org}, DOI={10.1/example}, pages={1–9}, author="Doe, Jane and Roe, John"}');
+    check('Existing formatting rules and quoted commas', formatted === '@article{Key,\n  title = {A {Nested} Title},\n  doi = {10.1/example},\n  pages = {1--9},\n  author = {Doe, Jane and Roe, John}\n}');
+    check('Retain URL when no DOI exists', formatBibTex('@misc{Key,url={https://example.org},year={2026}}').includes('url = {https://example.org}'));
+    for (const value of ['2503.01559', 'arXiv:2503.01559v2', 'https://arxiv.org/pdf/2503.01559v2.pdf', 'https://arxiv.org/abs/2503.01559?x=1', 'arxiv.org/html/2503.01559v4']) check('arXiv input: ' + value, identify(value).id === '2503.01559');
+    check('Legacy arXiv identifier', identify('https://arxiv.org/abs/math/0301234').id === 'math/0301234');
+    check('DOI URL normalization', identify('https://doi.org/10.1007/s10107-025-02311-3').id === '10.1007/s10107-025-02311-3');
+    check('Optimization Online query parameters', identify('https://optimization-online.org/?tracking=x&p=37829').id === '37829');
+    check('Optimization Online slug and fragment', identify('https://optimization-online.org/2026/10/example/?x=1#article').slug === 'example');
+    let rejected = false;
+    try { identify('https://arxiv.org.example.com/abs/2503.01559'); } catch { rejected = true; }
+    check('Reject unrelated hosts', rejected);
+    const originalFetch = window.fetch;
+    window.fetch = async (url) => {
+      if (url.includes('api.datacite.org')) return new Response(JSON.stringify({data:{attributes:{doi:'10.48550/arXiv.2503.01559',titles:[{title:'A study'}],creators:[{givenName:'Henri',familyName:'Lefebvre'},{name:'Johannes Thürauf'}],publicationYear:2025,dates:[{dateType:'Submitted',date:'2026-07-06',dateInformation:'v4'}],subjects:[{subjectScheme:'arXiv',subject:'Optimization and Control (math.OC)'}]}}}));
+      if (url.includes('coauthors=2')) return new Response(JSON.stringify([{_embedded:{author:[{slug:'mariusroland',name:'Marius Roland'}]}}]));
+      if (url.includes('optimization-online.org')) {
+        const post = {id:37829,date:'2026-10-31',title:{rendered:'A &amp; B: <i>nested</i> models'},coauthors:[2,1],_embedded:{author:[], 'wp:term':[[{id:1,taxonomy:'author',slug:'cap-jane-doe',name:'Jane Doe'},{id:2,taxonomy:'author',slug:'cap-mariusroland',name:'mariusroland'}]]}};
+        return new Response(JSON.stringify(url.includes('slug=') ? [post] : post));
+      }
+      return new Response('@article{Key,title={Example},month=jan,doi={10.1/example},url={https://example.org}}');
+    };
+    const arxiv = await generate('https://arxiv.org/pdf/2503.01559v4');
+    check('arXiv metadata becomes BibTeX, not XML', arxiv.startsWith('@misc{Lefebvre2026,') && arxiv.includes('eprint = {2503.01559}') && arxiv.includes('primaryclass = {math.OC}') && !arxiv.includes('url ='));
+    const oo = await generate('https://optimization-online.org/?p=37829');
+    check('Optimization Online author names and ordering', oo.includes('author = {Marius Roland and Jane Doe}'));
+    check('Decode HTML title and use canonical URL', oo.includes('title = {A & B: nested models}') && oo.includes('url = {https://optimization-online.org/?p=37829}'));
+    check('Slug lookup', await generate('https://optimization-online.org/2026/10/example/') === oo);
+    const doi = await generate('doi:10.1007/example');
+    check('DOI path uses same formatter', !doi.includes('month =') && !doi.includes('url ='));
+    window.fetch = async () => new Response('Unavailable', {status:503});
+    let failure = false;
+    try { await generate('2503.01559'); } catch (error) { failure = error.message.includes('503'); }
+    check('Readable service errors', failure);
+    window.fetch = originalFetch;
+    document.body.dataset.result = 'pass';
+  } catch (error) { results.push('FAIL ' + error.message); document.body.dataset.result = 'fail'; }
+  document.getElementById('results').textContent = results.join('\n');
+})();
+</script>

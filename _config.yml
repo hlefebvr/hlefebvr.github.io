@@ -3,3 +3,4 @@ baseurl: "/" # the subpath of your site, e.g. /blog
 title: "Henri Lefebvre, CNRS" # the name of your site, e.g. ACME Corp.
 exclude:
   - renv
+  - tests

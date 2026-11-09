@@ -1,62 +1,43 @@
-<!-- {% if counter == nil %} -->
-  {% assign counter = 1 %}
-<!-- {% endif %} -->
-
 {% assign counter = 1 %}
-
 {% assign years = include.articles | map: "year" | uniq | sort | reverse %}
 
 {% for year in years %}
-  <h3>{{ year }}</h3>
-  <ol  start="{{ counter }}">
+  <h3 class="paper-year">{{ year }}</h3>
+  <ol role="list" class="paper-group" start="{{ counter }}">
     {% for paper in include.articles %}
       {% if paper.year == year %}
         {% assign counter = counter | plus: 1 %}
         <li>
-          <p>
-            <div class="paper-list">
-              <span style="color:black;font-weight: 400;">
-                  <b>{{ paper.title }}</b>
-              </span><br />
-              {% if paper.authors %}
-                Jointly with <span color="black">{{ paper.authors }}</span>.
-              {% else %}
-                Single author.
-              {% endif %}
-              <br />
-              {% if paper.published %}
-                {% for preprint in paper.published %}
-                  <a href="{{ preprint.link }}" class="preprint-link" style="background-color: #f0fbff;" target="_blank">{{ preprint.title }}</a> &nbsp;
-                {% endfor %}
-              {% endif %}
-              {% if paper.preprints %}
-                {% for preprint in paper.preprints %}
-                  <a href="{{ preprint.link }}" class="preprint-link" target="_blank">{{ preprint.title }}</a> &nbsp;
-                {% endfor %}
-              {% endif %}
-
-              {% if paper.locations %}
-                {% for location in paper.locations %}
-                  {% if location.link %}
-                    <a href="{{ location.link }}" class="preprint-link" target="_blank">{{ location.title }}</a>
-                  {% else %}
-                    {{ location.title }}.
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-
-              {% if paper.comment %}
-                {{ paper.comment }}<br />
-              {% endif %}
-
+          <div class="paper-list">
+            <div class="paper-title">{{ paper.title }}</div>
+            <p class="paper-authors">
+              {% if paper.authors %}Jointly with {{ paper.authors }}.{% else %}Single author.{% endif %}
+            </p>
+            {% if paper.published or paper.preprints or paper.locations %}
+            <div class="paper-links">
+              {% for location in paper.published %}
+                <a href="{{ location.link }}" class="preprint-link preprint-link-published" target="_blank" rel="noopener">{{ location.title }}</a>
+              {% endfor %}
+              {% for location in paper.preprints %}
+                <a href="{{ location.link }}" class="preprint-link" target="_blank" rel="noopener">{{ location.title }}</a>
+              {% endfor %}
+              {% for location in paper.locations %}
+                {% if location.link %}
+                  <a href="{{ location.link }}" class="preprint-link" target="_blank" rel="noopener">{{ location.title }}</a>
+                {% else %}
+                  <span>{{ location.title }}.</span>
+                {% endif %}
+              {% endfor %}
             </div>
-            {% for image in paper.images %}
-              <center style="margin-top: 20px;">
-                <img src="{{ image.src }}" style="max-width:100%;" /><br />
-                {{ image.caption }}
-              </center>
-            {% endfor %}
-          </p>
+            {% endif %}
+            {% if paper.comment %}<p class="paper-comment">{{ paper.comment }}</p>{% endif %}
+          </div>
+          {% for image in paper.images %}
+            <figure class="paper-figure">
+              <img src="{{ image.src }}" alt="{{ image.caption | escape }}" loading="lazy" />
+              <figcaption>{{ image.caption }}</figcaption>
+            </figure>
+          {% endfor %}
         </li>
       {% endif %}
     {% endfor %}

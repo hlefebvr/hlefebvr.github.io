@@ -1,83 +1,105 @@
 <div class="research-map">
-    <div class="research-map-layout">
-        <svg class="research-map-diagram" viewBox="0 0 857 439" role="img" aria-labelledby="research-map-title research-map-desc">
-            <title id="research-map-title">Overlapping fields of research</title>
-            <desc id="research-map-desc">Optimization under uncertainty, explainability, bilevel optimization, and game theory. The accompanying topic boxes describe research within these fields and at their intersections.</desc>
+    <div class="research-map-overview">
+        <span class="research-map-eyebrow">Connected research areas</span>
+        <svg class="research-map-diagram" viewBox="270 0 480 455" role="img" aria-labelledby="research-map-title research-map-desc">
+            <title id="research-map-title">Four overlapping fields of research</title>
+            <desc id="research-map-desc">Optimization under uncertainty, explainability, bilevel optimization, and game theory. Research topics below explore these fields and their intersections.</desc>
             <defs>
-                <marker id="research-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="context-stroke" />
-                </marker>
+                <radialGradient id="research-blue"><stop stop-color="#dbeafe"/><stop offset="1" stop-color="#bfdbfe" stop-opacity="0.5"/></radialGradient>
+                <radialGradient id="research-orange"><stop stop-color="#ffedd5"/><stop offset="1" stop-color="#fed7aa" stop-opacity="0.5"/></radialGradient>
+                <radialGradient id="research-green"><stop stop-color="#d1fae5"/><stop offset="1" stop-color="#a7f3d0" stop-opacity="0.5"/></radialGradient>
+                <radialGradient id="research-purple"><stop stop-color="#ede9fe"/><stop offset="1" stop-color="#ddd6fe" stop-opacity="0.6"/></radialGradient>
             </defs>
-            <g class="research-map-circles" stroke-width="0.8">
-                <circle cx="409" cy="187" r="111" fill="#b9d7ff" fill-opacity="0.48" stroke="#8eb8ef" />
-                <circle cx="609" cy="187" r="111" fill="#ffdfc2" fill-opacity="0.48" stroke="#eab28d" />
-                <circle cx="509" cy="320" r="111" fill="#d4ffcf" fill-opacity="0.48" stroke="#9bd595" />
-                <circle cx="509" cy="87" r="78" fill="#eacaff" fill-opacity="0.48" stroke="#c899e7" />
+            <g class="research-area" data-area="uncertainty">
+                <g class="research-area-float">
+                    <circle cx="409" cy="125" r="111" fill="url(#research-blue)" stroke="#93b8e7"/>
+                    <text x="397" y="118"><tspan x="397">Optimization</tspan><tspan x="397" dy="21">under uncertainty</tspan></text>
+                </g>
             </g>
-            <g fill="#263c42" text-anchor="middle" font-size="15" font-weight="700">
-                <text x="509" y="92">Explainability</text>
-                <text x="409" y="181"><tspan x="409">Optimization</tspan><tspan x="409" dy="20">under Uncertainty</tspan></text>
-                <text x="609" y="181"><tspan x="609">Bilevel</tspan><tspan x="609" dy="20">Optimization</tspan></text>
-                <text x="509" y="325">Game Theory</text>
+            <g class="research-area" data-area="bilevel">
+                <g class="research-area-float">
+                    <circle cx="609" cy="125" r="111" fill="url(#research-orange)" stroke="#e9b78c"/>
+                    <text x="621" y="118"><tspan x="621">Bilevel</tspan><tspan x="621" dy="21">optimization</tspan></text>
+                </g>
             </g>
-            <g class="research-map-arrows" fill="none" stroke-width="1.5" marker-end="url(#research-arrow)">
-                <path d="M342 56 C405 80 461 127 507 155" stroke="#8183d8" />
-                <path d="M280 145 C311 145 301 175 324 186" stroke="#5489cf" />
-                <path d="M300 243 C355 162 502 288 512 190" stroke="#9793a2" />
-                <path d="M369 320 C412 304 407 260 452 265" stroke="#65aaa7" />
-                <path d="M380 390 C405 375 414 396 435 377" stroke="#70ac6b" />
-                <path d="M604 43 C576 62 560 92 550 124" stroke="#b179d0" />
-                <path d="M732 283 C707 239 698 224 666 225" stroke="#cb8b5c" />
+            <g class="research-area" data-area="games">
+                <g class="research-area-float">
+                    <circle cx="509" cy="330" r="111" fill="url(#research-green)" stroke="#86cbb1"/>
+                    <text x="509" y="350">Game theory</text>
+                </g>
+            </g>
+            <g class="research-area" data-area="explainability">
+                <g class="research-area-float">
+                    <circle cx="509" cy="225" r="78" fill="url(#research-purple)" stroke="#bca5e5"/>
+                    <text x="509" y="229">Explainability</text>
+                </g>
             </g>
         </svg>
-
-        <section class="research-topic research-topic-explaining">
-            <h4>Uncertainty ∩ Explainability ∩ Bilevel</h4>
-            <ul><li>Explaining Stochastic Optimization</li></ul>
-        </section>
-        <section class="research-topic research-topic-uncertainty">
+        <div class="research-filters" role="group" aria-label="Filter research topics by field" hidden>
+            <button type="button" data-field="all" aria-pressed="true" aria-controls="research-topics">All topics</button>
+            <button type="button" data-field="uncertainty" aria-pressed="false" aria-controls="research-topics">Uncertainty</button>
+            <button type="button" data-field="bilevel" aria-pressed="false" aria-controls="research-topics">Bilevel</button>
+            <button type="button" data-field="explainability" aria-pressed="false" aria-controls="research-topics">Explainability</button>
+            <button type="button" data-field="games" aria-pressed="false" aria-controls="research-topics">Game theory</button>
+        </div>
+    </div>
+    <p class="research-map-status" role="status" aria-live="polite" aria-atomic="true">7 topics across four connected fields</p>
+    <div class="research-map-layout" id="research-topics">
+        <section class="research-topic research-topic-uncertainty" data-fields="uncertainty">
             <h4>Optimization under Uncertainty</h4>
             <ul>
-                <li>Two-Stage Robust Optimization</li>
-                <li>Decision-Dependent Uncertainty</li>
-                <li>Information Discovery</li>
+                <li>Adjustable robust optimization</li>
+                <li>Decomposition methods</li>
+                <li>Information discovery</li>
             </ul>
         </section>
-        <section class="research-topic research-topic-robust-bilevel">
-            <h4>Uncertainty ∩ Bilevel</h4>
-            <ul>
-                <li>Robust Bilevel Optimization</li>
-                <li>Wait-and-See Follower</li>
-            </ul>
-        </section>
-        <section class="research-topic research-topic-robust-games">
-            <h4>Uncertainty ∩ Game Theory</h4>
-            <ul><li>Robust Extensive Games</li></ul>
-        </section>
-        <section class="research-topic research-topic-games">
-            <h4>Game Theory</h4>
-            <ul><li>GNEPs</li></ul>
-        </section>
-        <section class="research-topic research-topic-explainability">
-            <h4>Explainability ∩ Bilevel</h4>
-            <ul>
-                <li>Counterfactual Explanations</li>
-                <li>Tipping Points</li>
-            </ul>
-        </section>
-        <section class="research-topic research-topic-bilevel">
+        <section class="research-topic research-topic-bilevel" data-fields="bilevel">
             <h4>Bilevel Optimization</h4>
             <ul>
-                <li>Cutting Planes (MILP/LP)</li>
-                <li>Theoretical Properties
-                    <ul>
-                        <li>Calmness</li>
-                        <li>Coupling Constraints</li>
-                        <li>Reformulations</li>
-                    </ul>
-                </li>
-                <li>Heuristics</li>
+                <li>Single-level reformulations</li>
+                <li>Cutting planes and heuristics</li>
+                <li>Calmness and coupling constraints</li>
+            </ul>
+        </section>
+        <section class="research-topic research-topic-robust-bilevel" data-fields="uncertainty bilevel">
+            <h4>Uncertainty ∩ Bilevel</h4>
+            <ul>
+                <li>Decision-dependent uncertainty</li>
+                <li>Wait-and-see followers</li>
+                <li>Column-and-constraint generation</li>
+            </ul>
+        </section>
+        <section class="research-topic research-topic-explaining" data-fields="uncertainty explainability bilevel">
+            <h4>Uncertainty ∩ Explainability ∩ Bilevel</h4>
+            <ul>
+                <li>Two-stage stochastic programs</li>
+                <li>First-stage decision explanations</li>
+                <li>Scenario reduction</li>
+            </ul>
+        </section>
+        <section class="research-topic research-topic-robust-games" data-fields="uncertainty games">
+            <h4>Uncertainty ∩ Game Theory</h4>
+            <ul>
+                <li>Robust games</li>
+                <li>Extensive-form models</li>
+            </ul>
+        </section>
+        <section class="research-topic research-topic-explainability" data-fields="explainability bilevel">
+            <h4>Explainability ∩ Bilevel</h4>
+            <ul>
+                <li>Counterfactual explanations</li>
+                <li>Bilevel models</li>
+                <li>Penalty alternating direction methods</li>
+            </ul>
+        </section>
+        <section class="research-topic research-topic-games" data-fields="games">
+            <h4>Game Theory</h4>
+            <ul>
+                <li>Generalized Nash equilibria</li>
+                <li>Equilibrium reductions</li>
+                <li>Variational inequalities</li>
             </ul>
         </section>
     </div>
 </div>
+<script src="{{ '/assets/js/research-map.js' | relative_url }}" defer></script>

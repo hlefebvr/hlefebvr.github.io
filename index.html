@@ -3,6 +3,7 @@ layout: default
 title: "Home"
 ---
 
+<div class="home-page">
 <div class="home-bio">
     <h2>
         Henri Lefebvre 
@@ -30,70 +31,40 @@ title: "Home"
 
 </div>
 
-<div class="block">
-    <h3 style="margin:0px;">Meet idol, a C++ framework for optimization!</h3>
-
-    <p>
-        idol is a framework designed to help solve complex optimization problems
-        using a variety of decomposition methods. It enables the development of
-        custom algorithms for mixed-integer, robust, and bilevel optimization
-        problems.
-    </p>
-
-    <pre><code class="language-cpp">const auto branch_and_price = branch_and_bound + column_generation;
-model.use(branch_and_price);
-model.optimize();</code></pre>
-
-    <center>
-        <a href="/idol" class="my-button" id="get-started" target="_blank">Documentation</a>
-        &nbsp;-&nbsp;
-        <a href="https://github.com/hlefebvr/idol" class="my-button" id="get-started" target="_blank">GitHub</a>
-        &nbsp;-&nbsp;
-        <a href="/idol/examples.html" class="my-button" target="_blank">See Examples</a>
-    </center>
-
-</div>
-
 <div class="home-vignette">
 <h3>Research Interests</h3>
 
 {% include research-interests.html %}
 
-<p style="font-size: 0.7em">
-    <b>Keywords</b>: Bilevel optimization, robust optimization, decomposition methods, exact methods.
-</p>
 </div>
-<div class="home-bio">
-    <h3>Education</h3>
+
+<section class="idol-feature" aria-labelledby="idol-heading">
+    <div class="idol-heading">
+        <span class="idol-eyebrow">Research software</span>
+        <h3 id="idol-heading">idol <span>A C++ framework for optimization</span></h3>
+    </div>
+
     <p>
-        <ul class="education">
-            <li>
-                PhD in Operations Research, 2023<br />
-                <a href="https://www.unibo.it/it" target="_blank">DEI - Università di Bologna (Italy)</a><br />
-                Thesis: <i>Adjustable Robust Optimization with Nonlinear Recourses</i><br />
-                Supervisors: Michele Monaci, Enrico Malaguti
-            </li>
-        </ul>
-        <details>
-            <summary>More</summary>
-            <ul class="education">
-                <li>
-                    Master of Engineering, 2019<br />
-                    <a href="https://www.utc.fr/" target="_blank">Université de Technologie de Compiègne (France)</a><br />
-                    In <i>Decision support in logistics</i><br />
-                    Minor in <i>Philosophy, technology and cognition</i>
-                </li>
-                <li>
-                    Master of Science, 2019<br />
-                    <a href="https://www.utc.fr/" target="_blank">Université de Technologie de Compiègne (France)</a><br />
-                    In <i>Optimization and learning of systems</i>
-                </li>
-                <li>
-                    Master of Engineering, 2019<br />
-                    <a href="https://unige.it/" target="_blank">Univerità degli studi di Genova (Italy)</a><br />
-                    In <i>Production systems</i>
-                </li>
-            </ul>
-        </details>
+        Build custom algorithms for mixed-integer, robust, and bilevel
+        optimization by combining decomposition methods.
     </p>
+
+    <div class="idol-code">
+        <div class="idol-code-heading"><span>Compose your algorithm</span><span>C++</span></div>
+        <pre tabindex="0" role="region" aria-label="C++ branch-and-price example"><code class="language-cpp">const auto branch_and_price =
+    branch_and_bound + column_generation;
+
+model.use(branch_and_price);
+model.optimize();</code></pre>
+    </div>
+
+    <nav class="idol-links" aria-label="idol resources">
+        <a href="/idol" class="idol-link-primary" target="_blank" rel="noopener">Documentation <span aria-hidden="true">↗</span></a>
+        <a href="/idol/examples.html" target="_blank" rel="noopener">Examples <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/hlefebvr/idol" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+
+</section>
+
+{% include education.html %}
 </div>
