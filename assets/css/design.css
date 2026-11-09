@@ -246,6 +246,123 @@ pre {
     max-width: 700px;
 }
 
+/* Keep the research illustration crisp, with real HTML topic text. */
+.research-map {
+    container-type: inline-size;
+    margin: 1rem 0;
+}
+
+.research-map-layout {
+    position: relative;
+    aspect-ratio: 857 / 439;
+    font-size: 1.52cqw;
+    line-height: 1.4;
+}
+
+.research-map-diagram {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: inherit;
+}
+
+.research-topic {
+    position: absolute;
+    padding: 0.8cqw 1.2cqw;
+    border: 1.5px solid var(--topic-color);
+    border-radius: 1.7cqw;
+    background: white;
+    color: var(--topic-color);
+}
+
+.research-topic h4 {
+    margin-bottom: 0.45cqw;
+    font-size: 1.7cqw;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.research-topic ul {
+    margin: 0;
+    padding-left: 1em;
+    list-style-type: disc;
+}
+
+.research-topic li:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.research-topic-explaining {
+    --topic-color: #6668b7;
+    left: 4.7%; top: 5.9%; width: 35.3%;
+}
+
+.research-topic-uncertainty {
+    --topic-color: #356fb5;
+    left: 2.7%; top: 22.1%; width: 30%;
+}
+
+.research-topic-robust-bilevel {
+    --topic-color: #777280;
+    left: 6.3%; top: 46.7%; width: 28.7%;
+}
+
+.research-topic-robust-games {
+    --topic-color: #397e7b;
+    left: 15.8%; top: 66.3%; width: 27.4%;
+}
+
+.research-topic-games {
+    --topic-color: #478142;
+    left: 23.5%; top: 82.2%; width: 21%;
+}
+
+.research-topic-explainability {
+    --topic-color: #9258b1;
+    left: 70.5%; top: 0.7%; width: 27.5%;
+}
+
+.research-topic-bilevel {
+    --topic-color: #ab6535;
+    left: 73.5%; top: 64.2%; width: 23.7%;
+}
+
+@container (max-width: 540px) {
+    .research-map-layout {
+        display: grid;
+        gap: 0.75rem;
+        aspect-ratio: auto;
+        font-size: 0.9rem;
+    }
+
+    .research-map-diagram {
+        /* Crop the empty space occupied by the desktop topic boxes. */
+        width: 190%;
+        max-width: none;
+        margin-left: -64%;
+    }
+
+    .research-map-layout {
+        overflow: hidden;
+    }
+
+    .research-map-arrows {
+        display: none;
+    }
+
+    .research-topic {
+        position: static;
+        width: auto;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .research-topic h4 {
+        margin-bottom: 0.35rem;
+        font-size: 1rem;
+    }
+}
+
 .category-item {
 
     min-height: 100px;
